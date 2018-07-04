@@ -1,8 +1,17 @@
 #coding: utf-8
-# ver 2.0
+# ver 2.1
 
 
+import builtins
+
+import re
 import random
+import requests
+import json
+import types
+import base64
+import os
+import sys, datetime, time
 import discord
 
 

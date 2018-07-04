@@ -1,5 +1,5 @@
 ﻿#coding: utf-8
-# ver 2.0
+# ver 2.1
 
 import builtins
 
@@ -77,7 +77,7 @@ async def on_message(message):
         await MicMessage.say_message(message)
 
     # 表示
-    for regex in ["^雑談$", "^ディアたんと会話", "^ボットと雑談", "^★おみくじコーナー★"]:
+    for regex in NaturalChat.NaturalChattableChannelRegex():
         if re.match(regex, str(message.channel)):
         
             if str(message.channel) == "雑談":
