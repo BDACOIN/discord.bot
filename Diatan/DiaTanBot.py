@@ -77,34 +77,35 @@ async def on_message(message):
         await MicMessage.say_message(message)
 
     # 表示
-    if str(message.channel) in ["雑談", "ディアたんと会話", "ボットと雑談", "★おみくじコーナー★"]:
-    
-        if str(message.channel) == "雑談":
-
-            try:
-                msg = str(message.content)
-                dia_appear_remain_cnt = sm3.decrement_appear_zatsudan_cnt(msg)
-                if dia_appear_remain_cnt >= 0:
-                    # 3の方を使って会話
-                    msg = sm3.get_naturalchat_mesasge(message)
-                    await client.send_message(message.channel, msg)
-
-            except RuntimeError:
-                print(RuntimeError)
-
-
-        # おみくじが許される条件
-        elif JapaneseOmikuji.is_permission_omikuji_condition(message):
-            # 2の方を使って会話
-            msg = sm2.get_naturalchat_mesasge(message)
-            await client.send_message(message.channel, msg)
-            await JapaneseOmikuji.say_embedded_omikuji_message(message)
-
-        else:
-            # 1の方を使って会話
-            msg = sm1.get_naturalchat_mesasge(message)
-            await client.send_message(message.channel, msg)
+    for regex in ["^雑談$", "^ディアたんと会話", "^ボットと雑談", "^★おみくじコーナー★"]:
+        if re.match(regex, str(message.channel)):
         
+            if str(message.channel) == "雑談":
+
+                try:
+                    msg = str(message.content)
+                    dia_appear_remain_cnt = sm3.decrement_appear_zatsudan_cnt(msg)
+                    if dia_appear_remain_cnt >= 0:
+                        # 3の方を使って会話
+                        msg = sm3.get_naturalchat_mesasge(message)
+                        await client.send_message(message.channel, msg)
+
+                except RuntimeError:
+                    print(RuntimeError)
+
+
+            # おみくじが許される条件
+            elif JapaneseOmikuji.is_permission_omikuji_condition(message):
+                # 2の方を使って会話
+                msg = sm2.get_naturalchat_mesasge(message)
+                await client.send_message(message.channel, msg)
+                await JapaneseOmikuji.say_embedded_omikuji_message(message)
+
+            else:
+                # 1の方を使って会話
+                msg = sm1.get_naturalchat_mesasge(message)
+                await client.send_message(message.channel, msg)
+            
 
 
 # APP(BOT)を実行

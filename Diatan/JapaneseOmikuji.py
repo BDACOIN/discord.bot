@@ -10,7 +10,7 @@ def is_permission_omikuji_condition(message):
     ch = str(message.channel)
     if ch in ["★おみくじコーナー★"]:
        return True
-    if ch in ["ディアたんと会話"] and (random.randint(1,10) < 3):
+    if re.match("ディアたんと会話", ch) and (random.randint(1,10) < 3):
        return True
        
     return False
