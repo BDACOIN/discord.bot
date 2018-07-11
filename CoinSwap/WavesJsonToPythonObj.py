@@ -1,4 +1,5 @@
 import json
+import math
 import Base58DecodedWalletAddress
 import JudgeErrorWalletAddress
 
@@ -47,6 +48,8 @@ def json_to_python_obj(str_json):
     amount = amount / 10.0
     # イーサートークン比率は比率は25:1
     eth_amount = amount / 25.0
+    # 最後にintで丸める。切り捨て。ガス代等を考慮
+    eth_amount = int(eth_amount)
 
     # アタッチメントにイーサーウォレットのアドレスがあるはず
     attachment = json_obj["attachment"]
