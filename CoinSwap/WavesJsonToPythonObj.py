@@ -63,11 +63,11 @@ def json_to_python_obj(str_json):
 
     # 基本情報をセッティング
     ret_dict = {
+        "transaction_id":transaction_id,
         "sender":sender,
         "amount":amount,
-        "eth_amount":eth_amount,
-        "transaction_id":transaction_id,
-        "eth_address":attachment
+        "eth_address":attachment,
+        "eth_amount":eth_amount
     }
 
     # 送金者が、Attachmentに記載した情報が、イーサーアドレスとして不適切なことが明白であれば…
