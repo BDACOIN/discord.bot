@@ -7,5 +7,5 @@ def get_waves_node_transaction_json(str_transaction_address):
         res.raise_for_status()
         return res.text
     except:
-        return "Waves Node Transactions Get Error"
+        return r'{ "status":"error", "details":"Transaction is not in blockchain" }'
 
