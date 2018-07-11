@@ -18,7 +18,7 @@ def is_message_waves_pattern(message):
     if len(message) != 35:
         return False
 
-    if re.match("^(\s*)3P[0-9a-zA-Z]+(\s*)$", message):
+    if re.match("^3P[0-9a-zA-Z]+$", message):
         return True
     
     return False
@@ -29,7 +29,7 @@ def is_message_ether_pattern(message):
     if len(message) != 42:
         return False
 
-    if re.match("^(\s*)0x[0-9a-zA-Z]+(\s*)$", message):
+    if re.match("^0x[0-9a-zA-Z]+$", message):
         return True
     
     return False

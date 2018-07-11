@@ -227,4 +227,4 @@ if __name__ == '__main__':
     for t in (test_json1, test_json2, test_json3, test_json4, test_json5, test_json6):
         test_pyobj = json_to_python_obj(t)
         print(test_pyobj)
-        print("-------------------------------------------------------")        
+        print("-------------------------------------------------------")
