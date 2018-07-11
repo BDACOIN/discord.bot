@@ -19,7 +19,7 @@ def json_to_python_obj(str_json):
     # 送金者が普通に単発送金してる時
     if "recipient" in json_obj:
         recipient = json_obj["recipient"]
-        amount = json_obj["amount"] / 10.0
+        amount = json_obj["amount"]
 
     # 送金者が一斉送金している時。transfersを見てネスト情報を見る、受信アドレスが等しいやつだけ足していく
     elif "transfers" in json_obj:
@@ -30,19 +30,24 @@ def json_to_python_obj(str_json):
                 recipient = tr["recipient"]
                 amount = amount + tr["amount"]
 
-        amount = amount / 10.0
+        amount = amount
 
     # 受信アドレスが等しくないならば、ここで終わり
     if recipient != recipient_wallet_address_of_BDA:
         return {"status":"error", "details":"送金先のWavesウォレットアドレスが、BDA指定のものと異なります。" }
 
+    # 一応トランザクションID自体も控えておく
+    transaction_id = json_obj["id"]
+
     # 受信アドレスが等しければ続きの情報を拾う
     # 送信主のアドレス
     sender = json_obj["sender"]
+
+    # wavesノード上に出てるのは、10倍なので、1/10する。(よくわからないが、BDA waves版が「decimal 1」での発行と思われる)
+    amount = amount / 10.0
     # イーサートークン比率は比率は25:1
     eth_amount = amount / 25.0
-    # 一応トランザクションID自体も控えておく
-    transaction_id = json_obj["id"]
+
     # アタッチメントにイーサーウォレットのアドレスがあるはず
     attachment = json_obj["attachment"]
 
@@ -62,7 +67,7 @@ def json_to_python_obj(str_json):
     # print(attachment)
 
     # 基本情報をセッティング
-    ret_dict = {
+    rtn_dict = {
         "transaction_id":transaction_id,
         "sender":sender,
         "amount":amount,
@@ -74,10 +79,10 @@ def json_to_python_obj(str_json):
     # エラー情報を付加情報として記載しておく。
     # 送金自体はしてしまってるので特別な対処が必要かもしれない。
     if JudgeErrorWalletAddress.is_message_ether_pattern(attachment) != True:
-        ret_dict["status"] = "error"
-        ret_dict["details"] = "送金先のイーサーアドレスが不正です。"
+        rtn_dict["status"] = "error"
+        rtn_dict["details"] = "送金先のイーサーアドレスが不正です。"
 
-    return ret_dict
+    return rtn_dict
 
 
 
@@ -85,7 +90,8 @@ def json_to_python_obj(str_json):
 
 # テスト
 if __name__ == '__main__':
-    test_json = r"""{
+    # 正常
+    test_json1 = r"""{
     "type" : 4,
     "id" : "3qDqKc16QK1owMSFhwjBPH5jrhErSNWn2kVHiL9qrFLV",
     "sender" : "3PMahF2qDnkEZbCHC7dznUVBrfDqctGyEom",
@@ -103,9 +109,11 @@ if __name__ == '__main__':
     "height" : 996705
     }"""
 
-    # test_json = r'{ "status":"error", "details":"Transaction is not in blockchain" }'
+    # そもそも変
+    test_json2 = r'{ "status":"error", "details":"Transaction is not in blockchain" }'
 
-    test_json2 = r"""{
+    # 正常だが一斉送信のなかに、BDAへの送金が含まれてる。
+    test_json3 = r"""{
     "type" : 11,
     "id" : "J9Py9czWYSnp7wBxESuCHku4G78n73z4Utn3xsuTLAEc",
     "sender" : "3PM2LPgW8FjCsZDBivZ8gdVrYnJMM1vPQNx",
@@ -131,5 +139,92 @@ if __name__ == '__main__':
     "height" : 1075581
     }"""
 
-    test_pyobj = json_to_python_obj(test_json)
-    print(test_pyobj)
+    # アタッチメント忘れ
+    test_json4 = r"""{
+    "type" : 4,
+    "id" : "3qDqKc16QK1owMSFhwjBPH5jrhErSNWn2kVHiL9qrFLV",
+    "sender" : "3PMahF2qDnkEZbCHC7dznUVBrfDqctGyEom",
+    "senderPublicKey" : "EUpjLEaJoaM2wR6QEP5FcSfCT59EUDGVsVsRgirsvUDs",
+    "fee" : 100000,
+    "timestamp" : 1526095564397,
+    "signature" : "5j4rUmR5nptYDQLEBY7rJ6SR2UEvdQEPF8AhjPmhBqpFY1nPNykgBmTwvnweSA2mnQ6waLhm9GwnHzp5jt1H484m",
+    "version" : 1,
+    "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRdFF8",
+    "assetId" : "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn",
+    "feeAssetId" : null,
+    "feeAsset" : null,
+    "amount" : 1500000,
+    "attachment" : "",
+    "height" : 996705
+    }"""
+
+    # 受信アドレスとしてBDAの指定ウォレットが含まれてない
+    test_json5 = r"""{
+    "type" : 4,
+    "id" : "3qDqKc16QK1owMSFhwjBPH5jrhErSNWn2kVHiL9qrFLV",
+    "sender" : "3PMahF2qDnkEZbCHC7dznUVBrfDqctGyEom",
+    "senderPublicKey" : "EUpjLEaJoaM2wR6QEP5FcSfCT59EUDGVsVsRgirsvUDs",
+    "fee" : 100000,
+    "timestamp" : 1526095564397,
+    "signature" : "5j4rUmR5nptYDQLEBY7rJ6SR2UEvdQEPF8AhjPmhBqpFY1nPNykgBmTwvnweSA2mnQ6waLhm9GwnHzp5jt1H484m",
+    "version" : 1,
+    "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkf888888888",
+    "assetId" : "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn",
+    "feeAssetId" : null,
+    "feeAsset" : null,
+    "amount" : 1500000,
+    "attachment" : "",
+    "height" : 996705
+    }"""
+
+    # 一斉送信だが、そのなかに１つも受信アドレスとしてBDAの指定ウォレットが含まれてない。
+    test_json6 = r"""{
+    "type" : 11,
+    "id" : "J9Py9czWYSnp7wBxESuCHku4G78n73z4Utn3xsuTLAEc",
+    "sender" : "3PM2LPgW8FjCsZDBivZ8gdVrYnJMM1vPQNx",
+    "senderPublicKey" : "XXv5HCMKjjmEiqstGwZDnrRbg5pT1f29k4kQWyMaNms",
+    "fee" : 150000,
+    "timestamp" : 1531139477097,
+    "proofs" : [ "2ARQqqCVifv3vYJbfnFWZQ16ZYKcvoqYySv4AyVVJS6DhhVVXwpQT2ga3vqFVQFEy29BfmprPdKHFg21QosbPHoH" ],
+    "version" : 1,
+    "assetId" : "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn",
+    "attachment" : "ovFJPq8LJzj6zhiULUCHzsJD9DVrw3hUA54qWbbXMbGsLvfmkiFCp62WR",
+    "transferCount" : 1,
+    "totalAmount" : 200000,
+    "transfers" : [ {
+        "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRd555",
+        "amount" : 200000
+    }, {
+        "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRd555",
+        "amount" : 700000
+    }, {
+        "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRd555",
+        "amount" : 300000
+    } ],
+    "height" : 1075581
+    }"""
+
+    # アタッチメントしてるがイーサアドレスではない。
+    test_json6 = r"""{
+    "type" : 4,
+    "id" : "3qDqKc16QK1owMSFhwjBPH5jrhErSNWn2kVHiL9qrFLV",
+    "sender" : "3PMahF2qDnkEZbCHC7dznUVBrfDqctGyEom",
+    "senderPublicKey" : "EUpjLEaJoaM2wR6QEP5FcSfCT59EUDGVsVsRgirsvUDs",
+    "fee" : 100000,
+    "timestamp" : 1526095564397,
+    "signature" : "5j4rUmR5nptYDQLEBY7rJ6SR2UEvdQEPF8AhjPmhBqpFY1nPNykgBmTwvnweSA2mnQ6waLhm9GwnHzp5jt1H484m",
+    "version" : 1,
+    "recipient" : "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRdFF8",
+    "assetId" : "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn",
+    "feeAssetId" : null,
+    "feeAsset" : null,
+    "amount" : 1500000,
+    "attachment" : "0x494Da578D0470A2E43B8668826De87e6BC74bECf です、よろしくお願いします。",
+    "height" : 996705
+    }"""
+
+
+    for t in (test_json1, test_json2, test_json3, test_json4, test_json5, test_json6):
+        test_pyobj = json_to_python_obj(t)
+        print(test_pyobj)
+        print("-------------------------------------------------------")        
