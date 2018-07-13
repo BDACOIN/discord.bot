@@ -45,6 +45,23 @@ async def on_ready():
 
 
 
+def makedir_and_file(ret):
+    dirpath = ret["eth_address"]
+    dirpath = dirpath.strip()
+    if "eth_status" in ret and ret["eth_status"] == "error":
+        return False
+    try:
+        os.mkdir("postdata/"+dirpath)
+    except:
+        pass
+
+    filename = ret["transaction_id"]
+    f = open("postdata/" + dirpath + "/" + filename + ".txt", "w")
+    f.write(str(ret))
+    f.close()
+
+    return True
+
 
 # メッセージを受信するごとに実行される
 @client.event
@@ -65,26 +82,33 @@ async def on_message(message):
     if str(message.channel) == "erc申請":
         msg = message.content.strip()
         if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
-            await client.send_message(message.channel, mention_msg + " Ether ウォレットアドレス ではなく、Waves の **Transaction ID** を投稿してください。")
+            await client.send_message(message.channel, mention_msg + "\nEther ウォレットアドレス ではなく、\nWaves の **Transaction ID** を投稿してください。")
 
         elif JudgeErrorWalletAddress.is_message_waves_pattern(msg):
-            info = SearchWavesTransactionFromAddress.search_waves_transaction_from_address(msg)
-            await client.send_message(message.channel, mention_msg + " Waves ウォレットアドレス ではなく、Waves の **Transaction ID** を投稿してください。")
-            for ret in info:
-                await client.send_message(message.channel, str(ret))
+            if msg == WavesJsonToPythonObj.recipient_wallet_address_of_BDA:
+                await client.send_message(message.channel, mention_msg + "\nそのアドレスは BDA Waves の送金先のウォレットアドレスです。")
+            else:
+                info = SearchWavesTransactionFromAddress.search_waves_transaction_from_address(msg)
+                await client.send_message(message.channel, mention_msg + "\nWaves ウォレットアドレス ではなく、\nWaves の **Transaction ID** を投稿してください。")
+                for ret in info:
+                    makedir_and_file(ret)
+                    await client.send_message(message.channel, str(ret))
 
-        elif re.match("^[0-9a-zA-Z]{44}$", msg):
+        elif GetWavesNodeTransaction.is_waves_transaction_regex_pattern(msg):
             # wavesアドレスを元に、直近のトランザクション全部を引き出す
             str_json = GetWavesNodeTransaction.get_waves_node_transaction_json(msg)
 
             ret = WavesJsonToPythonObj.json_to_python_obj(str_json)
             if "status" in ret and ret["status"] == "error":
-                await client.send_message(message.channel, mention_msg + "対象のWaves の **Transaction ID** の取引内容を読み取れませんでした。")
+                await client.send_message(message.channel, mention_msg + "\n対象のWaves の **Transaction ID** の取引内容を読み取れませんでした。")
+            elif "eth_status" in ret and ret["eth_status"] == "error":
+                await client.send_message(message.channel, mention_msg + "\nあなたは送金において**深刻なミス**をしています!!\n**Attachmentにイーサーアドレスを記載していない**状態で、\nBDA Waves Tokenを送金しています。\n")
             else:
+                makedir_and_file(ret)
                 await client.send_message(message.channel, mention_msg + str(ret))
 
         else:
-            await client.send_message(message.channel, mention_msg + "投稿内容を理解できませんでした。")
+            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、ERC交換申請情報として認識できません。")
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
