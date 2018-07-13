@@ -82,8 +82,8 @@ def json_to_python_obj(str_json):
     # エラー情報を付加情報として記載しておく。
     # 送金自体はしてしまってるので特別な対処が必要かもしれない。
     if JudgeErrorWalletAddress.is_message_ether_pattern(attachment) != True:
-        rtn_dict["status"] = "error"
-        rtn_dict["details"] = "送金先のイーサーアドレスが不正です。"
+        rtn_dict["eth_status"] = "error"
+        rtn_dict["eth_status_details"] = "送金先のイーサーアドレスが不正です。"
 
     return rtn_dict
 
