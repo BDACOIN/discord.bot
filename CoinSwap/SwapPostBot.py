@@ -57,7 +57,8 @@ def makedir_and_file(ret):
 
     filename = ret["transaction_id"]
     f = open("postdata/" + dirpath + "/" + filename + ".txt", "w")
-    f.write(str(ret))
+    json_data = json.dumps(ret, indent=4)
+    f.write(json_data)
     f.close()
 
     return True

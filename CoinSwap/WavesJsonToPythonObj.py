@@ -62,6 +62,8 @@ def json_to_python_obj(str_json):
         attachment = ""
         # print("送金先イーサーアドレスエラー")
 
+    attachment = attachment.strip()
+
     # print(recipient)
     # print(sender)
     # print(amount)
