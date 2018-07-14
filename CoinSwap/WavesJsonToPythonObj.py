@@ -44,6 +44,9 @@ def json_to_python_obj(str_json):
     # 送信主のアドレス
     sender = json_obj["sender"]
 
+    # タイムスタンプ
+    timestamp = json_obj["timestamp"]
+
     # wavesノード上に出てるのは、10倍なので、1/10する。(よくわからないが、BDA waves版が「decimal 1」での発行と思われる)
     amount = amount / 10.0
     # イーサートークン比率は比率は25:1
@@ -76,6 +79,7 @@ def json_to_python_obj(str_json):
         "transaction_id":transaction_id,
         "sender":sender,
         "amount":amount,
+        "timestamp":timestamp,
         "eth_address":attachment,
         "eth_amount":eth_amount
     }
