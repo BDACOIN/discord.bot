@@ -19,9 +19,3 @@ def get_discord_bot_token():
 
 
 
-def get_docomo_naturalchat_key():
-    KEY = os.getenv("DISCORD_DOCOMO_NATURALCHAT_KEY", r'')
-    appid_01 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_01", r'')
-    appid_02 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_02", r'')
-    appid_03 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_03", r'')
-    return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03}
