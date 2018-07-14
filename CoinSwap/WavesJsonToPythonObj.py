@@ -3,8 +3,9 @@ import math
 import Base58DecodedWalletAddress
 import JudgeErrorWalletAddress
 
-recipient_wallet_address_of_BDA = "3PFCT4q6K56zC8YGa8vBaXgvkfFvJnRdFF8"
+asset_id_of_BDA = "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn" # BLACK DIA WAVESトークンのAssetID。これは固定
 
+recipient_wallet_address_of_BDA = "3P7DGDmNEdCgN5XM7Qenxk8K8jGrTLHjRRQ" # 受け取り申請先のウォレットアドレス。まだ実験用
 
 def json_to_python_obj(str_json):
 
@@ -13,6 +14,15 @@ def json_to_python_obj(str_json):
     if "status" in json_obj and json_obj["status"] == "error":
         # print("error")
         return {"status":"error", "details":"対象のデータはトランザクションデータではありません。" }
+
+    # assetidが無い。おそらくはwaves本体コインか何かの送信データ
+    if not "assetId" in json_obj:
+        return {"status":"error", "asset_error":True, "details":"対象のデータはBDA(Waves版)のトランザクションデータではありません。" }
+
+    # assetはあるが、BDAのものではない。
+    if json_obj["assetId"] != asset_id_of_BDA:
+        return {"status":"error", "asset_error":True, "details":"対象のデータはBDA(Waves版)のトランザクションデータではありません。" }
+
 
     # 送金先（受信者）のウォレットアドレス
     recipient = ""
