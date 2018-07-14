@@ -102,7 +102,7 @@ async def on_message(message):
                 if len(info) == 0:
                     await client.send_message(message.channel, mention_msg + "\nWaves ウォレットアドレス ではなく、\nBDA(Waves版)の **Transaction ID** が必要となります。\nご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**は発見できませんでした。")
                 else:
-                    await client.send_message(message.channel, mention_msg + "\nWaves ウォレットアドレス ではなく、\nBDA(Waves版)の **Transaction ID** が必要となります。\n以下は、ご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**一覧候補となります。")
+                    await client.send_message(message.channel, mention_msg + "\nWaves ウォレットアドレス ではなく、\nBDA(Waves版)の **Transaction ID** が必要となります。\n\n以下は、ご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**一覧候補となります。")
                     for ret in info:
                         em = discord.Embed(title="", description="", color=0xDEED33)
                         em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
