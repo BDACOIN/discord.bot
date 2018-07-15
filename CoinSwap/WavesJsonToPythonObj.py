@@ -76,8 +76,29 @@ def json_to_python_obj(str_json):
         # print("送金先イーサーアドレスエラー")
 
     attachment = attachment.strip()
+    eth_address_and_user_id = attachment.split(",")
+    # ユーザーIDを設定し忘れている
+    if len(eth_address_and_user_id) == 1:
+        user_id = 0 # とりあえず仕方が無いので0
+        eth_address = eth_address_and_user_id[0]
+        eth_address = eth_address.strip()
+    elif len(eth_address_and_user_id) >= 2:
+        try:
+            eth_address = eth_address_and_user_id[0]
+            # 掃除
+            eth_address = eth_address.strip()
 
-    # print(recipient)
+            str_user_id = eth_address_and_user_id[1]
+            # 掃除
+            str_user_id = str_user_id.strip()
+            # 数字を数値とする
+            user_id = int(str_user_id)
+        except:
+            user_id = 0 # とりあえず仕方が無いので0
+    else:
+        eth_address = attachment
+
+
     # print(sender)
     # print(amount)
     # print(eth_amount)
@@ -90,16 +111,23 @@ def json_to_python_obj(str_json):
         "sender":sender,
         "amount":amount,
         "timestamp":timestamp,
-        "eth_address":attachment,
-        "eth_amount":eth_amount
+        "eth_address":eth_address,
+        "eth_amount":eth_amount,
+        "attachment":attachment,
+        "user_id":user_id
     }
 
     # 送金者が、Attachmentに記載した情報が、イーサーアドレスとして不適切なことが明白であれば…
     # エラー情報を付加情報として記載しておく。
     # 送金自体はしてしまってるので特別な対処が必要かもしれない。
-    if JudgeErrorWalletAddress.is_message_ether_pattern(attachment) != True:
+    if JudgeErrorWalletAddress.is_message_ether_pattern(eth_address) != True:
         rtn_dict["eth_status"] = "error"
         rtn_dict["eth_status_details"] = "送金先のイーサーアドレスが不正です。"
+
+    if user_id == 0:
+        rtn_dict["user_id_status"] = "error"
+        rtn_dict["user_id_status_details"] = "ユーザーIDが不正です。"
+
 
     return rtn_dict
 
