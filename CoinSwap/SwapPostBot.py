@@ -80,16 +80,21 @@ async def on_message(message):
 
     mention_msg = "{0.author.mention}".format(message)
 
-    if str(message.channel) == "erc申請":
+    if str(message.channel) == "①コメントの取得":
         msg = message.content.strip()
         if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
             em = discord.Embed(title="", description="", color=0xDEED33)
             em.add_field(name="返信相手", value="<@" + message.author.id + ">\n送金する際、\n" +
             "以下の内容をAttachment(Description)に**必ず正しく記載**してください。\n", inline=False)
             em.add_field(name="Attachment(Description)に記載する内容", value=msg+","+str(int(str(message.author.id))), inline=False)
+            
             await client.send_message(message.channel, embed=em)
+        else:
+            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
-        elif JudgeErrorWalletAddress.is_message_waves_pattern(msg):
+    elif str(message.channel) == "②トランザクションの申請":
+        msg = message.content.strip()
+        if JudgeErrorWalletAddress.is_message_waves_pattern(msg):
             if msg == WavesJsonToPythonObj.recipient_wallet_address_of_BDA:
                 em = discord.Embed(title="", description="", color=0xDEED33)
                 em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
@@ -186,7 +191,7 @@ async def on_message(message):
                     await client.send_message(message.channel, embed=em)
 
         else:
-            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、ERC交換申請情報として認識できません。")
+            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、トランザクション申請情報として認識できません。")
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
