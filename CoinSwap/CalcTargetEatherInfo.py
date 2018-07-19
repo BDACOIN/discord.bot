@@ -20,17 +20,19 @@ def GetEtherWillSendAmount(ether_address):
     dir = r"postdata/" + ether_address + "/"
     file_list = GetTransitionFiles(dir)
     eth_amount = 0
+    usr_id_list = []
     for f in file_list:
         try:
             p = open(dir+f, 'r')
             json_data = json.load(p)
             p.close()
             eth_amount = eth_amount + json_data["eth_amount"]
+            usr_id_list.append(json_data["user_id"])
         except:
             print(sys.exc_info())
             pass
 
-    return {"eth_amount": eth_amount}
+    return {"eth_amount": eth_amount, "user_id_list":usr_id_list}
 
 
 # テスト

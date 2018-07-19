@@ -20,6 +20,7 @@ import JudgeErrorWalletAddress
 import WavesJsonToPythonObj
 import GetWavesNodeTransaction
 import SearchWavesTransactionFromAddress
+import CalcTargetEatherInfo
 
 
 # テストサーバー用のトークン
@@ -88,6 +89,44 @@ async def on_message(message):
             "以下の内容をAttachment(Description)に**必ず正しく記載**してください。\n", inline=False)
             em.add_field(name="Attachment(Description)に記載する内容", value=msg+","+str(int(str(message.author.id))), inline=False)
             
+            await client.send_message(message.channel, embed=em)
+        else:
+            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
+
+    elif str(message.channel) == "③受取予定枚数の確認":
+        msg = message.content.strip()
+        if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
+            ret = CalcTargetEatherInfo.GetEtherWillSendAmount(msg)
+            print(ret)
+            # そんなアドレスの情報は無い
+            em = discord.Embed(title="", description="", color=0xDEED33)
+            if ret == []:
+                em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
+                em.add_field(name="イーサアドレス", value=msg + "\nに関する情報はありません。", inline=False)
+
+            else:
+                user_id_list = ret["user_id_list"]
+                post_user_id = int(message.author.id)
+                print(post_user_id)
+                print(user_id_list)
+                match_user_id_list = filter(lambda id:id==post_user_id, user_id_list )
+                print(match_user_id_list)
+                match_user_id_list = list(match_user_id_list)
+                print(len(match_user_id_list))
+                # 全くマッチしない
+                if len(match_user_id_list) == 0:
+                    em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
+                    em.add_field(name="返信相手", value="<@" + message.author.id + ">", inline=False)
+                    em.add_field(name="イーサアドレス", value=msg + "\nはあなたに紐づいていません。", inline=False)
+
+                # １つでもマッチしたら、該当のイーサーアドレスに関する情報は全て見る権利があると言えるだろう。
+                else:
+                    em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/ok.png")
+                    em.add_field(name="返信相手", value="<@" + message.author.id + ">", inline=False)
+                    em.add_field(name="イーサアドレス", value=msg + "\nに関する情報です。", inline=False)
+                    em.add_field(name="該当アドレスのBDA(ERC版)受取予定枚数", value=str(ret["eth_amount"]) +" 枚", inline=False)
+
+                
             await client.send_message(message.channel, embed=em)
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
