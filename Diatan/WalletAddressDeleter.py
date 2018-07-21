@@ -5,10 +5,10 @@
 import re
 
 # Wavesアドレスはダメなチャンネル
-nopermit_channnel_of_waves_address = ["^雑談$", "^english:.+", "ルーレット.+", "^botでランクを確認$", "^★おみくじコーナー.+", "^ロゴ投稿場", "^招待人数確認", "^bdaチャート"]
+nopermit_channnel_of_waves_address = ["^雑談$", "^english.$", "ルーレット.+", "^botでランクを確認$", "^★おみくじコーナー.+", "^ロゴ投稿場", "^招待人数確認", "^bdaチャート"]
 
 # Etherアドレスはダメなチャンネル
-nopermit_channnel_of_ether_address = ["^雑談$", "^english:.+", "ルーレット.+", "^botでランクを確認$", "^★おみくじコーナー.+", "^ロゴ投稿場", "^招待人数確認", "^bdaチャート", "^新規の方のみairdrop", "^new-people-only-airdrop",]
+nopermit_channnel_of_ether_address = ["^雑談$", "^english.$", "ルーレット.+", "^botでランクを確認$", "^★おみくじコーナー.+", "^ロゴ投稿場", "^招待人数確認", "^bdaチャート", "^新規の方のみairdrop", "^new-people-only-airdrop",]
 
 # Wavesウォレットのアドレスのパターン
 def is_message_waves_pattern(message):
