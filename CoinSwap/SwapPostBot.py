@@ -217,7 +217,7 @@ async def on_message(message):
                     em.add_field(name="ステータス", value="登録成功", inline=False)
                     em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
                     em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
-                    em.add_field(name="あたなが送金したBDA(Waves版)の枚数", value=str(ret["amount"]) + " 枚", inline=False)
+                    em.add_field(name="あなたが送金したBDA(Waves版)の枚数", value=str(ret["amount"]) + " 枚", inline=False)
                     em.add_field(name="受取用のETHウォレットのアドレス", value=str(ret["eth_address"]), inline=False)
                     em.add_field(name="受取予定となるBDA(ERC版)の枚数", value=str(ret["eth_amount"]) + " 枚", inline=False)
                     await client.send_message(message.channel, embed=em)
