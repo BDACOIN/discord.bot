@@ -2,7 +2,7 @@ import json
 import WavesJsonToPythonObj
 import GetWavesRecentTransactions
     
-# 該当のWavesウォレットアドレスから直近100個のトランザクションを見つけ、指定のBDAのウォレットへと送金しているもののTransactionオブジェクトを得る。
+# 該当のWavesウォレットアドレスから直近200個のトランザクションを見つけ、指定のBDAのウォレットへと送金しているもののTransactionオブジェクトを得る。
 # 個々のトランザクションの検証は、「WavesJsonToPythonObj.json_to_python_obj(...)」へと移譲している
 def search_waves_transaction_from_address(str_waves_address):
     # wavesアドレスを元に、直近のトランザクション全部を引き出す
