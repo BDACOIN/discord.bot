@@ -3,7 +3,7 @@ import sys
 
 def get_waves_recent_transactions_json(str_wallet_address):
     try:
-        res = requests.get('https://nodes.wavesnodes.com/transactions/address/' + str_wallet_address + '/limit/200')
+        res = requests.get('https://nodes.wavesnodes.com/transactions/address/' + str_wallet_address + '/limit/100')
         res.raise_for_status()
         return res.text
     except:

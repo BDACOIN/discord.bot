@@ -94,11 +94,14 @@ def GetEmbeddedReportOneTransaction(message, ret):
         else:
             em.add_field(name="受取用のETHウォレットのアドレス", value=str(ret["eth_address"]), inline=False)
         if ("user_id" in ret and ret["user_id"] == 0):
-            em.add_field(name="送金者識別番号", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\n送金者識別番号を記載していない**状態で、\nBDA(Waves版)を送金されています。\n", inline=False)
+            em.add_field(name="送金者識別番号", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\n送金者識別番号を記載していない**状態で、\nBDA(Waves版)が送金されています。\n", inline=False)
         else:
             em.add_field(name="送金者識別番号", value=str(ret["user_id"]))
         
-        em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
+        if "attachment" in ret["attachment"]:
+            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
+        else:
+            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
         em.add_field(name="受取予定となるBDA(ERC版)の枚数", value="0 枚", inline=False)
         return em
 
@@ -117,6 +120,10 @@ def GetEmbeddedReportOneTransaction(message, ret):
             em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
             em.add_field(name="このTransactionでのBDA(Waves版)の送金枚数", value=str(ret["amount"]) + " 枚", inline=False)
             em.add_field(name="受取用のETHウォレットのアドレス", value=str(ret["eth_address"]), inline=False)
+            if "attachment" in ret["attachment"]:
+                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
+            else:
+                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
             em.add_field(name="受取予定となるBDA(ERC版)の枚数", value=str(ret["eth_amount"]) + " 枚", inline=False)
             return em
         else:
@@ -124,6 +131,10 @@ def GetEmbeddedReportOneTransaction(message, ret):
             em.add_field(name="ステータス", value="登録失敗", inline=False)
             em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
             em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
+            if "attachment" in ret["attachment"]:
+                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
+            else:
+                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
             em.add_field(name="送金者識別番号", value="送金者識別番号が、あなたと一致していません。", inline=False)
             return em
 
@@ -152,8 +163,12 @@ async def on_message(message):
             em.add_field(name="返信相手", value="<@" + message.author.id + ">\n送金する際、\n" +
             "以下の内容をAttachment(Description)に**必ず正しく記載**してください。\n", inline=False)
             em.add_field(name="Attachment(Description)に記載する内容", value=msg+","+str(int(str(message.author.id))), inline=False)
+            em.add_field(name="BDA(Waves版)の送金先", value=WavesJsonToPythonObj.recipient_wallet_address_of_BDA + " 宛てに送金してください。", inline=False)
             
+            dm_msg = "Attachment(Description)に記載する内容\n" + msg+","+str(int(str(message.author.id))) + "\n\n" + "BDA(Waves版)の送金先\n" +  WavesJsonToPythonObj.recipient_wallet_address_of_BDA
+
             await client.send_message(message.channel, embed=em)
+            await client.send_message(message.author, dm_msg)
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
@@ -181,7 +196,7 @@ async def on_message(message):
                 if len(match_user_id_list) == 0:
                     em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
                     em.add_field(name="返信相手", value="<@" + message.author.id + ">", inline=False)
-                    em.add_field(name="イーサアドレス", value=msg + "\nはあなたに紐づいていません。", inline=False)
+                    em.add_field(name="イーサアドレス", value=msg + "\nは送金者識別番号があなたと一致していません。", inline=False)
 
                 # １つでもマッチしたら、該当のイーサーアドレスに関する情報は全て見る権利があると言えるだろう。
                 else:
@@ -212,30 +227,15 @@ async def on_message(message):
                     await client.send_message(message.channel, mention_msg + "\n以下は、ご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**一覧候補となります。")
                     for ret in info:
                         em = GetEmbeddedReportOneTransaction(message, ret)
-                        await client.send_message(message.channel, embed=em)
-
-#                        em = discord.Embed(title="", description="", color=0xDEED33)
-#                        em.add_field(name="返信相手", value="<@" + message.author.id + ">", inline=False)
-#                        em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
-#                        em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
-#                        if "eth_status" in ret and ret["eth_status"] == "error":
-#                            em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
-#                            em.add_field(name="受取用のETHウォレットのアドレス", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\nイーサーウォレットアドレスを記載していない**状態で、\nBDA(Waves版)を送金されています。\n", inline=False)
-#                            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
-#                        elif "user_id" in ret and ret["user_id"] == 0:
-#                            em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
-#                            em.add_field(name="送金者識別番号", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\n送金者識別番号を記載していない**状態で、\nBDA(Waves版)を送金されています。\n", inline=False)
-#                            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
-#                        else:
-#                            em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/ok.png")
-#                        await client.send_message(message.channel, embed=em)
+                        try:
+                            await client.send_message(message.channel, embed=em)
+                        except:
+                            print(sys.exc_info())
 
         elif GetWavesNodeTransaction.is_waves_transaction_regex_pattern(msg):
             # wavesアドレスを元に、直近のトランザクション全部を引き出す
             str_json = GetWavesNodeTransaction.get_waves_node_transaction_json(msg)
-
             ret = WavesJsonToPythonObj.json_to_python_obj(str_json)
-
             em = GetEmbeddedReportOneTransaction(message, ret)
             await client.send_message(message.channel, embed=em)
 
