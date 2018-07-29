@@ -142,10 +142,13 @@ async def on_message(message):
         return
     
     # 送信主がBOTなら処理しない
-    roles = message.author.roles
-    for r in roles:
-        if r.name == "BOT":
-            return
+    try:
+        roles = message.author.roles
+        for r in roles:
+            if r.name == "BOT":
+                return
+    except:
+        pass
 
     mention_msg = "{0.author.mention}".format(message)
 
@@ -158,9 +161,10 @@ async def on_message(message):
             em.add_field(name="Attachment(Description)に記載する内容", value=msg+","+str(int(str(message.author.id))), inline=False)
             em.add_field(name="BDA(Waves版)の送金先", value=WavesJsonToPythonObj.recipient_wallet_address_of_BDA + " 宛てに送金してください。", inline=False)
             
-            dm_msg = "Attachment(Description)に記載する内容\n" + msg+","+str(int(str(message.author.id))) + "\n\n" + "BDA(Waves版)の送金先\n" +  WavesJsonToPythonObj.recipient_wallet_address_of_BDA
+            dm_msg = msg+","+str(int(str(message.author.id)))
 
             await client.send_message(message.channel, embed=em)
+            await client.send_message(message.author, "★★必ずこれをAttachment(Description)に記載してください!!!★★")
             await client.send_message(message.author, dm_msg)
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
