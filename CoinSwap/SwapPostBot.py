@@ -81,7 +81,8 @@ def GetEmbeddedReportOneTransaction(message, ret):
             return em
 
     elif ("eth_status" in ret and ret["eth_status"] == "error") or ("user_id" in ret and ret["user_id"] == 0):
-        
+        print("いいい" + str(ret))
+       
         em = discord.Embed(title="", description="", color=0xDEED33)
         em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
         em.add_field(name="返信相手", value="<@" + message.author.id + ">", inline=False)
@@ -90,18 +91,17 @@ def GetEmbeddedReportOneTransaction(message, ret):
         em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
         em.add_field(name="このTransactionでのBDA(Waves版)の送金枚数", value=str(ret["amount"]) + " 枚", inline=False)
         if ("eth_status" in ret and ret["eth_status"] == "error"):
-            em.add_field(name="受取用のETHウォレットのアドレス", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\nイーサーウォレットアドレスを記載していない**状態で、\nBDA(Waves版)を送金されています。\n", inline=False)
+            print("ooo")
+            em.add_field(name="受取用のETHウォレットのアドレス", value="\nAttachmentに未記載。重大エラーです。\n", inline=False)
         else:
+            print("かかか")
             em.add_field(name="受取用のETHウォレットのアドレス", value=str(ret["eth_address"]), inline=False)
         if ("user_id" in ret and ret["user_id"] == 0):
-            em.add_field(name="送金者識別番号", value="\nこのTransactionは送金において**深刻なミス**をしています!!\n**Attachment(Description)に、\n送金者識別番号を記載していない**状態で、\nBDA(Waves版)が送金されています。\n", inline=False)
+            em.add_field(name="送金者識別番号", value="\nAttachmentに未記載。重大エラーです。\n", inline=False)
         else:
             em.add_field(name="送金者識別番号", value=str(ret["user_id"]))
-        
-        if "attachment" in ret["attachment"]:
-            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
-        else:
-            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
+
+        em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
         em.add_field(name="受取予定となるBDA(ERC版)の枚数", value="0 枚", inline=False)
         return em
 
@@ -117,13 +117,8 @@ def GetEmbeddedReportOneTransaction(message, ret):
             em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/ok.png")
             em.add_field(name="ステータス", value="登録成功", inline=False)
             em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
-            em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
             em.add_field(name="このTransactionでのBDA(Waves版)の送金枚数", value=str(ret["amount"]) + " 枚", inline=False)
             em.add_field(name="受取用のETHウォレットのアドレス", value=str(ret["eth_address"]), inline=False)
-            if "attachment" in ret["attachment"]:
-                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
-            else:
-                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
             em.add_field(name="受取予定となるBDA(ERC版)の枚数", value=str(ret["eth_amount"]) + " 枚", inline=False)
             return em
         else:
@@ -131,10 +126,8 @@ def GetEmbeddedReportOneTransaction(message, ret):
             em.add_field(name="ステータス", value="登録失敗", inline=False)
             em.add_field(name="Transaction ID", value=str(ret["transaction_id"]), inline=False)
             em.add_field(name="Transaction IDの内容", value="https://wavesexplorer.com/tx/" + str(ret["transaction_id"]), inline=False)
-            if "attachment" in ret["attachment"]:
-                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
-            else:
-                em.add_field(name="このTransactionでのアタッチメントに記載された内容", value="なし", inline=False)
+            print(str(ret))
+            em.add_field(name="このTransactionでのアタッチメントに記載された内容", value=str(ret["attachment"]), inline=False)
             em.add_field(name="送金者識別番号", value="送金者識別番号が、あなたと一致していません。", inline=False)
             return em
 

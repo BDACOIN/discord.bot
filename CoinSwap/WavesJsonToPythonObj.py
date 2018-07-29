@@ -73,7 +73,7 @@ def json_to_python_obj(str_json):
         attachment = Base58DecodedWalletAddress.get_base58_decoded_wallet_address(attachment)
     except:
         attachment = ""
-        # print("送金先イーサーアドレスエラー")
+        print("attachmentエラー")
 
     attachment = attachment.strip()
     eth_address_and_user_id = attachment.split(",")
@@ -103,7 +103,14 @@ def json_to_python_obj(str_json):
     # print(amount)
     # print(eth_amount)
     # print(transaction_id)
-    # print(attachment)
+    print(attachment)
+
+
+    if attachment == "":
+        attachment = "なし"
+    if eth_address == "":
+        eth_address = "なし"
+
 
     # 基本情報をセッティング
     rtn_dict = {
