@@ -57,15 +57,23 @@ print(sm3)
 @client.event
 async def on_message(message):
 
+    try:
+        print(message.channel.id)
+    except:
+        pass
+
     # BOTとメッセージの送り主が同じ人なら処理しない
     if client.user == message.author:
         return
-    
-    # 送信主がBOTなら処理しない
-    roles = message.author.roles;
-    for r in roles:
-        if r.name == "BOT":
-            return
+
+    try:
+        # 送信主がBOTなら処理しない
+        roles = message.author.roles;
+        for r in roles:
+            if r.name == "BOT":
+                return
+    except:
+        pass
 
     # 許可されないWalletアドレスのメッセージ
     is_delete = await WalletAddressDeleter.violation_wallet_address_message(message)
