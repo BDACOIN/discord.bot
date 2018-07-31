@@ -21,7 +21,7 @@ import WavesJsonToPythonObj
 import GetWavesNodeTransaction
 import SearchWavesTransactionFromAddress
 import CalcTargetEatherInfo
-
+import Base58DecodedWalletAddress
 
 # テストサーバー用のトークン
 BOT_TOKEN = EnvironmentVariable.get_discord_bot_token()
@@ -238,6 +238,34 @@ async def on_message(message):
 
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、トランザクション申請情報として認識できません。")
+
+    elif str(message.channel) == "⑩ユーザー名⇒識別番号":
+        msg = message.content.strip()
+        # まずは今のメンバーのところから(スワップサーバー想定)
+        member_obj = discord.utils.find(lambda m: str(m) == msg, message.channel.server.members)
+        if not member_obj:
+            bda_zatsudan_channel = client.get_channel('443638843225407489')
+            if bda_zatsudan_channel:
+                member_obj = discord.utils.find(lambda m: str(m) == msg, bda_zatsudan_channel.server.members)
+            
+        if member_obj:
+            await client.send_message(message.channel, msg + " の識別番号は、\n" + str(member_obj.id))
+
+    elif str(message.channel) == "⑪識別番号⇒ユーザー名":
+        msg = message.content.strip()
+        if msg.isdigit():
+            await client.send_message(message.channel, msg + " の識別番号のユーザー名は、\n" + '<@' + msg + '>' )
+
+
+    elif str(message.channel) == "⑫アタッチメント情報復元":
+        attachment = message.content.strip()
+        try:
+            # base58デコードした文字列を返す。失敗した場合原文文字列ままを返す。
+            base58decoded = Base58DecodedWalletAddress.get_base58_decoded_wallet_address(attachment)
+            await client.send_message(message.channel, attachment+ "\n　　　↓\n" + base58decoded )
+        except:
+            await client.send_message(message.channel, attachment+ "\n　　　↓\n" + "変換エラー" )
+
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
