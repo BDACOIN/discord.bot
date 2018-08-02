@@ -152,6 +152,16 @@ async def on_message(message):
 
     mention_msg = "{0.author.mention}".format(message)
 
+    # komiyamma
+    if message.author.id == "397238348877529099":
+        # そのチャンネルに存在するメッセージを全て削除する
+        if message.content.startswith('!!!clear'):
+            tmp = await client.send_message(message.channel, 'チャンネルのメッセージを削除しています')
+            async for msg in client.logs_from(message.channel):
+                await client.delete_message(msg)
+
+            return
+
     if str(message.channel) == "①コメントの取得":
         msg = message.content.strip()
         if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
