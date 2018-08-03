@@ -167,7 +167,7 @@ async def on_message(message):
 
             return
 
-    if str(message.channel) == "①コメントの取得":
+    if str(message.channel) == "①添付情報の取得":
         msg = message.content.strip()
         if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
             em = discord.Embed(title="", description="", color=0xDEED33)
@@ -249,6 +249,8 @@ async def on_message(message):
                         except:
                             print(sys.exc_info())
 
+        elif msg == WavesJsonToPythonObj.asset_id_of_BDA:
+            await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、BLACK DIA(Waves版)のAsset IDです。\nAsset IDではなく、送金時のご自身のWavesウォレットアドレスを投稿してください。")
         elif GetWavesNodeTransaction.is_waves_transaction_regex_pattern(msg):
             # wavesアドレスを元に、直近のトランザクション全部を引き出す
             str_json = GetWavesNodeTransaction.get_waves_node_transaction_json(msg)
@@ -257,7 +259,7 @@ async def on_message(message):
             await client.send_message(message.channel, embed=em)
 
         elif JudgeErrorWalletAddress.is_message_ether_pattern(msg):
-            await client.send_message(message.channel, mention_msg + "\nイーサーウォレットアドレスではなく、送金時のご自身のWavesアドレスを投稿してください。")
+            await client.send_message(message.channel, mention_msg + "\nイーサーウォレットアドレスではなく、送金時のご自身のWavesウォレットアドレスを投稿してください。")
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、トランザクション申請情報として認識できません。")
 
