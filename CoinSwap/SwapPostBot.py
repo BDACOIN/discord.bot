@@ -137,6 +137,11 @@ def GetEmbeddedReportOneTransaction(message, ret):
 @client.event
 async def on_message(message):
 
+    try:
+        print(message.channel.id)
+    except:
+        pass
+
     # BOTとメッセージの送り主が同じ人なら処理しない
     if client.user == message.author:
         return
@@ -176,6 +181,9 @@ async def on_message(message):
             await client.send_message(message.channel, embed=em)
             await client.send_message(message.author, "★★必ずこれをAttachment(Description)に記載してください!!!★★")
             await client.send_message(message.author, dm_msg)
+          
+        elif JudgeErrorWalletAddress.is_message_waves_pattern(msg):
+            await client.send_message(message.channel, mention_msg + "\nWavesウォレットアドレスではなく、BRD(ERC版)を受け取りたいイーサウォレットアドレスを、投稿してください。")
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
@@ -214,6 +222,8 @@ async def on_message(message):
 
                 
             await client.send_message(message.channel, embed=em)
+        elif JudgeErrorWalletAddress.is_message_waves_pattern(msg):
+            await client.send_message(message.channel, mention_msg + "\nWavesウォレットアドレスではなく、BRD(ERC版)を受け取り申請したイーサウォレットアドレスを、投稿してください。")
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
@@ -246,6 +256,8 @@ async def on_message(message):
             em = GetEmbeddedReportOneTransaction(message, ret)
             await client.send_message(message.channel, embed=em)
 
+        elif JudgeErrorWalletAddress.is_message_ether_pattern(msg):
+            await client.send_message(message.channel, mention_msg + "\nイーサーウォレットアドレスではなく、送金時のご自身のWavesアドレスを投稿してください。")
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、トランザクション申請情報として認識できません。")
 
