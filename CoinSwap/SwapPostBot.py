@@ -162,9 +162,11 @@ async def on_message(message):
         # そのチャンネルに存在するメッセージを全て削除する
         if message.content.startswith('!!!clear'):
             tmp = await client.send_message(message.channel, 'チャンネルのメッセージを削除しています')
-            async for msg in client.logs_from(message.channel):
-                await client.delete_message(msg)
-
+            try:
+                async for msg in client.logs_from(message.channel):
+                    await client.delete_message(msg)
+            except:
+                print("削除中にエラーが発生しました")
             return
 
     if str(message.channel) == "①添付情報の取得":
