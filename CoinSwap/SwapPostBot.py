@@ -171,7 +171,11 @@ async def on_message(message):
 
     if str(message.channel) == "①添付情報の取得":
         msg = message.content.strip()
-        if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
+        if msg == "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA":
+            await client.send_message(message.channel, mention_msg + "\nそれは概要書等に記載されていた便宜上の仮想のイーサウォレットアドレスです。")
+        elif msg == "3PBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB":
+            await client.send_message(message.channel, mention_msg + "\nそれは概要書等に記載されていた便宜上の仮想のWavesウォレットアドレスです。\nWavesウォレットアドレスではなく、BRD(ERC版)を受け取りたいイーサウォレットアドレスを、投稿してください。")
+        elif JudgeErrorWalletAddress.is_message_ether_pattern(msg):
             em = discord.Embed(title="", description="", color=0xDEED33)
             em.add_field(name="返信相手", value="<@" + message.author.id + ">\n送金する際、\n" +
             "以下の内容をAttachment(Description)に**必ず正しく記載**してください。\n", inline=False)
@@ -231,7 +235,14 @@ async def on_message(message):
 
     elif str(message.channel) == "②トランザクションの申請":
         msg = message.content.strip()
-        if JudgeErrorWalletAddress.is_message_waves_pattern(msg):
+
+        if msg == "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA":
+            await client.send_message(message.channel, mention_msg + "\nそれは概要書等に記載されていた便宜上の仮想のイーサウォレットアドレスです。")
+
+        elif msg == "3PBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB":
+            await client.send_message(message.channel, mention_msg + "\nそれは概要書等に記載されていた便宜上の仮想のWavesウォレットアドレスです。")
+
+        elif JudgeErrorWalletAddress.is_message_waves_pattern(msg):
             if msg == WavesJsonToPythonObj.recipient_wallet_address_of_BDA:
                 em = discord.Embed(title="", description="", color=0xDEED33)
                 em.set_thumbnail(url="http://bdacoin.org/bot/coinswap/image/error.png")
@@ -242,6 +253,9 @@ async def on_message(message):
                 info = SearchWavesTransactionFromAddress.search_waves_transaction_from_address(msg)
                 if len(info) == 0:
                     await client.send_message(message.channel, mention_msg + "\nご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**は発見できませんでした。")
+                elif type(info) == type({}) and ("status" in info) and (info["status"] == "error"):
+                    await client.send_message(message.channel, mention_msg + "\nご投稿のウォレットアドレスの内容を読み取ることができません。")
+
                 else:
                     await client.send_message(message.channel, mention_msg + "\n以下は、ご投稿のウォレットアドレスから運営ウォレットへと\nBDA(Waves版)を送金している**Transaction ID**一覧候補となります。")
                     for ret in info:
