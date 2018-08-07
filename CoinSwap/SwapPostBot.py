@@ -13,6 +13,7 @@ import sys
 import datetime
 import time
 import discord
+import glob
 
 
 import EnvironmentVariable
@@ -284,6 +285,7 @@ async def on_message(message):
         # まずは今のメンバーのところから(スワップサーバー想定)
         member_obj = discord.utils.find(lambda m: str(m) == msg, message.channel.server.members)
         if not member_obj:
+            # BDAサーバーの本来のサーバーの雑談チャンネル
             bda_zatsudan_channel = client.get_channel('443638843225407489')
             if bda_zatsudan_channel:
                 member_obj = discord.utils.find(lambda m: str(m) == msg, bda_zatsudan_channel.server.members)
@@ -306,6 +308,22 @@ async def on_message(message):
         except:
             await client.send_message(message.channel, attachment+ "\n　　　↓\n" + "変換エラー" )
 
+    elif str(message.channel) == "⑬合格済みトランザクションチェッカー":
+        msg = message.content.strip()
 
+        glob_list = glob.glob('postdata/*/' + msg + '.txt')
+
+        if len(glob_list) > 0:
+            await client.send_message(message.channel, "該当のTransaction-ID は、__既に登録が完了しています。\n返金に応じてはいけません。__" )
+        else:
+            await client.send_message(message.channel, "該当のTransaction-ID は、まだ登録されていません。\n相手がまだトランザクション申請をしていないなら、\n先にトランザクション申請をしてもらい結果を確認してください。" )
+        # 返金チャンネル
+        henkin_list_channel = client.get_channel('474191429606834199')
+        async for kako_log_msg in client.logs_from(henkin_list_channel):
+            if msg in kako_log_msg.content:
+                await client.send_message(message.channel, "該当のID は、__返金済です。\n返金に応じてはいけません。__" )
+
+
+        
 # APP(BOT)を実行
 client.run(BOT_TOKEN)

@@ -5,7 +5,7 @@ import JudgeErrorWalletAddress
 
 asset_id_of_BDA = "ANdLVFpTmpxPsCwMZq7hHMfikSVz8LBZNykziPgnZ7sn" # BLACK DIA WAVESトークンのAssetID。これは固定
 
-recipient_wallet_address_of_BDA = "3P7DGDmNEdCgN5XM7Qenxk8K8jGrTLHjRRQ" # 受け取り申請先のウォレットアドレス。まだ実験用
+recipient_wallet_address_of_BDA = "3PQU5cvB7u7tmhWRL3DdL5JwxtPcs9sDGbG" # 受け取り申請先のウォレットアドレス。まだ実験用
 
 def json_to_python_obj(str_json):
 
