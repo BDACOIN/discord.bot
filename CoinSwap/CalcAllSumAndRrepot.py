@@ -44,13 +44,24 @@ CalkAllEtherData()
 #print(amountlist)
 
 
-collected_count = 6
+collected_count = 2
 
+
+report = ""
 pre_ix = 0
 while(True):
     ix = pre_ix + collected_count
-    print(adresslist[pre_ix:ix])
-    print(amountlist[pre_ix:ix])
+    report += str(adresslist[pre_ix:ix]) + "\n"
+    report += str(amountlist[pre_ix:ix]) + "\n"
+    report += "\n"
     pre_ix = ix
     if ix > len(adresslist):
         break
+
+
+report = report.replace("'", '"')
+
+path = './report.txt'
+f = open(path, "w")
+f.write(report)
+f.close()
