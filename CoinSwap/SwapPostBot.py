@@ -170,7 +170,7 @@ async def on_message(message):
                 print("削除中にエラーが発生しました")
             return
 
-    if str(message.channel) == "①添付情報の取得":
+    if str(message.channel) == "①添付情報の取得" or str(message.channel) == "①get-attachment-from-bot":
         msg = message.content.strip()
         if msg == "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA":
             await client.send_message(message.channel, mention_msg + "\nそれは概要書等に記載されていた便宜上の仮想のイーサウォレットアドレスです。")
@@ -194,7 +194,7 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
-    elif str(message.channel) == "③受取予定枚数の確認":
+    elif str(message.channel) == "③受取予定枚数の確認" or str(message.channel) == "③confirm-erc-to-be-received":
         msg = message.content.strip()
         if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
             ret = CalcTargetEatherInfo.GetEtherWillSendAmount(msg)
@@ -234,7 +234,7 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, mention_msg + "\nご投稿の内容は、イーサウォレットアドレスのパターンとして認識できません。")
 
-    elif str(message.channel) == "②トランザクションの申請":
+    elif str(message.channel) == "②トランザクションの申請" or str(message.channel) == "②regist-waves-transaction":
         msg = message.content.strip()
 
         if msg == "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA":
