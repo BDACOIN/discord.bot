@@ -44,7 +44,7 @@ CalkAllEtherData()
 #print(amountlist)
 
 
-collected_count = 2
+collected_count = 13
 
 
 report = ""
@@ -65,3 +65,7 @@ path = './report.txt'
 f = open(path, "w")
 f.write(report)
 f.close()
+
+
+print("総計額:" + str(sum(amountlist)))
+
