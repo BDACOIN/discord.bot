@@ -84,6 +84,10 @@ async def on_message(message):
     if MicMessage.is_mic_permission_condition(message):
         await MicMessage.say_message(message)
 
+
+    if JapaneseOmikuji.is_result_command_condition(message.content):
+        await JapaneseOmikuji.result_command_condition(message)
+        
     # 表示
     for regex in NaturalChat.NaturalChattableChannelRegex():
         if re.match(regex, str(message.channel)):
