@@ -240,13 +240,55 @@ async def say_embedded_omikuji_message(message):
         # await client.send_file(message.channel, path)
 
 
-def is_result_command_condition(command):
-    if re.match("^omikuji \d{8}$", command):
+def is_report_command_condition(command):
+    if re.match("^omikujiinfo \d{8}$", command):
         return True
 
-async def result_command_condition(message):
-    if is_result_command_condition(message.content):
-        m = re.search("^omikuji (\d{8})$", message.content)
-        print(m.group(1))
-        await client.send_message(message.channel, m.group(1))
+
+def report_command_one_key_name(json_data, key):
+    msg = []
+    try:
+        for id in json_data[key]:
+            msg.append( "<@" + str(id) + ">" )
+    except:
+        pass
+
+    return " , ".join(msg)
+
+def report_command_one_key_eth(json_data, key):
+    msg = []
+    try:
+        for id in json_data[key]:
+            fullpath = "DataMemberInfo/" + str(id) + ".json"
+            if os.path.exists(fullpath):
+                try:
+                    fr = open(fullpath,'r')
+                    json_data = json.load(fr)
+                    fr.close()
+                    msg.append(json_data["eth_address"])
+                    
+                except:
+                    pass
+                    
+            else:
+                msg.append( "<@" + str(id) + ">" )
+    except:
+        pass
+
+    return '[ "' + '" , "'.join(msg) + '" ]'
+
+async def report_command(message):
+    if is_report_command_condition(message.content):
+        m = re.search("^omikujiinfo (\d{8})$", message.content)
+        date = m.group(1)
+        fullpath = get_date_omikuji_file(date)
+        if os.path.exists(fullpath):
+            json_data = get_today_omikuji_data(date)
+            ret = report_command_one_key_name(json_data, "大吉")
+            await client.send_message(message.channel, ret)
+            ret = report_command_one_key_eth(json_data, "大吉")
+            await client.send_message(message.channel, ret)
+        else:
+            await client.send_message(message.channel, "指定の年月日のおみくじ情報はありません。")
+        
 

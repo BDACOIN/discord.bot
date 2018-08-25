@@ -19,6 +19,8 @@ import JapaneseOmikuji
 import MicMessage
 import NaturalChat
 
+import TeamHousyu
+
 
 # 上記で取得したアプリのトークンを入力
 
@@ -80,13 +82,19 @@ async def on_message(message):
     if is_delete:
         return
 
+    if TeamHousyu.is_permission_teamhousyu_condition(message):
+        await TeamHousyu.say_message(message)
+        return
+
+
     # ディアたんのマイクの処理
     if MicMessage.is_mic_permission_condition(message):
         await MicMessage.say_message(message)
+        return
 
-
-    if JapaneseOmikuji.is_result_command_condition(message.content):
-        await JapaneseOmikuji.result_command_condition(message)
+    if JapaneseOmikuji.is_report_command_condition(message.content):
+        await JapaneseOmikuji.report_command(message)
+        return
         
     # 表示
     for regex in NaturalChat.NaturalChattableChannelRegex():
