@@ -181,9 +181,9 @@ def get_embedded_omikuji_object(message):
 
     # ハッシュからランダムで１つ選ぶ
     omikuji_key, omikuji_lv = random.choice(list(un_list.items()))
-    rnd = random.choice([0,1,2])
+    rnd = random.choice([0,1])
     print("rnd:" + str(rnd))
-    if rnd == 0 and (omikuji_key == "大吉" or omikuji_key == "凶"):
+    if rnd >= 1 and (omikuji_key == "大吉" or omikuji_key == "凶"):
         print("ふりなおし")
         omikuji_key, omikuji_lv = random.choice(list(un_list.items()))
 
