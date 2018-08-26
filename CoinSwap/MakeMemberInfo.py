@@ -36,6 +36,17 @@ def CalkOneEtherData(dirname):
         "kaiwa_paid_lv": 0,
         "user_id": 0
     }
+
+    paidinfo = {
+        "kaiwa_paid_lv": 0,
+        "blog_paid_lv": 0,
+        "invite_paid_lv": 0,
+        "kaiwa_paid_amount": 0,
+        "blog_paid_amount": 0,
+        "invite_paid_amount": 0,
+        "swap_amount": 0,
+        "user_id": 0
+    }
     
     if JudgeErrorWalletAddress.is_message_ether_pattern(msg):
         ret = CalcTargetEatherInfo.GetEtherWillSendAmount(msg)
@@ -54,6 +65,15 @@ def CalkOneEtherData(dirname):
             if len(ret["user_id_list"]) > 1:
                 # print("複数人から１つのイーサアドレスに送金されたデータです。")
                 pass
+
+            paidinfo["user_id"] = ret["user_id_list"][0]
+            paidinfo["swap_amount"] = ret["eth_amount"]
+            path = 'DataMemberPaid/' + str(memberinfo["user_id"]) + ".json"
+            f = open(path, "w")
+            json_data = json.dumps(paidinfo, indent=4)
+            f.write(json_data)
+            f.close()
+
         except:
             print("エラーデータを発見:" + dirname )
 
