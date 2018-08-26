@@ -1,0 +1,10 @@
+{
+    "transaction_id": "BTXAkXqRNvjBdkvi4ApEBZPPMjh79BCKjgSkvMpxZ8Ra",
+    "sender": "3PMVPHvNG5aRXxvGMPbjwgAN8GtHoi6J5BN",
+    "amount": 620000.0,
+    "timestamp": 1533960004346,
+    "eth_address": "0x3dc7ea7E4CEF01b56e0Bc6F0BE6d5B37673Bc724",
+    "eth_amount": 24800,
+    "attachment": "0x3dc7ea7E4CEF01b56e0Bc6F0BE6d5B37673Bc724,456361478904348701",
+    "user_id": 456361478904348701
+}
