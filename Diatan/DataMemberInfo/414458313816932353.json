@@ -7,8 +7,7 @@
     "drink_ticket_count": 0,
     "kaiwa_experiment": 0,
     "kaiwa_experiment_coef": 1,
-    "invite_paid_lv": 0,
-    "blog_paid_lv": 0,
-    "kaiwa_paid_lv": 0,
+    "blog_lv": 0,
+    "kaiwa_lv": 0,
     "user_id": 414458313816932353
 }

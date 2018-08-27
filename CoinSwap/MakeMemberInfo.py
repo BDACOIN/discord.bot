@@ -18,7 +18,7 @@ adresslist = []
 amountlist = []
 
 
-def CalkOneEtherData(dirname):
+def MakeOneEtherData(dirname):
     # print(dirname)
     msg = dirname.strip()
     
@@ -31,9 +31,8 @@ def CalkOneEtherData(dirname):
         "drink_ticket_count": 0,
         "kaiwa_experiment": 0,
         "kaiwa_experiment_coef": 1,
-        "invite_paid_lv": 0,
-        "blog_paid_lv": 0,
-        "kaiwa_paid_lv": 0,
+        "blog_lv": 0,
+        "kaiwa_lv": 0,
         "user_id": 0
     }
 
@@ -77,14 +76,14 @@ def CalkOneEtherData(dirname):
         except:
             print("エラーデータを発見:" + dirname )
 
-def CalkAllEtherData():
+def MakeAllEtherData():
     dirlist = os.listdir("./postdata")
     # print(dirlist)
     for d in dirlist:
-        CalkOneEtherData(d)
+        MakeOneEtherData(d)
 
 
-CalkAllEtherData()
+MakeAllEtherData()
 
 
 

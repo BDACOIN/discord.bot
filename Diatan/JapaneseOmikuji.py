@@ -84,9 +84,8 @@ def is_exist_today_omikuji_file(date):
 def get_today_omikuji_data(date):
     fullpath = get_date_omikuji_file(date)
     try:
-        fr = open(fullpath,'r')
-        json_data = json.load(fr)
-        fr.close()
+        with open(fullpath,'r') as fr:
+            json_data = json.load(fr)
         return json_data
     except:
         pass
@@ -98,9 +97,8 @@ def save_today_omikuji_data(date, dict):
     
     try:
         json_data = json.dumps(dict, indent=4)
-        fw = open(fullpath,'w')
-        fw.write(json_data)
-        fw.close()
+        with open(fullpath,'w') as fw:
+            fw.write(json_data)
         return True
     except:
         pass
@@ -262,9 +260,8 @@ def report_command_one_key_eth(json_data, key):
             fullpath = "DataMemberInfo/" + str(id) + ".json"
             if os.path.exists(fullpath):
                 try:
-                    fr = open(fullpath,'r')
-                    json_data = json.load(fr)
-                    fr.close()
+                    with open(fullpath,'r') as fr:
+                        json_data = json.load(fr)
                     msg.append(json_data["eth_address"])
                     
                 except:

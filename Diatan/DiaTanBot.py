@@ -19,6 +19,7 @@ import JapaneseOmikuji
 import MicMessage
 import NaturalChat
 
+import RegistEtherMemberInfo
 
 
 # 上記で取得したアプリのトークンを入力
@@ -81,6 +82,10 @@ async def on_message(message):
     if is_delete:
         return
 
+    # イーサアドレスの登録
+    if RegistEtherMemberInfo.is_regist_one_member_data_condition(message):
+        await RegistEtherMemberInfo.regist_one_member_data(message, message.author.id)
+        return
 
     # ディアたんのマイクの処理
     if MicMessage.is_mic_permission_condition(message):
