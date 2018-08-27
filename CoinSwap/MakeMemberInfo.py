@@ -32,6 +32,8 @@ def MakeOneEtherData(dirname):
         "kaiwa_experiment": 0,
         "kaiwa_experiment_coef": 1,
         "blog_lv": 0,
+        "twitter_lv": 0,
+        "facebook_lv": 0,
         "kaiwa_lv": 0,
         "user_id": 0
     }
@@ -40,8 +42,12 @@ def MakeOneEtherData(dirname):
         "kaiwa_paid_lv": 0,
         "blog_paid_lv": 0,
         "invite_paid_lv": 0,
+        "twitter_paid_lv": 0,
+        "facebook_paid_lv": 0,
         "kaiwa_paid_amount": 0,
         "blog_paid_amount": 0,
+        "twitter_paid_amount": 0,
+        "facebook_paid_amount": 0,
         "invite_paid_amount": 0,
         "swap_amount": 0,
         "user_id": 0

@@ -13,6 +13,7 @@ import base64
 import os
 import sys, datetime, time
 import discord
+import RegistEtherMemberInfo
 
 
 def is_permission_omikuji_condition(message):
@@ -138,7 +139,12 @@ def is_busy_timestamp(message):
     
     return False
 
-def get_embedded_omikuji_object(message):
+async def get_embedded_omikuji_object(message):
+
+    has = await RegistEtherMemberInfo.has_member_data(message, message.author.id)
+    print("メンバー情報がある？" + str(has))
+    if not has:
+        return
 
     #今日の日付の作成
     date = message.timestamp.now()
@@ -176,7 +182,7 @@ def get_embedded_omikuji_object(message):
         "末吉":"04",
         "凶":"05"
     }
-
+    
     # ハッシュからランダムで１つ選ぶ
     omikuji_key, omikuji_lv = random.choice(list(un_list.items()))
     rnd = random.choice([0,1,2])
@@ -193,7 +199,8 @@ def get_embedded_omikuji_object(message):
         print(k)
         if id in result[k]:
              today_omikuji = k
-             
+    
+    is_use_ticket = False         
     # 該当のメンバーは今日おみくじを引いている
     if today_omikuji != "":
         print("今日すでに引いたのと同じものへと修正")
@@ -202,7 +209,25 @@ def get_embedded_omikuji_object(message):
     
     # 該当のメンバーは今日はじめておみくじを引いた
     else:
-        # ユーザーを足す
+        # 大吉以外で、かつ大吉を引いたメンツがまだ10人未満なら
+        if omikuji_key!="大吉" and len(result["大吉"]) < 10:
+            # １つ幸運のおみくじ券を減らす
+            omikuji_ticket_remain = await RegistEtherMemberInfo.decrement_one_member_omikuji_data(message, id)
+            if omikuji_ticket_remain == None:
+                print("幸運のおみくじが無い")
+            else:
+                print("幸運のおみくじを1枚引いた")
+                # 再度振りなおし
+                omikuji_key2, omikuji_lv2 = random.choice(list(un_list.items()))
+                is_use_ticket = True
+                # より良い結果が出た
+                if int(omikuji_lv2) < int(omikuji_lv):
+                    print("おみくじの結果を上書き")
+                    omikuji_key = omikuji_key2
+                    omikuji_lv = omikuji_lv2
+
+    
+        # くじを引いたというユーザー記録を足す
         result[omikuji_key].append(id)
         save_today_omikuji_data(strdate, result)
 
@@ -213,6 +238,8 @@ def get_embedded_omikuji_object(message):
     em.set_author(name='ディア', icon_url='http://bdacoin.org/bot/omikuji/image/face.png')
     
     em.add_field(name=omikuji_key + "です!!", value="─────────", inline=False)
+    if is_use_ticket:
+        em.add_field(name="幸運のおみくじ券", value="１枚使用", inline=False)
     
     em.set_thumbnail(url="http://bdacoin.org/bot/omikuji/image/" + omikuji_lv + "_omkj.png")
 
@@ -223,7 +250,7 @@ def get_embedded_omikuji_object(message):
 
 async def say_embedded_omikuji_message(message):
     if is_omikuji_command(message.content):
-        em = get_embedded_omikuji_object(message)
+        em = await get_embedded_omikuji_object(message)
         if em != None:
             await client.send_message(message.channel, embed=em)
 
@@ -239,7 +266,7 @@ async def say_embedded_omikuji_message(message):
 
 
 def is_report_command_condition(command):
-    if re.match("^omikujiinfo \d{8}$", command):
+    if re.match("^!omikujiinfo \d{8}$", command):
         return True
 
 

@@ -82,6 +82,11 @@ async def on_message(message):
     if is_delete:
         return
 
+    # メンバー情報の表示
+    if RegistEtherMemberInfo.is_show_one_member_data_condition(message):
+        await RegistEtherMemberInfo.show_one_member_data(message, message.author.id)
+        return
+
     # イーサアドレスの登録
     if RegistEtherMemberInfo.is_regist_one_member_data_condition(message):
         await RegistEtherMemberInfo.regist_one_member_data(message, message.author.id)
