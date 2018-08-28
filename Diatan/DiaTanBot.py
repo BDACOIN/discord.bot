@@ -20,7 +20,7 @@ import MicMessage
 import NaturalChat
 
 import RegistEtherMemberInfo
-
+import EastAsianWidthCounter
 
 # 上記で取得したアプリのトークンを入力
 
@@ -102,7 +102,7 @@ async def on_message(message):
         await JapaneseOmikuji.report_command(message)
         return
 
-        
+   
     # 表示
     for regex in NaturalChat.NaturalChattableChannelRegex():
         if re.match(regex, str(message.channel)):
@@ -132,7 +132,11 @@ async def on_message(message):
                 # 1の方を使って会話
                 msg = sm1.get_naturalchat_mesasge(message)
                 await client.send_message(message.channel, msg)
-            
+    
+    try:
+        await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
+    except:
+        pass
 
 
 # APP(BOT)を実行

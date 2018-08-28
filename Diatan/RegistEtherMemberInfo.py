@@ -16,10 +16,11 @@ import discord
 import WalletAddressDeleter
 
 async def report_error(message, error_msg):
-    em = discord.Embed(title=" ", description="─────────\n" + message.author.display_name, color=0xDEED33)
+    em = discord.Embed(title=" ", description="─────────\n" , color=0xDEED33)
     em.set_author(name='ディア', icon_url=client.user.default_avatar_url)
     em.set_author(name='ディア', icon_url='http://bdacoin.org/bot/omikuji/image/face.png')
     
+    em.add_field(name="返信相手", value= "<@" + message.author.id + ">", inline=False)
     em.add_field(name="エラー", value=error_msg, inline=False)
     try:
         print(error_msg)
@@ -35,6 +36,9 @@ def get_data_memberpaid_path(message, id):
 
 async def decrement_one_member_omikuji_data(message, id):
     try:
+        has = await has_member_data(message, id, False)
+        if not has:
+            return None
 
         path = get_data_memberinfo_path(message, id)
         print(path)
@@ -56,10 +60,86 @@ async def decrement_one_member_omikuji_data(message, id):
         return memberinfo["omikuji_ticket_count"]
 
     except:
-        await report_error(message, "MemberDataデータ作成中にエラー")
+        await report_error(message, "decrement_one_member_omikuji_data中にエラー")
         await report_error(message, sys.exc_info())
     
     return None
+
+# 1枚増やすが、５枚以上は増えない。又1枚増えると、６時間は増えない
+async def increment_one_member_omikuji_data(message, id):
+
+    try:
+        has = await has_member_data(message, id, False)
+        if not has:
+            return None
+
+        path = get_data_memberinfo_path(message, id)
+        print(path)
+        with open(path, "r") as fr:
+            memberinfo = json.load(fr)
+
+        # そんなにもっていても仕方がない
+        if memberinfo["omikuji_ticket_count"] >= 5:
+            return None
+
+        memberinfo["omikuji_ticket_count"] = memberinfo["omikuji_ticket_count"] + 1
+        
+        # 現在のunixタイムを出す
+        now = datetime.datetime.now()
+        unix = now.timestamp()
+        unix = int(unix)
+        
+        # すでに過去の記録があるならば…(初版ではこのデータ型はないのでチェックが必要)
+        if "omikuji_ticket_last_gettime" in memberinfo:
+            # 過去のunixタイムを過去のnow形式にする。
+            old_unix = memberinfo["omikuji_ticket_last_gettime"]
+            old_now = datetime.datetime.fromtimestamp(old_unix)
+            tdelta = now - old_now
+            total_seconds = tdelta.total_seconds()
+            print("差分:" + str(total_seconds))
+            if total_seconds < 60 * 60 * 6: # 6時間に1枚が限界とする。1日4枚まで。
+                print("短すぎる")
+                return None
+
+            memberinfo["omikuji_ticket_last_gettime"] = unix
+            
+        # はじめての保存なら、問題はないさっくり保存
+        else:
+            memberinfo["omikuji_ticket_last_gettime"] = unix
+
+        path = get_data_memberinfo_path(message, id)
+        json_data = json.dumps(memberinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+
+        print("チケットカウントを返す" + str(memberinfo["omikuji_ticket_count"]))
+        return memberinfo["omikuji_ticket_count"]
+
+    except:
+        await report_error(message, "increment_one_member_omikuji_data中にエラー")
+        await report_error(message, sys.exc_info())
+    
+    return None
+
+async def get_count_one_member_omikuji_data(message, id):
+    try:
+        has = await has_member_data(message, id, False)
+        if not has:
+            return 0
+
+        path = get_data_memberinfo_path(message, id)
+        print(path)
+        with open(path, "r") as fr:
+            memberinfo = json.load(fr)
+
+        return memberinfo["omikuji_ticket_count"]
+
+    except:
+        await report_error(message, "get_count_one_member_omikuji_data中にエラー")
+        await report_error(message, sys.exc_info())
+    
+    return None
+
 
 async def update_one_member_data(message, address, id):
     try:
@@ -181,6 +261,9 @@ async def regist_one_member_data(message, id):
             print("regist_one_member_data でエラー")
             print(sys.exc_info())
 
+    # イーサアドレス登録だ
+    elif WalletAddressDeleter.is_message_waves_pattern(address):
+        await report_error(message, "wavesウォレットのアドレスではなく、\nETHウォレットのアドレスを投稿してください。")
     else:
         await report_error(message, "イーサアドレスのパターンではありません。")
         return
@@ -204,7 +287,7 @@ def get_ether_regist_channel(message):
 async def show_one_member_data(message, id):
     try:
         path = get_data_memberinfo_path(message, id)
-        has = await has_member_data(message, id)
+        has = await has_member_data(message, id, True)
         print("メンバー情報がある？" + str(has))
         if not has:
             return
@@ -248,11 +331,12 @@ def is_show_one_member_data_condition(message):
 
 
 
-async def has_member_data(message, id):
+async def has_member_data(message, id, withMessage):
     path = get_data_memberinfo_path(message, id)
     if not os.path.exists(path):
-        ch = get_ether_regist_channel(message)
-        await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEatherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\nコインが受け取れるよう登録申請**をしてください。")
+        if withMessage:
+            ch = get_ether_regist_channel(message)
+            await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEatherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインが受け取れるよう登録申請**をしてください。")
         return False
     else:
         return True

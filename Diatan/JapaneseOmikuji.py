@@ -14,6 +14,7 @@ import os
 import sys, datetime, time
 import discord
 import RegistEtherMemberInfo
+import EastAsianWidthCounter
 
 
 def is_permission_omikuji_condition(message):
@@ -141,7 +142,7 @@ def is_busy_timestamp(message):
 
 async def get_embedded_omikuji_object(message):
 
-    has = await RegistEtherMemberInfo.has_member_data(message, message.author.id)
+    has = await RegistEtherMemberInfo.has_member_data(message, message.author.id, True)
     print("メンバー情報がある？" + str(has))
     if not has:
         return
@@ -265,6 +266,35 @@ async def say_embedded_omikuji_message(message):
         # await client.send_file(message.channel, path)
 
 
+# 会話からおみくじを得る
+async def get_omikuji_from_kaiwa(message):
+    stripped_msg = message.content.strip()
+    
+    #utf8_byte 数
+    kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(stripped_msg)
+    print("文字列のバイト数" + str(kaiwa_utf8_byte_count))
+    # 一定以上の長さは100と評価する
+    if kaiwa_utf8_byte_count > 100:
+         kaiwa_utf8_byte_count = 100
+
+    # 最大でも100/1000 即ち10％
+    rnd = random.randint(1, 1000)
+    if rnd < kaiwa_utf8_byte_count:
+        try:
+            success = await RegistEtherMemberInfo.increment_one_member_omikuji_data(message, message.author.id)
+            # 実際に枚数が増えているならば
+            if success != None:
+                await client.send_message(message.channel, "<@" + message.author.id + "> さん、これ落ちてましたよ!!")
+                em = discord.Embed(title=" ", description=" ", color=0xDEED33)
+                em.add_field(name="幸運のおみくじ券", value="１枚追加", inline=False)
+                await client.send_message(message.channel, embed=em)
+            
+                print("おみくじ1枚ゲット!!")
+        except:
+            print(sys.exc_info())
+
+
+
 def is_report_command_condition(command):
     if re.match("^!omikujiinfo \d{8}$", command):
         return True
@@ -303,7 +333,7 @@ def report_command_one_key_eth(json_data, key):
 
 async def report_command(message):
     if is_report_command_condition(message.content):
-        m = re.search("^omikujiinfo (\d{8})$", message.content)
+        m = re.search("^!omikujiinfo (\d{8})$", message.content)
         date = m.group(1)
         fullpath = get_date_omikuji_file(date)
         if os.path.exists(fullpath):
