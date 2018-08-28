@@ -284,7 +284,13 @@ async def get_omikuji_from_kaiwa(message):
             success = await RegistEtherMemberInfo.increment_one_member_omikuji_data(message, message.author.id)
             # 実際に枚数が増えているならば
             if success != None:
-                await client.send_message(message.channel, "<@" + message.author.id + "> さん、これ落ちてましたよ!!")
+                if rnd % 3 == 0:
+                    await client.send_message(message.channel, "<@" + message.author.id + "> さん、これ落ちてましたよ！")
+                if rnd % 3 == 1:
+                    await client.send_message(message.channel, "このおみくじ券、<@" + message.author.id + "> さんのですか？")
+                if rnd % 3 == 2:
+                    await client.send_message(message.channel, "<@" + message.author.id + "> さん、おみくじ券いかがですか～")
+                    
                 em = discord.Embed(title=" ", description=" ", color=0xDEED33)
                 em.add_field(name="幸運のおみくじ券", value="１枚追加", inline=False)
                 await client.send_message(message.channel, embed=em)
