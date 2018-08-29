@@ -274,11 +274,11 @@ async def get_omikuji_from_kaiwa(message):
     kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(stripped_msg)
     print("文字列のバイト数" + str(kaiwa_utf8_byte_count))
     # 一定以上の長さは100と評価する
-    if kaiwa_utf8_byte_count > 100:
-         kaiwa_utf8_byte_count = 100
+    if kaiwa_utf8_byte_count > 50:
+         kaiwa_utf8_byte_count = 50
 
     # 最大でも100/1000 即ち10％
-    rnd = random.randint(1, 1000)
+    rnd = random.randint(1, 200)
     if rnd < kaiwa_utf8_byte_count:
         try:
             success = await RegistEtherMemberInfo.increment_one_member_omikuji_data(message, message.author.id)
