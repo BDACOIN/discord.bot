@@ -267,8 +267,10 @@ async def say_embedded_omikuji_message(message):
 
 
 # 会話からおみくじを得る
-async def get_omikuji_from_kaiwa(message):
+async def get_omikuji_from_kaiwa(message, override_message = ""):
     stripped_msg = message.content.strip()
+    if override_message:
+        stripped_msg = override_message
     
     #utf8_byte 数
     kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(stripped_msg)

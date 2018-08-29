@@ -21,6 +21,7 @@ import NaturalChat
 
 import RegistEtherMemberInfo
 import EastAsianWidthCounter
+import ImageCategory
 
 # 上記で取得したアプリのトークンを入力
 
@@ -136,6 +137,15 @@ async def on_message(message):
     try:
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
     except:
+        print("例外:get_omikuji_from_kaiwa")
+        pass
+
+    try:
+        att = ImageCategory.is_analyze_condition(message)
+        if att != None:
+            await ImageCategory.analyze_image(message, att)
+    except:
+        print("例外:is_analyze_condition")
         pass
 
 
