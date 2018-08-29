@@ -20,7 +20,8 @@ def get_docomo_naturalchat_key():
     appid_01 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_01", r'')
     appid_02 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_02", r'')
     appid_03 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_03", r'')
-    return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03}
+    appid_04 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_01", r'')
+    return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03, "appid_04":appid_04}
 
 
 class NaturalChatMessage:
@@ -32,7 +33,7 @@ class NaturalChatMessage:
         self.lastMode = "dialog"
         self.appear_zatsudan_count = 0
 
-    def get_naturalchat_mesasge(self, message):
+    def get_naturalchat_mesasge(self, message, override_word = ""):
         KEY = self.KEY
         
         try:
@@ -49,6 +50,8 @@ class NaturalChatMessage:
             datastr = date.strftime("%Y-%m-%d %H:%M:%S")
 
             text = message.content
+            if override_word:
+                text = override_word
             
             payload = {'language':'ja-JP', 'botId':'Chatting','appId':appid,'voiceText':text, 
                 "clientData":{
@@ -155,8 +158,9 @@ def CreateObject():
     sm1 = NaturalChatMessage(params["KEY"], params["appid_01"])
     sm2 = NaturalChatMessage(params["KEY"], params["appid_02"])
     sm3 = NaturalChatMessage(params["KEY"], params["appid_03"])
+    sm4 = NaturalChatMessage(params["KEY"], params["appid_04"])
     
-    return sm1, sm2, sm3
+    return sm1, sm2, sm3, sm4
 
 
 

@@ -243,10 +243,14 @@ async def replay_image_message(message, word, isStrong = True):
     print("画像への返事")
     if isStrong:
         await client.send_message(message.channel, word + " ですね！")
+        imgmsg = sm4.get_naturalchat_mesasge(message, word)
+        await client.send_message(message.channel, imgmsg)
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message, word)
 
     else:
         await client.send_message(message.channel, "もしかしたら " + word + " ...ですか？")
+        imgmsg = sm4.get_naturalchat_mesasge(message, word)
+        await client.send_message(message.channel, imgmsg)
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message, word)
 
         

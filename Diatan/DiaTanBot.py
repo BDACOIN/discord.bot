@@ -50,11 +50,13 @@ async def on_ready():
 
 
 
-sm1, sm2, sm3 = NaturalChat.CreateObject()
+sm1, sm2, sm3, sm4 = NaturalChat.CreateObject()
 print(sm1)
 print(sm3)
 print(sm3)
+print(sm4)
 
+builtins.sm4 = sm4
 
 # メッセージを受信するごとに実行される
 @client.event
@@ -103,43 +105,6 @@ async def on_message(message):
         await JapaneseOmikuji.report_command(message)
         return
 
-   
-    # 表示
-    for regex in NaturalChat.NaturalChattableChannelRegex():
-        if re.match(regex, str(message.channel)):
-        
-            if str(message.channel) == "雑談":
-
-                try:
-                    msg = str(message.content)
-                    dia_appear_remain_cnt = sm3.decrement_appear_zatsudan_cnt(msg)
-                    if dia_appear_remain_cnt >= 0:
-                        # 3の方を使って会話
-                        msg = sm3.get_naturalchat_mesasge(message)
-                        await client.send_message(message.channel, msg)
-
-                except RuntimeError:
-                    print(RuntimeError)
-
-
-            # おみくじが許される条件
-            elif JapaneseOmikuji.is_permission_omikuji_condition(message):
-                # 2の方を使って会話
-                msg = sm2.get_naturalchat_mesasge(message)
-                await client.send_message(message.channel, msg)
-                await JapaneseOmikuji.say_embedded_omikuji_message(message)
-
-            else:
-                # 1の方を使って会話
-                msg = sm1.get_naturalchat_mesasge(message)
-                await client.send_message(message.channel, msg)
-    
-    try:
-        await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
-    except:
-        print("例外:get_omikuji_from_kaiwa")
-        pass
-
     try:
         att = ImageCategory.is_analyze_condition(message)
         if att != None:
@@ -147,6 +112,44 @@ async def on_message(message):
     except:
         print("例外:is_analyze_condition")
         pass
+
+    # 表示
+    if len(message.content) > 0:
+        for regex in NaturalChat.NaturalChattableChannelRegex():
+            if re.match(regex, str(message.channel)):
+            
+                if str(message.channel) == "雑談":
+
+                    try:
+                        msg = str(message.content)
+                        dia_appear_remain_cnt = sm3.decrement_appear_zatsudan_cnt(msg)
+                        if dia_appear_remain_cnt >= 0:
+                            # 3の方を使って会話
+                            msg = sm3.get_naturalchat_mesasge(message)
+                            await client.send_message(message.channel, msg)
+
+                    except RuntimeError:
+                        print(RuntimeError)
+
+
+                # おみくじが許される条件
+                elif JapaneseOmikuji.is_permission_omikuji_condition(message):
+                    # 2の方を使って会話
+                    msg = sm2.get_naturalchat_mesasge(message)
+                    await client.send_message(message.channel, msg)
+                    await JapaneseOmikuji.say_embedded_omikuji_message(message)
+
+                else:
+                    # 1の方を使って会話
+                    msg = sm1.get_naturalchat_mesasge(message)
+                    await client.send_message(message.channel, msg)
+    
+    try:
+        await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
+    except:
+        print("例外:get_omikuji_from_kaiwa")
+        pass
+
 
 
 # APP(BOT)を実行
