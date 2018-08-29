@@ -14,7 +14,7 @@ import datetime
 import time
 import discord
 import glob
-
+import time
 
 import EnvironmentVariable
 import JudgeErrorWalletAddress
@@ -168,6 +168,13 @@ async def on_message(message):
                     await client.delete_message(msg)
             except:
                 print("削除中にエラーが発生しました")
+            return
+        if message.content.startswith('!!!allexit'):
+            for m in list(message.channel.server.members):
+                if len(m.roles) == 1 and m.roles[0].name == "@everyone":
+                    print(m.name + ":" + m.roles[0].name)
+                    await client.kick(m)
+                    time.sleep(1)
             return
 
     if str(message.channel) == "①添付情報の取得" or str(message.channel) == "①get-attachment-from-bot":
