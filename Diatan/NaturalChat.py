@@ -20,7 +20,7 @@ def get_docomo_naturalchat_key():
     appid_01 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_01", r'')
     appid_02 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_02", r'')
     appid_03 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_03", r'')
-    appid_04 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_01", r'')
+    appid_04 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_04", r'')
     return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03, "appid_04":appid_04}
 
 
