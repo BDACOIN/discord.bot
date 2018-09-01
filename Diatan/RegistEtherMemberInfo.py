@@ -97,7 +97,7 @@ async def increment_one_member_omikuji_data(message, id):
             tdelta = now - old_now
             total_seconds = tdelta.total_seconds()
             print("差分:" + str(total_seconds))
-            if total_seconds < 60 * 60 * 6: # 6時間に1枚が限界とする。1日4枚まで。
+            if total_seconds < 60 * 60 * 8: # 8時間に1枚が限界とする。1日3枚まで。
                 print("短すぎる")
                 return None
 
