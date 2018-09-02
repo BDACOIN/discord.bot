@@ -105,6 +105,7 @@ async def on_message(message):
         await JapaneseOmikuji.report_command(message)
         return
 
+    # イメージカテゴリ
     try:
         att = ImageCategory.is_analyze_condition(message)
         if att != None:
@@ -144,12 +145,30 @@ async def on_message(message):
                     msg = sm1.get_naturalchat_mesasge(message)
                     await client.send_message(message.channel, msg)
     
+    # 会話からおみくじを得る
     try:
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
     except:
         print("例外:get_omikuji_from_kaiwa")
         pass
 
+    try:
+        em = discord.Embed(title="レベル情報", description="─────────\n", color=0xDEED33)
+        em.add_field(name="返信相手", value= "<@" + message.author.id + ">", inline=True)
+        user_id = message.author.id
+
+        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        print(avator_url)
+#        em.set_author(name="<@" + message.author.id + ">", icon_url=avator_url)
+        em.add_field(name="Lv", value="31", inline=True)
+        em.add_field(name="次のレベルまで", value="31211 EXP", inline=True)
+        em.set_thumbnail(url=avator_url)
+        em.set_image(url=avator_url)
+        await client.send_message(message.channel, embed=em)
+
+    except:
+        print(sys.exc_info())
+        pass
 
 
 # APP(BOT)を実行
