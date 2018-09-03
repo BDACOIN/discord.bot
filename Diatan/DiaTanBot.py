@@ -23,6 +23,8 @@ import RegistEtherMemberInfo
 import EastAsianWidthCounter
 import ImageCategory
 
+import ChatLevelUp
+
 # 上記で取得したアプリのトークンを入力
 
 
@@ -153,23 +155,25 @@ async def on_message(message):
         pass
 
     try:
-        em = discord.Embed(title="レベル情報", description="─────────\n", color=0xDEED33)
-        em.add_field(name="返信相手", value= "<@" + message.author.id + ">", inline=True)
-        user_id = message.author.id
+        em = discord.Embed(title="", description="", color=0xDEED33)
+        em.add_field(name="レベル情報", value= "<@" + message.author.id + ">", inline=True)
 
         avator_url = message.author.avatar_url or message.author.default_avatar_url
         print(avator_url)
-#        em.set_author(name="<@" + message.author.id + ">", icon_url=avator_url)
+        avator_url = avator_url.replace(".webp?", ".png?")
+        # em.set_author(name=" ", icon_url=avator_url)
         em.add_field(name="Lv", value="31", inline=True)
-        em.add_field(name="次のレベルまで", value="31211 EXP", inline=True)
+        em.add_field(name="経験値", value="27200/31211 EX", inline=False)
         em.set_thumbnail(url=avator_url)
-        em.set_image(url=avator_url)
+        em.set_image(url="http://bdacoin.org/bot/levelup/image/level_up_image_050.png")
+#        em.add_field(name="テスト", value=avator_url, inline=True)
         await client.send_message(message.channel, embed=em)
 
     except:
         print(sys.exc_info())
         pass
 
+    await KaiwaKeisu.push_kaiwa_post(message, message.content)
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
