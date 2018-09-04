@@ -13,6 +13,30 @@ import discord
 
 import EastAsianWidthCounter
 
+# そのレベルになるのに必要な総経験値(Mee6と同じ計算式)
+def need_experiment_value(level):
+    xp_to_desired_level = 5 / 6 * level * (2 * level * level + 27 * level + 91);
+    return xp_to_desired_level
+
+
+LV_TO_EXP_LIST = []
+def createChatLevelUpTable():
+    if len(LV_TO_EXP_LIST) ==0:
+        # lv200まで埋める
+        for lv in range(0, 201):
+            LV_TO_EXP_LIST.append([lv, need_experiment_value(lv)])
+
+    print(LV_TO_EXP_LIST)
+
+
+def get_lv_from_exp(exp):
+    lv = 0
+    for t in LV_TO_EXP_LIST:
+        # 指定された経験値より、レベル表の総合経験値が低いなら
+        if t[1] < exp:
+            lv = t[0] # すくなくともそのレベルには到達している
+    
+    return lv
 
 # ２つのテキストの類似度の比較
 def get_sequence_matcher_coef(test_1, text_2):
@@ -55,8 +79,7 @@ def has_post_data(message):
         return True
 
 
-async def is_level_up(message):
-    pass
+    
 
 
 async def is_syougou_up(message):
@@ -93,7 +116,7 @@ async def update_one_kaiwa_post_data(message):
             add_experience = 1
         postinfo["exp"] = postinfo["exp"] + add_experience
         print(str(add_experience) + "が経験値として加算された")
-
+        
         # テキストも履歴として加える
         postinfo["posthistory"].append(text)
 
@@ -105,6 +128,8 @@ async def update_one_kaiwa_post_data(message):
                 # 先頭をカット
                 postinfo["posthistory"].pop(0)
 
+
+        print("ただいまのレベル" + str(get_lv_from_exp(postinfo["exp"])))
 
         path = get_data_kaiwa_post_path(message)
         json_data = json.dumps(postinfo, indent=4)

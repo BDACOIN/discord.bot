@@ -40,6 +40,7 @@ client = discord.Client()
 # 他のモジュールへの伝搬が面倒なので、Pythonの組み込み変数同様の扱いにしてしまう
 builtins.client = client
 
+ChatLevelUp.createChatLevelUpTable()
 
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
