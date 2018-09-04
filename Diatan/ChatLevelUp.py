@@ -149,6 +149,7 @@ async def update_one_kaiwa_post_data(message):
 async def make_one_kaiwa_post_data(message):
     try:
         postinfo = {
+            "id": message.author.id,
             "posthistory": [],
             "exp": 0,
         }
