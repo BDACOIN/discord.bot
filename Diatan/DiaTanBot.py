@@ -12,6 +12,7 @@ import base64
 import os
 import sys, datetime, time
 import discord
+import traceback
 
 import EnvironmentVariable
 import WalletAddressDeleter
@@ -108,14 +109,28 @@ async def on_message(message):
         await JapaneseOmikuji.report_command(message)
         return
 
+    try:
+        if ChatLevelUp.is_level_command_condition(message.content):
+            await ChatLevelUp.command_show_level_infomation(message)
+            return
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+
+
     # イメージカテゴリ
     try:
         att = ImageCategory.is_analyze_condition(message)
         if att != None:
             await ImageCategory.analyze_image(message, att)
-    except:
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
         print("例外:is_analyze_condition")
         pass
+
 
     # 表示
     if len(message.content) > 0:
@@ -151,30 +166,26 @@ async def on_message(message):
     # 会話からおみくじを得る
     try:
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message)
-    except:
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
         print("例外:get_omikuji_from_kaiwa")
         pass
 
     try:
-        em = discord.Embed(title="", description="", color=0xDEED33)
-        em.add_field(name="レベル情報", value= "<@" + message.author.id + ">", inline=True)
-
-        avator_url = message.author.avatar_url or message.author.default_avatar_url
-        print(avator_url)
-        avator_url = avator_url.replace(".webp?", ".png?")
-        # em.set_author(name=" ", icon_url=avator_url)
-        em.add_field(name="Lv", value="31", inline=True)
-        em.add_field(name="経験値", value="27200/31211 EX", inline=False)
-        em.set_thumbnail(url=avator_url)
-        em.set_image(url="http://bdacoin.org/bot/levelup/image/level_up_image_050.png")
-#        em.add_field(name="テスト", value=avator_url, inline=True)
-        await client.send_message(message.channel, embed=em)
-
-    except:
+        await ChatLevelUp.push_kaiwa_post(message, message.content)
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
         print(sys.exc_info())
-        pass
-
-    await KaiwaKeisu.push_kaiwa_post(message, message.content)
-
+        
+    if message.author.id == "397238348877529099":
+        if message.content == "!all_level_roles":
+            await ChatLevelUp.all_member_add_level_role(message)
+            
+            
+            
 # APP(BOT)を実行
 client.run(BOT_TOKEN)

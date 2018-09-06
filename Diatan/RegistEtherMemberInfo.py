@@ -301,12 +301,16 @@ async def show_one_member_data(message, id):
         with open(path, "r") as fr:
             paidinfo = json.load(fr)
 
-        em = discord.Embed(title="登録情報", description="─────────\n", color=0xDEED33)
-        em.set_author(name='ディア', icon_url=client.user.default_avatar_url)
-        em.set_author(name='ディア', icon_url='http://bdacoin.org/bot/omikuji/image/face.png')
-        em.add_field(name="メンバー名", value="<@" + id + ">", inline=False)
+        em = discord.Embed(title="", description="", color=0xDEED33)
+        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        print(avator_url)
+        avator_url = avator_url.replace(".webp?", ".png?")
+        em.set_thumbnail(url=avator_url)
+        em.add_field(name="メンバー情報", value="<@" + id + ">", inline=False)
         em.add_field(name="ETHウォレットのアドレス", value=memberinfo["eth_address"], inline=False)
         em.add_field(name="幸運のおみくじ券", value=str(memberinfo["omikuji_ticket_count"]) + " 枚", inline=False)
+
+
         try:
             await client.send_message(message.channel, embed=em)
         except:
@@ -336,7 +340,7 @@ async def has_member_data(message, id, withMessage):
     if not os.path.exists(path):
         if withMessage:
             ch = get_ether_regist_channel(message)
-            await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEatherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインが受け取れるよう登録申請**をしてください。")
+            await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEatherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。")
         return False
     else:
         return True

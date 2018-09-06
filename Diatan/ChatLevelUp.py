@@ -9,6 +9,7 @@ import re
 import json
 import os
 import sys, datetime, time
+import traceback
 import discord
 
 import EastAsianWidthCounter
@@ -62,8 +63,10 @@ async def report_error(message, error_msg):
     try:
         print(error_msg)
         await client.send_message(message.channel, embed=em)
-    except:
-        print(sys.exc_info())
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
 
 
 def get_data_kaiwa_post_path(message):
@@ -86,7 +89,104 @@ async def is_syougou_up(message):
     pass
 
 
+async def show_level_infomation(message, exp, default="会話レベル情報"):
+
+    try:
+        lv = get_lv_from_exp(exp)
+        em = discord.Embed(title="", description="", color=0xDEED33)
+        em.add_field(name=default, value= "<@" + message.author.id + ">", inline=True)
+
+        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        print(avator_url)
+        avator_url = avator_url.replace(".webp?", ".png?")
+        # em.set_author(name=" ", icon_url=avator_url)
+        em.add_field(name="Lv", value=str(lv), inline=True)
+        amari = exp-LV_TO_EXP_LIST[lv][1]
+        nnext = LV_TO_EXP_LIST[lv+1][1]-LV_TO_EXP_LIST[lv][1]
+        str_cur_per_nex = str(int(amari)) + "/" + str(int(nnext)) + " EX"
+        int_cur_per_nex = int(amari / nnext * 200)
+        if int_cur_per_nex < 0:
+            int_cur_per_nex = 0
+        if int_cur_per_nex > 200:
+            int_cur_per_nex = 200
+        print("★" + str(int_cur_per_nex))
+        em.add_field(name="経験値", value=str_cur_per_nex, inline=False)
+        em.set_thumbnail(url=avator_url)
+        em.set_image(url="http://bdacoin.org/bot/levelup/image/level_up_image_{0:03d}.png".format(int_cur_per_nex))
+    #        em.add_field(name="テスト", value=avator_url, inline=True)
+        await client.send_message(message.channel, embed=em)
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        print("show_level_infomation 中エラー")
+        
+async def command_show_level_infomation(message):
+
+    try:
+        if not has_post_data(message):
+            await make_one_kaiwa_post_data(message)
+            
+        path = get_data_kaiwa_post_path(message)
+        print(path)
+        with open(path, "r") as fr:
+            postinfo = json.load(fr)
+
+        await show_level_infomation(message, postinfo["exp"])
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        print("show_level_infomation 中エラー")
+
+def is_level_command_condition(message):
+    if re.match("^!rankinfo$", message):
+        return True
+    if re.match("^!rank$", message):
+        return True
+        
+    return False
+
+
+async def add_level_role(roles, author, level):
+    # そのサーバーが持ってる役職
+    roles_list = roles
+    for r in roles_list:
+        try:
+            #print(r.name)
+            # 役職の名前そのものに必須到達レベルがある。
+            m = re.search(".+\s*LV(\d+)", r.name, re.IGNORECASE)
+            if m:
+                #print("マッチ" + r.name)
+                roles_lv = m.group(1)
+                if roles_lv and int(roles_lv) <= level:
+                    # print("付与開始" + r.name)
+                    await client.add_roles(author, r)
+                    print("付与した" + r.name)
+        except Exception as e:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e.__traceback__))
+
+async def all_member_add_level_role(message):
+    for m in message.channel.server.members:
+    
+        id = m.id
+        path = 'DataMemberPostInfo/' + str(id) + ".json"
+        try:
+            if os.path.exists(path):
+                with open(path, "r") as fr:
+                    postinfo = json.load(fr)
+                    post_level = get_lv_from_exp(postinfo["exp"])
+                    await add_level_role(message.channel.server.roles, m, post_level)
+        except Exception as e:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e.__traceback__))
+
 async def update_one_kaiwa_post_data(message):
+    
     try:
         if not has_post_data(message):
             await make_one_kaiwa_post_data(message)
@@ -104,17 +204,34 @@ async def update_one_kaiwa_post_data(message):
         # 過去の20投稿との比較で最低の係数を出す（類似したものがあるほど係数が低くなる)
         for hist in postinfo["posthistory"]:
             temp_coef = 1 - get_sequence_matcher_coef(hist, text)
-            print("どうか:" + str(temp_coef) + hist + ", " + text)
+            # print("どうか:" + str(temp_coef) + hist + ", " + text)
             if temp_coef < minimum_coef:
                 minimum_coef = temp_coef
 
-        print("最低係数:" + str(minimum_coef))
+        # print("最低係数:" + str(minimum_coef))
 
         base_experience = 40
         add_experience = int(minimum_coef * base_experience)
         if add_experience <= 0:
             add_experience = 1
+
+        # そのテキストのutf8バイト数を超えないようにする
+        kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(text)
+        if add_experience > kaiwa_utf8_byte_count:
+            add_experience = kaiwa_utf8_byte_count
+        
+        # 添付ファイルがあるのであれば、下駄を40はかせる
+        attach_list = message.attachments
+        if len(attach_list) > 0:
+            add_experience = add_experience + 40
+        
+        prev_level = get_lv_from_exp(postinfo["exp"])
         postinfo["exp"] = postinfo["exp"] + add_experience
+        post_level = get_lv_from_exp(postinfo["exp"])
+        if prev_level != post_level:
+            await show_level_infomation(message, postinfo["exp"], "会話レベルがアップしました!!")
+            await add_level_role(message.channel.server.roles, message.author, post_level)
+            
         print(str(add_experience) + "が経験値として加算された")
         
         # テキストも履歴として加える
@@ -138,7 +255,10 @@ async def update_one_kaiwa_post_data(message):
             
         return postinfo
 
-    except:
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
         await report_error(message, "update_one_kaiwa_post_dataデータ作成中にエラー")
         await report_error(message, sys.exc_info())
     
@@ -160,7 +280,10 @@ async def make_one_kaiwa_post_data(message):
         with open(path, "w") as fw:
             fw.write(json_data)
         return postinfo
-    except:
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
         await report_error(message, "make_one_kaiwa_post_data 中にエラーが発生しました。")
         await report_error(message, sys.exc_info())
     return None
@@ -193,11 +316,10 @@ async def push_kaiwa_post(message, text):
 
     postinfo = await update_one_kaiwa_post_data(message)
     if postinfo != None:
-        is_level_up(message)
-        is_shougou_up(message)
-    
+        pass
+        
     # count = EastAsianWidthCounter.get_east_asian_width_count_effort(text)
-    print(count)
+    # print(count)
 
 # テスト
 if __name__ == '__main__':
