@@ -210,6 +210,8 @@ async def update_one_kaiwa_post_data(message):
 
         # print("最低係数:" + str(minimum_coef))
 
+
+
         base_experience = 40
         add_experience = int(minimum_coef * base_experience)
         if add_experience <= 0:
@@ -219,12 +221,38 @@ async def update_one_kaiwa_post_data(message):
         kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(text)
         if add_experience > kaiwa_utf8_byte_count:
             add_experience = kaiwa_utf8_byte_count
+
         
         # 添付ファイルがあるのであれば、下駄を40はかせる
         attach_list = message.attachments
         if len(attach_list) > 0:
             add_experience = add_experience + 40
+
+        # 投稿差分タイムを越えないようにする
+        # 現在のunixタイムを出す
+        now = datetime.datetime.now()
+        unix = now.timestamp()
+        unix = int(unix)
         
+        # すでに過去の記録があるならば…(初版ではこのデータ型はないのでチェックが必要)
+        if "post_last_gettime" in postinfo:
+            # 過去のunixタイムを過去のnow形式にする。
+            old_unix = postinfo["post_last_gettime"]
+            old_now = datetime.datetime.fromtimestamp(old_unix)
+            tdelta = now - old_now
+            total_seconds = tdelta.total_seconds()
+            print("差分:" + str(total_seconds))
+            if add_experience > total_seconds:
+                print("差分タイムへと抑え込み:" + str(total_seconds)) 
+                add_experience = int(total_seconds)
+
+            postinfo["post_last_gettime"] = unix
+            
+        # はじめての保存なら、問題はないさっくり保存
+        else:
+            postinfo["post_last_gettime"] = unix
+
+
         prev_level = get_lv_from_exp(postinfo["exp"])
         postinfo["exp"] = postinfo["exp"] + add_experience
         post_level = get_lv_from_exp(postinfo["exp"])
@@ -240,8 +268,8 @@ async def update_one_kaiwa_post_data(message):
         # 多くなりすぎていれば削除。
         # 3回ぐらい繰り返しておけば十分か
         for rng in [0, 1, 2]:
-            # すでに履歴が10以上あれば
-            if len(postinfo["posthistory"]) > 10:
+            # すでに履歴が20以上あれば
+            if len(postinfo["posthistory"]) > 20:
                 # 先頭をカット
                 postinfo["posthistory"].pop(0)
 
