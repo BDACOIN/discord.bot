@@ -340,7 +340,7 @@ async def has_member_data(message, id, withMessage):
     if not os.path.exists(path):
         if withMessage:
             ch = get_ether_regist_channel(message)
-            await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEatherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。")
+            await report_error(message, "登録情報がありません。\n" + "<#" + ch.id + ">" + " に\nご自身の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。")
         return False
     else:
         return True
