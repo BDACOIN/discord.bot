@@ -214,11 +214,14 @@ async def update_one_kaiwa_post_data(message):
 
         base_experience = 40
         add_experience = int(minimum_coef * base_experience)
-        if add_experience <= 0:
-            add_experience = 1
+        if add_experience < 0:
+            add_experience = 0
 
         # そのテキストのutf8バイト数を超えないようにする
         kaiwa_utf8_byte_count = EastAsianWidthCounter.get_east_asian_width_count_effort(text)
+        # 6バイトまでは判定しない
+        if kaiwa_utf8_byte_count <= 6:
+            kaiwa_utf8_byte_count = 0
         if add_experience > kaiwa_utf8_byte_count:
             add_experience = kaiwa_utf8_byte_count
 
