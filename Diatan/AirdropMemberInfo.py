@@ -53,7 +53,7 @@ async def update_one_member_data(message, address, id):
         return True
 
     except:
-        await report_error(message, "Error while creating MemberData data")
+        await report_error(message, "Error while creating MemberData data.")
         await report_error(message, sys.exc_info())
     
     return False
@@ -150,7 +150,7 @@ def is_regist_one_member_data_condition(message):
 
 def get_ether_regist_channel(message):
     for ch in message.channel.server.channels:
-        if "エアドロップETH登録" in str(ch) or "Regist AirDrop Ether Address" in str(ch):
+        if "regist-airdrop-eth" in str(ch):
             return ch
             
     return None
@@ -191,7 +191,7 @@ async def show_one_member_data(message, id):
         return True
 
     except:
-        await report_error(message, "Error in show_one_member_data")
+        await report_error(message, "Error in show_one_member_data.")
         await report_error(message, sys.exc_info())
     
     return False
@@ -212,7 +212,7 @@ async def has_member_data(message, id, withMessage):
     if not os.path.exists(path):
         if withMessage:
             ch = get_ether_regist_channel(message)
-            await report_error(message, "登録情報がありません。ご自身の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。\n(There is no your registration information. Please post your Ether Wallet address such as your own MyEtherWallet, so that you can receive coins.)")
+            await report_error(message, "登録情報がありません。ご自身の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。\n(There is no your registration information. \n Please post your Ether Wallet address such as your own MyEtherWallet, so that you can receive coins.)")
         return False
     else:
         return True
