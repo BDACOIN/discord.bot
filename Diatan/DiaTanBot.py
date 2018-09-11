@@ -23,6 +23,7 @@ import NaturalChat
 import RegistEtherMemberInfo
 import EastAsianWidthCounter
 import ImageCategory
+import AirdropMemberInfo
 
 import ChatLevelUp
 
@@ -97,6 +98,17 @@ async def on_message(message):
     # イーサアドレスの登録
     if RegistEtherMemberInfo.is_regist_one_member_data_condition(message):
         await RegistEtherMemberInfo.regist_one_member_data(message, message.author.id)
+        return
+
+    # メンバー情報の表示
+    if AirdropMemberInfo.is_show_one_member_data_condition(message):
+        await AirdropMemberInfo.show_one_member_data(message, message.author.id)
+        return
+
+
+    # エアドロのイーサアドレスの登録
+    if AirdropMemberInfo.is_regist_one_member_data_condition(message):
+        await AirdropMemberInfo.regist_one_member_data(message, message.author.id)
         return
 
     # ディアたんのマイクの処理

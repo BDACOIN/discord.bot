@@ -11,6 +11,7 @@ import sys
 import datetime
 import time
 import glob
+import traceback
 import discord
 
 import WalletAddressDeleter
@@ -38,6 +39,10 @@ def get_data_memberpaid_path(message, id):
 
 async def update_one_member_data(message, address, id):
     try:
+        has_address = await is_has_address(message, address, id)
+        if has_address:
+            await report_error(message, "そのイーサアドレスは別アカウントの人に登録されています。\n(That Ether wallet address is registered by another account.")
+            return False
 
         path = get_data_memberinfo_path(message, id)
         print(path)
@@ -50,6 +55,9 @@ async def update_one_member_data(message, address, id):
         json_data = json.dumps(memberinfo, indent=4)
         with open(path, "w") as fw:
             fw.write(json_data)
+            
+        await update_all_member_data(message, memberinfo)
+            
         return True
 
     except:
@@ -58,12 +66,66 @@ async def update_one_member_data(message, address, id):
     
     return False
 
+
+async def is_has_address(message, address, id):
+    try:
+
+        path = "AirdropMemberInfo/AirdropMemberInfoList.json"
+        with open(path, "r") as fr:
+            allinfo = json.load(fr)
+        # print(allinfo)
+        for key in allinfo:
+            memberinfo = allinfo[key]
+            # 別人なのに同一のイーサアドレスが投稿されようとしている
+            if memberinfo["eth_address"] == address and int(memberinfo["user_id"]) != int(id):
+                return True
+            
+        return False
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        await report_error(message, "Error while judge is_has_address.")
+        await report_error(message, sys.exc_info())
+    
+    return False
+
+
+async def update_all_member_data(message, memberinfo):
+    try:
+
+        path = "AirdropMemberInfo/AirdropMemberInfoList.json"
+        print(path)
+        with open(path, "r") as fr:
+            allinfo = json.load(fr)
+
+        allinfo[memberinfo["user_id"]] = memberinfo
+
+        path = "AirdropMemberInfo/AirdropMemberInfoList.json"
+        json_data = json.dumps(allinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+            
+        return True
+
+    except:
+        await report_error(message, "Error while creating Update_all_member_data.")
+        await report_error(message, sys.exc_info())
+    
+    return False
+
+
 # 1人分のメンバーデータの作成
 async def make_one_member_data(message, address, id):
     try:
+        has_address = await is_has_address(message, address, id)
+        if has_address:
+            await report_error(message, "そのイーサアドレスは別アカウントの人に登録されています。\n(That Ether wallet address is registered by another account.")
+            return False
+            
         memberinfo = {
             "eth_address": "",
-            "user_name": message.author.name,
             "user_id": 0
         }
         
@@ -76,6 +138,9 @@ async def make_one_member_data(message, address, id):
         json_data = json.dumps(memberinfo, indent=4)
         with open(path, "w") as fw:
             fw.write(json_data)
+            
+        await update_all_member_data(message, memberinfo)
+            
         return True
     except:
         await report_error(message, "An error occurred during make_one_member_data.")
@@ -136,9 +201,9 @@ async def regist_one_member_data(message, id):
 
     # イーサアドレス登録だ
     elif WalletAddressDeleter.is_message_waves_pattern(address):
-        await report_error(message, "wavesウォレットのアドレスではなく、\n**ETHウォレット**のアドレスを投稿してください。\n(Please post the address of **Ether Wallet**, not the address of Waves Wallet.)")
+        await report_error(message, "wavesウォレットのアドレスではなく、\n**ETHウォレット**のアドレスを投稿してください。\n(Please post the address of **Ether wallet** address, not the address of Waves one.)")
     else:
-        await report_error(message, "イーサアドレスのパターンではありません。\n(The post is not a pattern of Ether Wallet address.)")
+        await report_error(message, "イーサアドレスのパターンではありません。\n(The post is not a pattern of Ether wallet address.)")
         return
 
 def is_regist_one_member_data_condition(message):
@@ -179,7 +244,7 @@ async def show_one_member_data(message, id):
         print(avator_url)
         avator_url = avator_url.replace(".webp?", ".png?")
         em.set_thumbnail(url=avator_url)
-        em.add_field(name="エアドロ(Airdrop Registration Information)", value="<@" + id + ">", inline=False)
+        em.add_field(name="エアドロ登録情報(Airdrop Registration Information)", value="<@" + id + ">", inline=False)
         em.add_field(name="ETHウォレットのアドレス(Ether Wallet Address)", value=memberinfo["eth_address"], inline=False)
 
 
@@ -212,7 +277,7 @@ async def has_member_data(message, id, withMessage):
     if not os.path.exists(path):
         if withMessage:
             ch = get_ether_regist_channel(message)
-            await report_error(message, "登録情報がありません。ご自身の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。\n(There is no your registration information. \n Please post your Ether Wallet address such as your own MyEtherWallet, so that you can receive coins.)")
+            await report_error(message, "登録情報がありません。ご自身の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿し、\n**コインを受け取れるように**してください。\n(There is no your registration information. \n Please post your Ether wallet address such as your own MyEtherWallet, so that you can receive BLACK DIA COINs.)")
         return False
     else:
         return True
