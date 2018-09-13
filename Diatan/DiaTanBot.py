@@ -123,6 +123,12 @@ async def on_message(message):
         await JapaneseOmikuji.report_command(message)
         return
 
+    # 招待数表示コマンド
+    if InviteCounter.is_invites_show_command_condition(message.content):
+        await InviteCounter.invites_show_command(message)
+        return
+
+
     try:
         if ChatLevelUp.is_level_command_condition(message.content):
             await ChatLevelUp.command_show_level_infomation(message)

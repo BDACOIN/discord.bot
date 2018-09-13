@@ -14,7 +14,7 @@ import sys, datetime, time
 import discord
 import traceback
 import copy
-
+import RegistEtherMemberInfo
 
 def get_welcome_count_channel(member):
     for ch in member.server.channels:
@@ -107,9 +107,27 @@ async def on_member_join(member):
         pass
 
 
+def get_member_id_list(member):
+    # メンバーIDのリスト一覧
+    member_id_list = []
+    for mem in member.server.members:
+        member_id_list.append(mem.id)
+
+    return member_id_list
+
+def get_member_id_hash(member):
+    # メンバーIDのリスト一覧
+    member_id_hash = {}
+    for mem in member.server.members:
+        member_id_hash[mem.id] = mem
+
+    return member_id_hash
+    
 async def on_member_remove(member):
 
     try:
+        member_id_list = get_member_id_list(member)
+    
         path = get_data_inviteinfo_path()
         with open(path, "r") as fr:
             inviteinfo = json.load(fr)
@@ -124,7 +142,7 @@ async def on_member_remove(member):
         
             # メンバーIDが配列にあるならば
             if member.id in invitehash["children"]:
-                # このメンバーが、招待された人としてIDを追加する
+                # このメンバーが、退場した人としてIDを削除する
                 invitehash["children"].remove(member.id)
                 try:
                     _user = await client.get_user_info(invitehash["owner"])
@@ -135,6 +153,13 @@ async def on_member_remove(member):
                     print(traceback.format_exception(t,v,tb))
                     print(traceback.format_tb(e.__traceback__))
                     pass
+            
+            # リストの中で削除するので、複製を作ってfor
+            for child in invitehash["children"][:]:
+                if not child in member_id_list:
+                    # もうこの人はサーバーに居ない
+                    print("元々サーバーに居ない")
+                    invitehash["children"].remove(child)
 
 
         # サーバーにある招待オブジェクトリスト
@@ -179,3 +204,99 @@ async def on_member_remove(member):
     except:
         pass
             
+
+
+def is_invites_show_command_condition(command):
+    if re.match("!invites", command):
+        return True
+
+# User.created_at
+# Returns the user’s creation time in UTC.
+# This is when the user’s discord account was created.
+
+async def invites_show_command(message):
+    print("invites_show_command")
+    owner_id = message.author.id
+    try:
+        invite_point = 0
+        invite_num   = 0
+        
+        path = get_data_inviteinfo_path()
+        with open(path, "r") as fr:
+            inviteinfo = json.load(fr)
+
+        # 現存するサーバーのメンツ
+        member_id_hash = get_member_id_hash(message.author)
+
+        # それぞれの招待について
+        for key in inviteinfo:
+            invitehash = inviteinfo[key]
+        
+            # 招待の発行主が一致した
+            if "owner" in invitehash and owner_id == invitehash["owner"]:
+
+                # そのURLを使って招待された人がいる
+                if "children" in invitehash:
+
+                    # 招待された人それぞれが…
+                    for child_id in invitehash["children"]:
+
+                        # サーバーに居る人なら
+                        if child_id in member_id_hash:
+                            member_obj = member_id_hash[child_id]
+                            
+                            # メンバーオブジェクト⇒ユーザーオブジェクトへ
+                            _user = await client.get_user_info(child_id)
+                            
+                            # アカウント作成時期
+                            create_time = _user.created_at
+
+                            # 現在のunixタイムを出す
+                            now_time = datetime.datetime.now()
+
+                            tdelta = now_time - create_time
+                            total_seconds = tdelta.total_seconds()
+
+                            invite_num = invite_num + 1
+                            add_point = 1
+                            # 20日以上経過していること
+                            if tdelta and tdelta.days >= 20:
+                                
+                                # print("差分:" + str(tdelta.days))
+                                # print("差分:" + str(total_seconds))
+                                
+                                add_point = 1
+                            else:
+                                add_point = 0.1
+                            
+                            
+                            memberinfo_path = RegistEtherMemberInfo.get_data_memberinfo_path(message, child_id)
+                            if memberinfo_path and os.path.exists(memberinfo_path):
+                                add_point = add_point * 1
+                                # print("メンバー登録情報あり")
+                                # print(memberinfo_path)
+                            else:
+                                add_point = add_point * 0.5
+                                # print("メンバー登録情報なし")
+
+                            invite_point = invite_point + add_point
+
+
+        em = discord.Embed(title="", description="", color=0xDEED33)
+        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        print(avator_url)
+        avator_url = avator_url.replace(".webp?", ".png?")
+        em.set_thumbnail(url=avator_url)
+        em.add_field(name="招待情報", value="<@" + owner_id + ">", inline=False)
+        em.add_field(name="招待評価 (報酬対象)", value=str(invite_point) + " 名 相当", inline=False)
+        em.add_field(name="有効招待アカウント数 (参考値)", value=str(invite_num) + " 個", inline=False)
+        try:
+            await client.send_message(message.channel, embed=em)
+        except:
+            print(sys.exc_info())
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        pass
