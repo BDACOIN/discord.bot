@@ -121,7 +121,7 @@ async def show_level_infomation(message, exp, default="会話レベル情報"):
         print(traceback.format_tb(e.__traceback__))
         print("show_level_infomation 中エラー")
         
-async def command_show_level_infomation(message):
+async def command_show_level_infomation(message, author):
 
     try:
         if not has_post_data(message):

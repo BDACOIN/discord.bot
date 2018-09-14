@@ -16,6 +16,7 @@ import traceback
 import copy
 import RegistEtherMemberInfo
 
+
 def get_welcome_count_channel(member):
     for ch in member.server.channels:
         if "招待カウント閲覧" == str(ch):
@@ -207,16 +208,45 @@ async def on_member_remove(member):
 
 
 def is_invites_show_command_condition(command):
-    if re.match("!invites", command):
+    if re.match("^!invites$", command):
         return True
+
+def is_another_invites_show_command_condition(command):
+    print(command)
+    if re.match("^!invites <@\d+?>$", command):
+        return True
+
+
+async def another_invites_show_command(message):
+    print("another_invites_show_command")
+    try:
+        m = re.search("^!invites <@(\d+?)>$", message.content)
+        if m:
+            print("マッチ")
+            targetg_member_id = m.group(1)
+            if targetg_member_id:
+                print("サーバー")
+                svr = message.author.server
+                target_author = svr.get_member(targetg_member_id)
+                print("おーさー" + str(target_author))
+                if target_author:
+                    await invites_show_command(message, target_author)
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        pass
+
+
 
 # User.created_at
 # Returns the user’s creation time in UTC.
 # This is when the user’s discord account was created.
 
-async def invites_show_command(message):
+async def invites_show_command(message, target_author):
     print("invites_show_command")
-    owner_id = message.author.id
+    owner_id = target_author.id
     try:
         invite_point = 0
         invite_num   = 0
@@ -226,7 +256,7 @@ async def invites_show_command(message):
             inviteinfo = json.load(fr)
 
         # 現存するサーバーのメンツ
-        member_id_hash = get_member_id_hash(message.author)
+        member_id_hash = get_member_id_hash(target_author)
 
         # それぞれの招待について
         for key in inviteinfo:
@@ -283,12 +313,12 @@ async def invites_show_command(message):
 
 
         em = discord.Embed(title="", description="", color=0xDEED33)
-        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        avator_url = target_author.avatar_url or target_author.default_avatar_url
         print(avator_url)
         avator_url = avator_url.replace(".webp?", ".png?")
         em.set_thumbnail(url=avator_url)
         em.add_field(name="招待情報", value="<@" + owner_id + ">", inline=False)
-        em.add_field(name="招待評価 (報酬対象)", value=str(invite_point) + " 名 相当", inline=False)
+        em.add_field(name="招待評価 (報酬対象)", value=str(round(invite_point, 2)) + " 名 相当", inline=False)
         em.add_field(name="有効招待アカウント数 (参考値)", value=str(invite_num) + " 個", inline=False)
         try:
             await client.send_message(message.channel, embed=em)
@@ -300,3 +330,4 @@ async def invites_show_command(message):
         print(traceback.format_exception(t,v,tb))
         print(traceback.format_tb(e.__traceback__))
         pass
+

@@ -124,14 +124,19 @@ async def on_message(message):
         return
 
     # 招待数表示コマンド
+    if InviteCounter.is_another_invites_show_command_condition(message.content):
+        await InviteCounter.another_invites_show_command(message)
+        return
+
+    # 招待数表示コマンド
     if InviteCounter.is_invites_show_command_condition(message.content):
-        await InviteCounter.invites_show_command(message)
+        await InviteCounter.invites_show_command(message, message.author)
         return
 
 
     try:
         if ChatLevelUp.is_level_command_condition(message.content):
-            await ChatLevelUp.command_show_level_infomation(message)
+            await ChatLevelUp.command_show_level_infomation(message, message.author)
             return
     except Exception as e:
         t, v, tb = sys.exc_info()
