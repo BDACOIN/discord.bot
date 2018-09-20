@@ -1,7 +1,7 @@
 #coding: utf-8
 # ver 2.1
 import builtins
-
+import ctypes
 import re
 import random
 import requests
@@ -14,6 +14,7 @@ import discord
 
 import EnvironmentVariable
 
+Kernel32 = ctypes.windll.Kernel32
 
 def get_docomo_naturalchat_key():
     KEY = os.getenv("DISCORD_DOCOMO_NATURALCHAT_KEY", r'')
@@ -36,11 +37,12 @@ class NaturalChatMessage:
     def get_naturalchat_mesasge(self, message, override_word = ""):
         KEY = self.KEY
         
+        mutex = None
         try:
+
             #エンドポイントの設定
             endpoint = 'https://api.apigw.smt.docomo.ne.jp/naturalChatting/v1/dialogue?APIKEY=REGISTER_KEY' #変更
             url = endpoint.replace('REGISTER_KEY', KEY)
-
             appid = self.appid
 
             norm_nickname = self.get_normalized_nickname(message.author.display_name)
@@ -52,6 +54,15 @@ class NaturalChatMessage:
             text = message.content
             if override_word:
                 text = override_word
+            
+            print(appid)
+            mutex = Kernel32.CreateMutexA(0, 1, appid)
+            print("ロック待ち開始")
+            result = Kernel32.WaitForSingleObject(mutex, 2000)   # ロック解除されるまで待つ
+            if result == 0x00000102:
+                print("ロック待ちエラー")
+                return "う～ん..."
+            print("ロック待ち終了")
             
             payload = {'language':'ja-JP', 'botId':'Chatting','appId':appid,'voiceText':text, 
                 "clientData":{
@@ -88,11 +99,17 @@ class NaturalChatMessage:
             response = self.modify_response(response)
 
             msg = '{0.author.mention} '.format(message) + response
+            
+            Kernel32.ReleaseMutex(mutex)
+            Kernel32.CloseHandle(mutex)
 
             return msg
             
         except RuntimeError:
-        
+            if mutex != None:
+                Kernel32.ReleaseMutex(mutex)
+                Kernel32.CloseHandle(mutex)
+
             print(RuntimeError)
             return "今ディア調子が悪いみたい..."
 

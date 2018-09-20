@@ -270,8 +270,10 @@ async def regist_one_member_data(message, id):
 
 def is_regist_one_member_data_condition(message):
     if message.channel == get_ether_regist_channel(message):
+        print("イーサアドレス登録")
         return True
 
+    print("イーサアドレスちゃんねるにマッチしない")
     return False
 
 

@@ -71,6 +71,8 @@ async def on_member_join(member):
             # print("invitehash['uses']" + str(invitehash["uses"]))
             if invite.uses != invitehash["uses"]:
 
+                invitehash["uses"] = invite.uses
+
                 _inviter = invite.inviter
 
                 # print("これが使われた" + _inviter.id + ":" + _inviter.name)
@@ -83,7 +85,9 @@ async def on_member_join(member):
                     invitehash["children"].append(member.id)
                     this_member_inviter = _inviter
                     break
+                    
 
+            invitehash["uses"] = invite.uses
 
         path = get_data_inviteinfo_path()
         json_data = json.dumps(inviteinfo, indent=4)
