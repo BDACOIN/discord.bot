@@ -22,7 +22,8 @@ def get_docomo_naturalchat_key():
     appid_02 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_02", r'')
     appid_03 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_03", r'')
     appid_04 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_04", r'')
-    return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03, "appid_04":appid_04}
+    appid_05 = os.getenv("DISCORD_DOCOMO_NATURALCHAT_APPID_05", r'')
+    return {"KEY":KEY, "appid_01":appid_01, "appid_02":appid_02, "appid_03":appid_03, "appid_04":appid_04, "appid_05":appid_05}
 
 
 class NaturalChatMessage:
@@ -34,7 +35,7 @@ class NaturalChatMessage:
         self.lastMode = "dialog"
         self.appear_zatsudan_count = 0
 
-    def get_naturalchat_mesasge(self, message, override_word = ""):
+    def get_naturalchat_mesasge(self, message, override_word = "", need_lock = True):
         KEY = self.KEY
         
         mutex = None
@@ -55,14 +56,13 @@ class NaturalChatMessage:
             if override_word:
                 text = override_word
             
-            print(appid)
-            mutex = Kernel32.CreateMutexA(0, 1, appid)
-            print("ロック待ち開始")
-            result = Kernel32.WaitForSingleObject(mutex, 2000)   # ロック解除されるまで待つ
-            if result == 0x00000102:
-                print("ロック待ちエラー")
-                return "う～ん..."
-            print("ロック待ち終了")
+            if need_lock:
+                print(appid)
+                mutex = Kernel32.CreateMutexA(0, 1, appid)
+                result = Kernel32.WaitForSingleObject(mutex, 2000)   # ロック解除されるまで待つ
+                if result == 0x00000102:
+                    print("ロック待ちエラー")
+                    return "う～ん..."
             
             payload = {'language':'ja-JP', 'botId':'Chatting','appId':appid,'voiceText':text, 
                 "clientData":{
@@ -95,13 +95,18 @@ class NaturalChatMessage:
                 self.lastMode = 'srtr'
             else:
                 self.lastMode = 'dialog'
-                
-            response = self.modify_response(response)
-
-            msg = '{0.author.mention} '.format(message) + response
             
-            Kernel32.ReleaseMutex(mutex)
-            Kernel32.CloseHandle(mutex)
+            msg = ""
+            if response =="読みが不明か名詞ではありませんので、別の言葉でお願いします。" and (not "しりとり" in text):
+                response = sm5.get_naturalchat_mesasge(message, "", False)
+                msg = response
+            else:
+                response = self.modify_response(response)
+                msg = '{0.author.mention} '.format(message) + response
+            
+            if mutex != None:
+                Kernel32.ReleaseMutex(mutex)
+                Kernel32.CloseHandle(mutex)
 
             return msg
             
@@ -176,8 +181,8 @@ def CreateObject():
     sm2 = NaturalChatMessage(params["KEY"], params["appid_02"])
     sm3 = NaturalChatMessage(params["KEY"], params["appid_03"])
     sm4 = NaturalChatMessage(params["KEY"], params["appid_04"])
-    
-    return sm1, sm2, sm3, sm4
+    sm5 = NaturalChatMessage(params["KEY"], params["appid_05"])
+    return sm1, sm2, sm3, sm4, sm5
 
 
 

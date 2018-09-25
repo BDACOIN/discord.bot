@@ -161,7 +161,6 @@ async def on_message(message):
     if len(message.content) > 0:
         for regex in NaturalChat.NaturalChattableChannelRegex():
             if re.match(regex, str(message.channel)):
-            
                 if str(message.channel) == "雑談":
 
                     try:
@@ -183,9 +182,14 @@ async def on_message(message):
                     await client.send_message(message.channel, msg)
                     await JapaneseOmikuji.say_embedded_omikuji_message(message)
 
-                else:
+                elif "ディアたんと会話" in str(message.channel):
                     # 1の方を使って会話
                     msg = sm1.get_naturalchat_mesasge(message)
+                    await client.send_message(message.channel, msg)
+
+                else:
+                    # 1の方を使って会話
+                    msg = sm4.get_naturalchat_mesasge(message)
                     await client.send_message(message.channel, msg)
     
     # 会話からおみくじを得る
