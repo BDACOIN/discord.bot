@@ -164,7 +164,8 @@ async def get_embedded_omikuji_object(message):
             "吉": [],
             "中吉": [],
             "末吉": [],
-            "凶": [],
+            "ぴょん吉":[],
+            "凶": []
         }
 
         result = save_today_omikuji_data(strdate, first_dict)
@@ -181,11 +182,12 @@ async def get_embedded_omikuji_object(message):
         "吉":"02",
         "中吉":"03",
         "末吉":"04",
-        "凶":"05"
+        "ぴょん吉":"06",
+        "凶":"20"
     }
     
     # ハッシュからランダムで１つ選ぶ
-    rndstr = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "大吉", "凶"])
+    rndstr = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "大吉", "ぴょん吉", "凶"])
     omikuji_key = rndstr
     omikuji_lv = un_list[rndstr]
     print("キ★" + omikuji_key)
@@ -221,7 +223,7 @@ async def get_embedded_omikuji_object(message):
                 print("幸運のおみくじを1枚引いた")
                 # 再度振りなおし
 
-                rndstr2 = random.choice(["吉", "吉", "中吉", "中吉", "末吉", "末吉", "大吉", "凶"])
+                rndstr2 = random.choice(["吉", "吉", "中吉", "中吉", "末吉", "末吉", "大吉", "ぴょん吉", "凶"])
                 omikuji_key2 = rndstr2
                 omikuji_lv2 = un_list[rndstr2]
 

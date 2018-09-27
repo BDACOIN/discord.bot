@@ -285,6 +285,28 @@ def get_ether_regist_channel(message):
     return None
 
 
+async def show_another_member_data(message):
+    print("another_member_data_show_command")
+    try:
+        m = re.search("^!memberinfo <@(\d+?)>$", message.content)
+        if m:
+            print("マッチ")
+            targetg_member_id = m.group(1)
+            if targetg_member_id:
+                print("サーバー")
+                svr = message.author.server
+                target_author = svr.get_member(targetg_member_id)
+                print("おーさー" + str(target_author))
+                if target_author:
+                    await show_one_member_data(message, target_author.id)
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        pass
+
+
 
 async def show_one_member_data(message, id):
     try:
@@ -304,7 +326,12 @@ async def show_one_member_data(message, id):
             paidinfo = json.load(fr)
 
         em = discord.Embed(title="", description="", color=0xDEED33)
-        avator_url = message.author.avatar_url or message.author.default_avatar_url
+        author = message.server.get_member(id)
+        avator_url = None
+        if author:
+            avator_url = author.avatar_url or author.default_avatar_url
+        else:
+            avator_url = message.author.default_avatar_url
         print(avator_url)
         avator_url = avator_url.replace(".webp?", ".png?")
         em.set_thumbnail(url=avator_url)
@@ -334,6 +361,12 @@ def is_show_one_member_data_condition(message):
         return True
 
     return False
+
+
+def is_show_another_member_data_condition(message):
+    msg = str(message.content).strip()
+    if re.match("^!memberinfo <@\d+?>$", msg):
+        return True
 
 
 

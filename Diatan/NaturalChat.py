@@ -98,6 +98,9 @@ class NaturalChatMessage:
             
             msg = ""
             if response =="読みが不明か名詞ではありませんので、別の言葉でお願いします。" and (not "しりとり" in text):
+                # 必ず矯正してから
+                sm5.lastMode = "dialog"
+                # 一般の返答を挟む
                 response = sm5.get_naturalchat_mesasge(message, "", False)
                 msg = response
             else:

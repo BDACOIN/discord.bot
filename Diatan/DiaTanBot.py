@@ -57,13 +57,15 @@ async def on_ready():
 
 
 
-sm1, sm2, sm3, sm4 = NaturalChat.CreateObject()
+sm1, sm2, sm3, sm4, sm5 = NaturalChat.CreateObject()
 print(sm1)
 print(sm3)
 print(sm3)
 print(sm4)
+print(sm5)
 
 builtins.sm4 = sm4
+builtins.sm5 = sm5
 
 # メッセージを受信するごとに実行される
 @client.event
@@ -90,6 +92,11 @@ async def on_message(message):
     # 許可されないWalletアドレスのメッセージ
     is_delete = await WalletAddressDeleter.violation_wallet_address_message(message)
     if is_delete:
+        return
+
+    # メンバー情報の表示
+    if RegistEtherMemberInfo.is_show_another_member_data_condition(message):
+        await RegistEtherMemberInfo.show_another_member_data(message)
         return
 
     # メンバー情報の表示
@@ -188,7 +195,7 @@ async def on_message(message):
                     await client.send_message(message.channel, msg)
 
                 else:
-                    # 1の方を使って会話
+                    # 4の方を使って会話
                     msg = sm4.get_naturalchat_mesasge(message)
                     await client.send_message(message.channel, msg)
     
