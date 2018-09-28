@@ -182,7 +182,7 @@ async def get_embedded_omikuji_object(message):
         "吉":"02",
         "中吉":"03",
         "末吉":"04",
-        "ぴょん吉":"06",
+        "ぴょん吉":"07",
         "凶":"20"
     }
     
@@ -238,6 +238,10 @@ async def get_embedded_omikuji_object(message):
         result[omikuji_key].append(id)
         save_today_omikuji_data(strdate, result)
 
+    pyon_success = False
+    if today_omikuji == "" and omikuji_key == "ぴょん吉":
+        pyon_success = await RegistEtherMemberInfo.increment_one_member_omikuji_data(message, message.author.id)
+        is_use_ticket = False
     # 
     em = discord.Embed(title=" ", description="─────────\n" + message.author.display_name + " さんの運勢は ...", color=0xDEED33)
 #    em = discord.Embed(title=message.author.display_name + " さんの運勢", description=message.author.display_name + " さんの運勢は... __" + omikuji_key + "__ですよ!!", colour=0xDEED33)
@@ -247,9 +251,10 @@ async def get_embedded_omikuji_object(message):
     em.add_field(name=omikuji_key + "です!!", value="─────────", inline=False)
     if is_use_ticket:
         em.add_field(name="幸運のおみくじ券", value="１枚使用", inline=False)
-    
-    em.set_thumbnail(url="http://bdacoin.org/bot/omikuji/image/" + omikuji_lv + "_omkj.png")
+    elif pyon_success:
+        em.add_field(name="幸運のおみくじ券（よだれ付き）", value="１枚追加", inline=False)
 
+    em.set_thumbnail(url="http://bdacoin.org/bot/omikuji/image/" + omikuji_lv + "_omkj.png")
     em.set_image(url="http://bdacoin.org/bot/omikuji/image/" + omikuji_lv + ".png")
     return em
 

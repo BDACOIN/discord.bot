@@ -208,12 +208,24 @@ async def all_member_add_level_role(message):
             print(traceback.format_exception(t,v,tb))
             print(traceback.format_tb(e.__traceback__))
 
+
+update_kaiwa_post_hasu = {}
+
+
 async def update_one_kaiwa_post_data(message):
     
     try:
+        # print("キャッシュ")
+        # print(update_kaiwa_post_hasu)
+    
         if not has_post_data(message):
             await make_one_kaiwa_post_data(message)
 
+        # まだそのチャンネルの履歴キャッシュがないならば
+        if not message.channel.id in update_kaiwa_post_hasu:
+            # 用意
+            update_kaiwa_post_hasu[message.channel.id] = []
+        
         path = get_data_kaiwa_post_path(message)
         print(path)
         with open(path, "r") as fr:
@@ -231,11 +243,18 @@ async def update_one_kaiwa_post_data(message):
             if temp_coef < minimum_coef:
                 minimum_coef = temp_coef
 
+        # 過去の該当チャンネルの履歴との比較
+        for hist in update_kaiwa_post_hasu[message.channel.id]:
+            temp_coef = 1 - get_sequence_matcher_coef(hist, text)
+            # print("どうか:" + str(temp_coef) + hist + ", " + text)
+            if temp_coef < minimum_coef:
+                minimum_coef = temp_coef
+
         # print("最低係数:" + str(minimum_coef))
 
 
 
-        base_experience = 40
+        base_experience = 60
         add_experience = int(minimum_coef * base_experience)
         if add_experience < 0:
             add_experience = 0
@@ -294,10 +313,16 @@ async def update_one_kaiwa_post_data(message):
         # 多くなりすぎていれば削除。
         # 3回ぐらい繰り返しておけば十分か
         for rng in [0, 1, 2]:
-            # すでに履歴が20以上あれば
+            # すでに本人の履歴が20以上あれば
             if len(postinfo["posthistory"]) > 20:
                 # 先頭をカット
                 postinfo["posthistory"].pop(0)
+                
+            # すでに該当チャンネルの投稿履歴が200以上あれば
+            if len(update_kaiwa_post_hasu[message.channel.id]) > 200:
+                # 先頭をカット
+                update_kaiwa_post_hasu[message.channel.id].pop(0)
+            
 
 
         print("ただいまのレベル" + str(get_lv_from_exp(postinfo["exp"])))
@@ -306,6 +331,10 @@ async def update_one_kaiwa_post_data(message):
         json_data = json.dumps(postinfo, indent=4)
         with open(path, "w") as fw:
             fw.write(json_data)
+
+        if kaiwa_utf8_byte_count > 6:
+            # メッセージのチャンネルに対応したキャッシュにたしこむ
+            update_kaiwa_post_hasu[message.channel.id].append(text)
             
         return postinfo
 

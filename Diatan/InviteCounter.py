@@ -335,3 +335,125 @@ async def invites_show_command(message, target_author):
         print(traceback.format_tb(e.__traceback__))
         pass
 
+
+
+def is_another_invitesraw_show_command_condition(command):
+    print(command)
+    if re.match("^!invitesraw <@\d+?>$", command):
+        return True
+
+
+async def another_invitesraw_show_command(message):
+    print("another_invitesraw_show_command")
+    try:
+        m = re.search("^!invitesraw <@(\d+?)>$", message.content)
+        if m:
+            print("マッチ")
+            targetg_member_id = m.group(1)
+            if targetg_member_id:
+                print("サーバー")
+                svr = message.author.server
+                target_author = svr.get_member(targetg_member_id)
+                print("おーさー" + str(target_author))
+                if target_author:
+                    await invitesraw_show_command(message, target_author)
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        pass
+
+
+
+# User.created_at
+# Returns the user’s creation time in UTC.
+# This is when the user’s discord account was created.
+
+async def invitesraw_show_command(message, target_author):
+    print("invites_show_command")
+    owner_id = target_author.id
+    try:
+        invite_point = 0
+        invite_num   = 0
+        
+        path = get_data_inviteinfo_path()
+        with open(path, "r") as fr:
+            inviteinfo = json.load(fr)
+
+        # 現存するサーバーのメンツ
+        member_id_hash = get_member_id_hash(target_author)
+
+        # それぞれの招待について
+        for key in inviteinfo:
+            invitehash = inviteinfo[key]
+        
+            # 招待の発行主が一致した
+            if "owner" in invitehash and owner_id == invitehash["owner"]:
+
+                # そのURLを使って招待された人がいる
+                if "children" in invitehash:
+
+                    # 招待された人それぞれが…
+                    for child_id in invitehash["children"]:
+
+                        # サーバーに居る人なら
+                        if child_id in member_id_hash:
+                            member_obj = member_id_hash[child_id]
+                            
+                            # メンバーオブジェクト⇒ユーザーオブジェクトへ
+                            # _user = await client.get_user_info(child_id)
+                            
+                            # アカウント作成時期
+                            create_time = member_obj.joined_at
+
+                            # 現在のunixタイムを出す
+                            now_time = datetime.datetime.now()
+
+                            tdelta = now_time - create_time
+                            total_seconds = tdelta.total_seconds()
+
+                            invite_num = invite_num + 1
+                            add_point = 1
+                            # 20日以上経過していること
+                            if tdelta and tdelta.days >= 20:
+                                
+                                # print("差分:" + str(tdelta.days))
+                                # print("差分:" + str(total_seconds))
+                                
+                                add_point = 1
+                            else:
+                                add_point = 0.1
+                            
+                            
+                            memberinfo_path = RegistEtherMemberInfo.get_data_memberinfo_path(message, child_id)
+                            if memberinfo_path and os.path.exists(memberinfo_path):
+                                add_point = add_point * 1
+                                # print("メンバー登録情報あり")
+                                # print(memberinfo_path)
+                            else:
+                                add_point = add_point * 0.5
+                                # print("メンバー登録情報なし")
+
+                            invite_point = invite_point + add_point
+
+
+        em = discord.Embed(title="", description="", color=0xDEED33)
+        avator_url = target_author.avatar_url or target_author.default_avatar_url
+        print(avator_url)
+        avator_url = avator_url.replace(".webp?", ".png?")
+        em.set_thumbnail(url=avator_url)
+        em.add_field(name="招待情報", value="<@" + owner_id + ">", inline=False)
+        em.add_field(name="招待評価 (報酬対象)", value=str(round(invite_point, 2)) + " 名 相当", inline=False)
+        em.add_field(name="有効招待アカウント数 (参考値)", value=str(invite_num) + " 個", inline=False)
+        try:
+            await client.send_message(message.channel, embed=em)
+        except:
+            print(sys.exc_info())
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        pass
+
