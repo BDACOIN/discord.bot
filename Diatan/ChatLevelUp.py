@@ -317,12 +317,29 @@ async def update_one_kaiwa_post_data(message):
             postinfo["post_last_gettime"] = unix
 
 
-        # ディアたんと会話だったら最高でも3までに抑えてしまう
-        if "ディアたんと会話" in message.channel.name:
-            if add_experience > 3:
-                add_experience = 3
-
         prev_level = get_lv_from_exp(postinfo["exp"])
+
+        # ディアたんと会話だったらレベルに応じて上限を抑えてしまう
+        if "ディアたんと会話" in message.channel.name:
+            if prev_level >= 30:
+                if add_experience > 3:
+                    add_experience = 3
+            elif prev_level >= 25:
+                if add_experience > 4:
+                    add_experience = 4
+            elif prev_level >= 20:
+                if add_experience > 6:
+                    add_experience = 6
+            elif prev_level >= 15:
+                if add_experience > 12:
+                    add_experience = 12
+            elif prev_level >= 10:
+                if add_experience > 24:
+                    add_experience = 24
+            elif prev_level >= 5:
+                if add_experience > 48:
+                    add_experience = 48
+
         postinfo["exp"] = postinfo["exp"] + add_experience
         post_level = get_lv_from_exp(postinfo["exp"])
         if prev_level != post_level:
