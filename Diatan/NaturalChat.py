@@ -13,6 +13,7 @@ import sys, datetime, time
 import discord
 
 import EnvironmentVariable
+import ChatLevelUp
 
 Kernel32 = ctypes.windll.Kernel32
 
@@ -55,6 +56,10 @@ class NaturalChatMessage:
             text = message.content
             if override_word:
                 text = override_word
+
+            # キャッシュにも追加しておく
+            if message.channel.id in ChatLevelUp.update_kaiwa_post_hasu:
+                ChatLevelUp.update_kaiwa_post_hasu[message.channel.id].append(text)
             
             if need_lock:
                 print(appid)
@@ -102,10 +107,21 @@ class NaturalChatMessage:
                 sm5.lastMode = "dialog"
                 # 一般の返答を挟む
                 response = sm5.get_naturalchat_mesasge(message, "", False)
+                # メッセージのチャンネルに対応したキャッシュにたしこむ
+                if message.channel.id in ChatLevelUp.update_kaiwa_post_hasu:
+                    ChatLevelUp.update_kaiwa_post_hasu[message.channel.id].append(response)
+
                 msg = response
+
+                
             else:
                 response = self.modify_response(response)
+                # メッセージのチャンネルに対応したキャッシュにたしこむ
+                if message.channel.id in ChatLevelUp.update_kaiwa_post_hasu:
+                    ChatLevelUp.update_kaiwa_post_hasu[message.channel.id].append(response)
+
                 msg = '{0.author.mention} '.format(message) + response
+
             
             if mutex != None:
                 Kernel32.ReleaseMutex(mutex)

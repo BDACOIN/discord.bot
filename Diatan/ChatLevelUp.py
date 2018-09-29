@@ -209,8 +209,17 @@ async def all_member_add_level_role(message):
             print(traceback.format_tb(e.__traceback__))
 
 
-update_kaiwa_post_hasu = {}
 
+# 繰り返し対処用。反復を圧縮する
+def HanpukuWordToOnceWord(text):
+    ma = re.search(r"(.{2,30})(\1){1,50}", text)
+    if ma:
+        return ma.group(1)
+    else:
+        return text
+
+# 投稿を各チャンネルで保持
+update_kaiwa_post_hasu = {}
 
 async def update_one_kaiwa_post_data(message):
     
@@ -231,8 +240,18 @@ async def update_one_kaiwa_post_data(message):
         with open(path, "r") as fr:
             postinfo = json.load(fr)
 
-        # まずは履歴として加える
+        # ゴミ除去
         text = message.content.strip()
+
+        print("元:" + text)
+        try:
+            text = HanpukuWordToOnceWord(text)
+            text = HanpukuWordToOnceWord(text)
+            text = HanpukuWordToOnceWord(text)
+            text = HanpukuWordToOnceWord(text)
+        except:
+            pass
+        print("後:" + text)
 
         # 経験値の加算係数を出す
         minimum_coef = 1
@@ -251,8 +270,6 @@ async def update_one_kaiwa_post_data(message):
                 minimum_coef = temp_coef
 
         # print("最低係数:" + str(minimum_coef))
-
-
 
         base_experience = 60
         add_experience = int(minimum_coef * base_experience)
@@ -312,17 +329,16 @@ async def update_one_kaiwa_post_data(message):
 
         # 多くなりすぎていれば削除。
         # 3回ぐらい繰り返しておけば十分か
-        for rng in [0, 1, 2]:
+        for rng in [0, 1, 2, 4, 5]:
             # すでに本人の履歴が20以上あれば
             if len(postinfo["posthistory"]) > 20:
                 # 先頭をカット
                 postinfo["posthistory"].pop(0)
                 
-            # すでに該当チャンネルの投稿履歴が200以上あれば
-            if len(update_kaiwa_post_hasu[message.channel.id]) > 200:
+            # すでに該当チャンネルの投稿履歴が500以上あれば
+            if len(update_kaiwa_post_hasu[message.channel.id]) > 500:
                 # 先頭をカット
                 update_kaiwa_post_hasu[message.channel.id].pop(0)
-            
 
 
         print("ただいまのレベル" + str(get_lv_from_exp(postinfo["exp"])))
