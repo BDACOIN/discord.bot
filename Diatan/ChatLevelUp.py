@@ -287,7 +287,6 @@ async def update_one_kaiwa_post_data(message):
         if add_experience > kaiwa_utf8_byte_count:
             add_experience = kaiwa_utf8_byte_count
 
-        
         # 添付ファイルがあるのであれば、下駄を40はかせる
         attach_list = message.attachments
         if len(attach_list) > 0:
@@ -318,13 +317,19 @@ async def update_one_kaiwa_post_data(message):
             postinfo["post_last_gettime"] = unix
 
 
+        # ディアたんと会話だったら最高でも3までに抑えてしまう
+        if "ディアたんと会話" in message.channel.name:
+            if add_experience > 3:
+                add_experience = 3
+
         prev_level = get_lv_from_exp(postinfo["exp"])
         postinfo["exp"] = postinfo["exp"] + add_experience
         post_level = get_lv_from_exp(postinfo["exp"])
         if prev_level != post_level:
             await show_level_infomation(message, postinfo["exp"], "会話レベルがアップしました!!")
             await add_level_role(message.channel.server.roles, message.author, post_level)
-            
+  
+          
         print(str(add_experience) + "が経験値として加算された")
         
         # テキストも履歴として加える
