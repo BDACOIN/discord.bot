@@ -211,10 +211,14 @@ async def all_member_add_level_role(message):
 
 
 # 繰り返し対処用。反復を圧縮する
-def HanpukuWordToOnceWord(text):
+def hanpukuword_to_onceword(text):
     ma = re.search(r"(.{2,30})(\1){1,50}", text)
     if ma:
-        return ma.group(1)
+        result = text.replace(ma.group(0), ma.group(1))
+        # print("0"+ma.group(0))
+        # print("1"+ma.group(1))
+        # print("2"+ma.group(2))
+        return result
     else:
         return text
 
@@ -245,10 +249,9 @@ async def update_one_kaiwa_post_data(message):
 
         print("元:" + text)
         try:
-            text = HanpukuWordToOnceWord(text)
-            text = HanpukuWordToOnceWord(text)
-            text = HanpukuWordToOnceWord(text)
-            text = HanpukuWordToOnceWord(text)
+            # まぁ5回ぐらいでええやろ…
+            for iix in range(0, 6):
+                text = hanpukuword_to_onceword(text)
         except:
             pass
         print("後:" + text)

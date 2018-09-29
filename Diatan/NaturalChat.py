@@ -57,10 +57,6 @@ class NaturalChatMessage:
             if override_word:
                 text = override_word
 
-            # キャッシュにも追加しておく
-            if message.channel.id in ChatLevelUp.update_kaiwa_post_hasu:
-                ChatLevelUp.update_kaiwa_post_hasu[message.channel.id].append(text)
-            
             if need_lock:
                 print(appid)
                 mutex = Kernel32.CreateMutexA(0, 1, appid)
