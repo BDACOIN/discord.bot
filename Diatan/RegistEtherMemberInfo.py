@@ -241,7 +241,7 @@ async def regist_one_member_data(message, id):
             # すでに登録済みである
             path = get_data_memberinfo_path(message, id)
             if (os.path.exists(path)):
-                # 何もしない
+                # 更新
                 await update_one_member_data(message, address, id)
             # 存在しなかった時にやる
             else:
