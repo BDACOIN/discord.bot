@@ -79,7 +79,7 @@ def show_level_infomation(id, exp):
         print("show_level_infomation 中エラー")
 
 
-def abc():
+def CalclatePaid(YEAR_MONTH):
 
     postjsonfiles = os.listdir('DataMemberPostInfo')
     for path in postjsonfiles:
@@ -101,15 +101,15 @@ def abc():
                     paidinfo = json.load(fr2)
                     if paidinfo["kaiwa_paid_lv"] == 0:
                         paidinfo["kaiwa_paid_lv"] = {}
-                        paidinfo["kaiwa_paid_lv"]["201809"] = lv
+                        paidinfo["kaiwa_paid_lv"][YEAR_MONTH] = lv
 
                     if not "kaiwa_paid_exp" in paidinfo:
                         paidinfo["kaiwa_paid_exp"] = {}
-                        paidinfo["kaiwa_paid_exp"]["201809"] = exp
+                        paidinfo["kaiwa_paid_exp"][YEAR_MONTH] = exp
 
                     if paidinfo["kaiwa_paid_amount"] == 0:
                         paidinfo["kaiwa_paid_amount"] = {}
-                        paidinfo["kaiwa_paid_amount"]["201809"] = amount
+                        paidinfo["kaiwa_paid_amount"][YEAR_MONTH] = amount
 
     
 
@@ -129,4 +129,4 @@ def abc():
 
 
 createChatLevelUpTable()
-abc()
+CalclatePaid("201809")
