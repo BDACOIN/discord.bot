@@ -1,5 +1,10 @@
 {
     "id": "430034860204359691",
-    "posthistory": [],
-    "exp": 57
+    "posthistory": [
+        "./ balance xp",
+        "./agree",
+        "./balance xp"
+    ],
+    "exp": 78,
+    "post_last_gettime": 1537020954
 }
