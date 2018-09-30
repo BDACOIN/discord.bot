@@ -247,6 +247,7 @@ async def another_invites_show_command(message):
 # User.created_at
 # Returns the user’s creation time in UTC.
 # This is when the user’s discord account was created.
+USER_ID_LIST = {}
 
 async def invites_show_command(message, target_author):
     print("invites_show_command")
@@ -279,8 +280,14 @@ async def invites_show_command(message, target_author):
                         if child_id in member_id_hash:
                             member_obj = member_id_hash[child_id]
                             
+                            _user = None
                             # メンバーオブジェクト⇒ユーザーオブジェクトへ
-                            _user = await client.get_user_info(child_id)
+                            if child_id in USER_ID_LIST:
+                                _user = USER_ID_LIST[child_id]
+                            
+                            if _user == None:
+                                _user = await client.get_user_info(child_id)
+                                USER_ID_LIST[child_id] = _user
                             
                             # アカウント作成時期
                             create_time = _user.created_at

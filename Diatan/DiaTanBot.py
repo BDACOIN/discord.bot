@@ -46,6 +46,7 @@ builtins.client = client
 
 ChatLevelUp.createChatLevelUpTable()
 
+
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
 async def on_ready():
@@ -54,6 +55,17 @@ async def on_ready():
     print('BOT-NAME :', client.user.name)
     print('BOT-ID   :', client.user.id)
     print('------')
+    
+    
+    _counter = 0
+    for svr in client.servers:
+        if "BDA" in svr.name or "本舗" in svr.name :
+            for mem in svr.members:
+                _usrobj = await client.get_user_info(mem.id)
+                InviteCounter.USER_ID_LIST[mem.id] = _usrobj
+                _counter = _counter + 1
+                if _counter % 100 == 0:
+                    print("User Objectを" + _counter + "名キャッシュしました")
 
 
 
