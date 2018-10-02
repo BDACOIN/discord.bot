@@ -193,7 +193,7 @@ async def add_level_role(roles, author, level):
             print(traceback.format_tb(e.__traceback__))
 
 async def all_member_add_level_role(message):
-    for m in message.channel.server.members:
+    for m in list(message.channel.server.members):
     
         id = m.id
         path = 'DataMemberPostInfo/' + str(id) + ".json"

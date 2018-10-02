@@ -59,14 +59,17 @@ async def on_ready():
     
     _counter = 0
     for svr in client.servers:
-        if "BDA" in svr.name or "本舗" in svr.name :
-            for mem in svr.members:
+        for mem in list(svr.members):
+            try:
                 _usrobj = await client.get_user_info(mem.id)
                 InviteCounter.USER_ID_LIST[mem.id] = _usrobj
                 _counter = _counter + 1
                 if _counter % 100 == 0:
-                    print("User Objectを" + _counter + "名キャッシュしました")
-
+                    print("User Objectを" + str(_counter) + "名キャッシュしました")
+            except Exception as e:
+                t, v, tb = sys.exc_info()
+                print(traceback.format_exception(t,v,tb))
+                print(traceback.format_tb(e.__traceback__))
 
 
 sm1, sm2, sm3, sm4, sm5 = NaturalChat.CreateObject()

@@ -115,7 +115,7 @@ async def on_member_join(member):
 def get_member_id_list(member):
     # メンバーIDのリスト一覧
     member_id_list = []
-    for mem in member.server.members:
+    for mem in list(member.server.members):
         member_id_list.append(mem.id)
 
     return member_id_list
@@ -123,7 +123,7 @@ def get_member_id_list(member):
 def get_member_id_hash(member):
     # メンバーIDのリスト一覧
     member_id_hash = {}
-    for mem in member.server.members:
+    for mem in list(member.server.members):
         member_id_hash[mem.id] = mem
 
     return member_id_hash

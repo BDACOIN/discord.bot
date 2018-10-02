@@ -168,7 +168,7 @@ async def on_message(message):
         
 
         top_holder_info = get_member_top_holder_info()
-        for m2 in message.channel.server.members:
+        for m2 in list(message.channel.server.members):
             id = m2.id
             try:
                 print(m2.name)

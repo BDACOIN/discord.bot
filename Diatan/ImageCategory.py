@@ -14,6 +14,7 @@ import os
 import sys, datetime, time
 import glob
 import discord
+import traceback
 
 import JapaneseOmikuji
 
@@ -74,13 +75,38 @@ def getImageCategory(fname, modelName="scene"):
         print(tag0)
         score0 = json[0]["score"]
         print(score0)
-        return tag0, score0
         
-    return None, None
+        if len(json) == 1:
+            return tag0, score0, None, None, None, None
+
+        tag1 = None
+        score1 = None
+        tag2 = None
+        score2 = None
+        if len(json) == 2:
+            tag1 = json[1]["tag"]
+            print(tag0)
+            score1 = json[1]["score"]
+            print(score0)
+            return tag0, score0, tag1, score1, None, None
+
+        if len(json) >= 3:
+            tag1 = json[1]["tag"]
+            print(tag0)
+            score1 = json[1]["score"]
+            print(score0)
+            tag2 = json[2]["tag"]
+            print(tag0)
+            score2 = json[2]["score"]
+            print(score0)
+            return tag0, score0, tag1, score1, tag2, score2
+        
+        
+    return None, None, None, None, None, None
 
 
 #画像データを投げて、カテゴリの候補上位5つを取得 (カテゴリ認識)
-def getImageScene(fname, modelName="scene"):
+def getImageScene(fname, modelName, message):
 
     APIKEY = get_docomo_naturalchat_key()["KEY"]
     url = 'https://api.apigw.smt.docomo.ne.jp/imageRecognition/v1/concept/classify/'
@@ -103,30 +129,48 @@ def getImageScene(fname, modelName="scene"):
     # print(data)    
     if "candidates" in data:
         json = data["candidates"]
+
+        print(json)
+
+        
         tag0 = json[0]["tag"]
         print(tag0)
         score0 = json[0]["score"]
         print(score0)
 
+        if "今日のご飯" in message.channel.name:
+            if "食事" in str(json):
+                tag0 = "食事・料理"
+                print("★食事料理に矯正")
+                if score0 < 0.5:
+                    score0 = 0.99
+                
         # 返す値
         retData = {"MainTagName":tag0, "MainScore":score0}
         
+        
         subTagName = None
         subScore = None
+        subTagName1 = None
+        subScore1 = None
+        subTagName2 = None
+        subScore2 = None
+        
         if tag0 == "建物":
-            subTagName, subScore = getImageCategory(fname, modelName="landmark")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="landmark")
         if tag0 == "花":
-            subTagName, subScore = getImageCategory(fname, modelName="flower")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="flower")
         if tag0 == "食事・料理":
-            subTagName, subScore = getImageCategory(fname, modelName="food")
+            print("★★★ここだよここ")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2 = getImageCategory(fname, modelName="food")
         if tag0 == "寺社・仏閣・城":
-            subTagName, subScore = getImageCategory(fname, modelName="landmark")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="landmark")
         if tag0 == "風景":
-            subTagName, subScore = getImageCategory(fname, modelName="landmark")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="landmark")
         if tag0 == "夜景":
-            subTagName, subScore = getImageCategory(fname, modelName="landmark")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="landmark")
         if tag0 == "遊園地":
-            subTagName, subScore = getImageCategory(fname, modelName="landmark")
+            subTagName, subScore, subTagName1, subScore1, subTagName2, subScore2  = getImageCategory(fname, modelName="landmark")
 
         # その他ですね!!などというわけにはいかないので、
         # subがその他なら、評価を消す
@@ -141,6 +185,10 @@ def getImageScene(fname, modelName="scene"):
 
         retData["SubTagName"] = subTagName
         retData["SubScore"] = subScore
+        retData["SubTagName1"] = subTagName1
+        retData["SubScore1"] = subScore1
+        retData["SubTagName2"] = subTagName2
+        retData["SubScore2"] = subScore2
 
         return retData
 
@@ -180,6 +228,15 @@ async def download(url, file_name):
 
 async def analyze_image(message, url):
     try:
+        # ビンゴは反応しない
+        if "ビンゴ" in message.channel.name:
+            return
+            
+        # 投稿が多いので間引く
+        if "見ちゃイヤ" in message.channel.name:
+            if random.randint(1,5) <= 4:
+                return
+            
         delete_old_image(message)
         
         # 現在のunixタイムを出す
@@ -192,11 +249,35 @@ async def analyze_image(message, url):
         dwImageFilePath = await download(url, "DataTempImage/" + str(unix) + ext)
         # 保存に成功していたら
         if dwImageFilePath:
-            resultAnalyzeData = getImageScene(dwImageFilePath)
+            resultAnalyzeData = getImageScene(dwImageFilePath, "scene", message)
             print(resultAnalyzeData)
 
+            if ("今日のご飯" in message.channel.name and resultAnalyzeData["MainTagName"] == "食事・料理"):
+                print("★★今日のご飯特殊処理")
+                
+                # メインもサブも0.8以上
+                if "SubScore" in resultAnalyzeData and resultAnalyzeData["SubScore"] != None and resultAnalyzeData["SubScore"] > 0.8:
+                    print("合格1")
+                    await replay_image_message(message, resultAnalyzeData["SubTagName"])
+
+                # メインもサブも0.5以上
+                elif "SubScore" in resultAnalyzeData and resultAnalyzeData["SubScore"] != None and resultAnalyzeData["SubScore"] > 0.5:
+                    print("合格2")
+                    await replay_image_message(message, resultAnalyzeData["SubTagName"], False)
+
+                # ２つ以上あって、0.3以上が２つ
+                elif ("SubScore" in resultAnalyzeData and resultAnalyzeData["SubScore"] != None and resultAnalyzeData["SubScore"] > 0.3) and ("SubScore1" in resultAnalyzeData and resultAnalyzeData["SubScore1"] != None and resultAnalyzeData["SubScore1"] > 0.25):
+                    print("合格3")
+                    await replay_image_message(message, resultAnalyzeData["SubTagName"] + "と、" + resultAnalyzeData["SubTagName1"] , False)
+
+                # ３つ以上あって、0.15以上が３つ
+                elif ("SubScore" in resultAnalyzeData and resultAnalyzeData["SubScore"] != None and resultAnalyzeData["SubScore"] > 0.15) and ("SubScore1" in resultAnalyzeData and resultAnalyzeData["SubScore1"] != None and resultAnalyzeData["SubScore1"] > 0.14) and ("SubScore2" in resultAnalyzeData and resultAnalyzeData["SubScore2"] != None and resultAnalyzeData["SubScore2"] > 0.13):
+                    print("合格4")
+                    await replay_image_message(message, resultAnalyzeData["SubTagName"] + "と、" + resultAnalyzeData["SubTagName1"] + "、それと " + resultAnalyzeData["SubTagName2"] , False)
+                    
+
             # まずはメイン0.95以上が目安
-            if "MainScore" in resultAnalyzeData and resultAnalyzeData["MainScore"] != None and resultAnalyzeData["MainScore"] > 0.95:
+            elif "MainScore" in resultAnalyzeData and resultAnalyzeData["MainScore"] != None and resultAnalyzeData["MainScore"] > 0.95:
 
                 # メインもサブも0.95以上
                 if "SubScore" in resultAnalyzeData and resultAnalyzeData["SubScore"] != None and resultAnalyzeData["SubScore"] > 0.95:
