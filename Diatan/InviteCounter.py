@@ -37,6 +37,11 @@ def get_data_inviteinfo_path():
 
 # https://foolean.net/p/1691
 
+# User.created_at
+# Returns the user’s creation time in UTC.
+# This is when the user’s discord account was created.
+USER_ID_LIST = {}
+
 
 async def on_member_join(member):
     print("on_member_join")
@@ -107,6 +112,12 @@ async def on_member_join(member):
             msg_content = msg_content + "└この人を招待した人:" + this_member_inviter.name + "\n"
 
         await client.send_message(ch2, msg_content)
+        
+        # キャッシュにuserオブジェクトの方を追加。userオブジェクトは
+        # サーチが重いのでこまめにキャッシュしておく
+        _mem_user = await client.get_user_info(member.id)
+        if _mem_user:
+            USER_ID_LIST[member.id] = _mem_user
 
     except:
         pass
@@ -244,10 +255,6 @@ async def another_invites_show_command(message):
 
 
 
-# User.created_at
-# Returns the user’s creation time in UTC.
-# This is when the user’s discord account was created.
-USER_ID_LIST = {}
 
 async def invites_show_command(message, target_author):
     print("invites_show_command")

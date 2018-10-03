@@ -306,9 +306,15 @@ async def update_one_kaiwa_post_data(message):
             tdelta = now - old_now
             total_seconds = tdelta.total_seconds()
             print("差分:" + str(total_seconds))
-            if add_experience > total_seconds/2:
-                print("差分タイム/2へと抑え込み:" + str(total_seconds/2)) 
-                add_experience = int(total_seconds/2)
+            if "見ちゃイヤ" in message.channel.name:
+                if add_experience > total_seconds/8:
+                    print("差分タイム/8へと抑え込み:" + str(total_seconds/8)) 
+                    add_experience = int(total_seconds/8)
+            # 普通のチャンネル
+            else:
+                if add_experience > total_seconds/2:
+                    print("差分タイム/2へと抑え込み:" + str(total_seconds/2)) 
+                    add_experience = int(total_seconds/2)
 
             postinfo["post_last_gettime"] = unix
             

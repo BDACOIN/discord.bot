@@ -25,6 +25,7 @@ import EastAsianWidthCounter
 import ImageCategory
 import AirdropMemberInfo
 import copy
+import asyncio
 
 import ChatLevelUp
 import InviteCounter
@@ -81,6 +82,21 @@ print(sm5)
 
 builtins.sm4 = sm4
 builtins.sm5 = sm5
+
+async def send_typing_message(channel, text):
+    text_len = len(text)
+    if text_len > 5:
+        text_len = text_len - 5
+    text_len = text_len / 30
+    if text_len >= 1.5:
+        text_len = 1.5
+
+    await client.send_typing(channel)
+    await asyncio.sleep(text_len)
+    await client.send_message(channel, text)
+
+client.send_typing_message = send_typing_message
+
 
 # メッセージを受信するごとに実行される
 @client.event
@@ -195,7 +211,7 @@ async def on_message(message):
                         if dia_appear_remain_cnt >= 0:
                             # 3の方を使って会話
                             msg = sm3.get_naturalchat_mesasge(message)
-                            await client.send_message(message.channel, msg)
+                            await client.send_typing_message(message.channel, msg)
 
                     except RuntimeError:
                         print(RuntimeError)
@@ -211,12 +227,12 @@ async def on_message(message):
                 elif "ディアたんと会話" in str(message.channel):
                     # 1の方を使って会話
                     msg = sm1.get_naturalchat_mesasge(message)
-                    await client.send_message(message.channel, msg)
+                    await client.send_typing_message(message.channel, msg)
 
                 else:
                     # 4の方を使って会話
                     msg = sm4.get_naturalchat_mesasge(message)
-                    await client.send_message(message.channel, msg)
+                    await client.send_typing_message(message.channel, msg)
     
     # 会話からおみくじを得る
     try:
