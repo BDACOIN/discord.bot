@@ -47,7 +47,7 @@ def get_user_id_from_fullname(fullname):
         # BDAサーバーの本来のサーバーの雑談チャンネル
         bda_zatsudan_channel = client.get_channel('443638843225407489')
         if bda_zatsudan_channel:
-            for m in bda_zatsudan_channel.server.members:
+            for m in list(bda_zatsudan_channel.server.members):
                 BDA_MEMBER_ID_DICT[str(m)] = m.id
                 
     
