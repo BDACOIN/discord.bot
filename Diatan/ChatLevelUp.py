@@ -327,21 +327,27 @@ async def update_one_kaiwa_post_data(message):
 
         # ディアたんと会話だったらレベルに応じて上限を抑えてしまう
         if "ディアたんと会話" in message.channel.name:
-            if prev_level >= 30:
-                if add_experience > 3:
-                    add_experience = 3
-            elif prev_level >= 25:
+            if prev_level >= 50:
                 if add_experience > 4:
                     add_experience = 4
+            elif prev_level >= 40:
+                if add_experience > 5:
+                    add_experience = 5
+            elif prev_level >= 30:
+                if add_experience > 7:
+                    add_experience = 7
+            elif prev_level >= 25:
+                if add_experience > 10:
+                    add_experience = 10
             elif prev_level >= 20:
-                if add_experience > 6:
-                    add_experience = 6
+                if add_experience > 15:
+                    add_experience = 15
             elif prev_level >= 15:
-                if add_experience > 12:
-                    add_experience = 12
+                if add_experience > 20:
+                    add_experience = 20
             elif prev_level >= 10:
-                if add_experience > 24:
-                    add_experience = 24
+                if add_experience > 32:
+                    add_experience = 32
             elif prev_level >= 5:
                 if add_experience > 48:
                     add_experience = 48
