@@ -136,6 +136,7 @@ async def on_ready():
                         # 万が一のときんためにtryしておく
                         try:
                             # await client.send_message(target_channel_obj, ":regional_indicator_t: :regional_indicator_r: :regional_indicator_i: :regional_indicator_c: :regional_indicator_k:\n                    :regional_indicator_o: :regional_indicator_r:\n          :regional_indicator_t: :regional_indicator_r: :regional_indicator_e: :regional_indicator_a: :regional_indicator_t:")
+                            await client.send_message(target_channel_obj, ":regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y:")
                             await asyncio.sleep(20)
                             await client.send_message(target_channel_obj, ":regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e:")
                             TRICK_OR_TREAT_CHANNEL = None
@@ -378,26 +379,25 @@ def delete_old_image(message):
     print("delete_old_image")
 
     files = os.listdir('DataTempImage')
-    for file in files:
-        print(file)
-        try:
-            m = re.search("^[0-9]+", file)
-            print(str(m))
-            date = m.group(0)
-            print(date)
-            date = int(date)
-            
-            # 現在のunixタイムを出す
-            now = datetime.datetime.now()
-            unix = now.timestamp()
-            unix = int(unix)
+    if len(list(files)) > 1000:
+        for file in files:
+            try:
+                m = re.search("^[0-9]+", file)
+                print(str(m))
+                date = m.group(0)
+                print(date)
+                date = int(date)
+                
+                # 現在のunixタイムを出す
+                now = datetime.datetime.now()
+                unix = now.timestamp()
+                unix = int(unix)
 
-            if unix-date > 60:
-                os.remove('DataTempImage/' + file)
-            print (unix - date)
-            
-        except:
-            print(sys.exc_info())
+                if unix-date > 600:
+                    os.remove('DataTempImage/' + file)
+                
+            except:
+                print(sys.exc_info())
 
 
 
@@ -409,13 +409,66 @@ def IsInputHappyHalloWeenWords(text):
     similar4 = get_sequence_matcher_coef(text, "ハッピーはろうぃん")
     similar5 = get_sequence_matcher_coef(text, "はっぴーハロウィン")
     similar6 = get_sequence_matcher_coef(text, "ﾊｯﾋﾟｰﾊﾛｳｨﾝ")
-    if similar1 > 0.5 or similar2 > 0.5 or similar3 > 0.5 or similar4 > 0.5 or similar5 > 0.5 or similar6 > 0.5:
+    similar7 = get_sequence_matcher_coef(text, "Halloween!")
+    similar9 = get_sequence_matcher_coef(text, "ハロウィン")
+    similar9 = get_sequence_matcher_coef(text, "はろうぃん")
+    similar10 = get_sequence_matcher_coef(text, "ﾊﾛｳｨﾝ")
+    if similar1 > 0.5 or similar2 > 0.5 or similar3 > 0.5 or similar4 > 0.5 or similar5 > 0.5 or similar6 > 0.5 or similar7 > 0.5 or similar8 > 0.5 or similar9 > 0.5 or similar10 > 0.5 :
         return True
     else:
         return False
 
 
-G_LASTEST_DELETE_TIMESTAMP = 0
+
+# 1人分のメンバーデータの作成
+async def make_one_kaiwa_post_data(message):
+    try:
+        postinfo = {
+            "id": message.author.id,
+            "posthistory": [],
+            "exp": 0,
+        }
+        
+        path = get_data_kaiwa_post_path(message)
+        print("ここきた★" + path)
+        json_data = json.dumps(postinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+        return postinfo
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+        await report_error(message, "make_one_kaiwa_post_data 中にエラーが発生しました。")
+        await report_error(message, sys.exc_info())
+    return None
+
+
+async def load_one_kaiwa_data(message):
+    try:
+        if not has_post_data(message):
+            await make_one_kaiwa_post_data(message)
+    
+        with open(path, "r") as fr:
+            postinfo = json.load(fr)
+
+        path = get_data_kaiwa_post_path(message)
+        print(path)
+        with open(path, "r") as fr:
+            postinfo = json.load(fr)
+
+
+        return postinfo
+
+    except:
+        await report_error(message, "load_one_kaiwa_data 中にエラー")
+        await report_error(message, sys.exc_info())
+    
+    return None
+
+
+
+
 
 # メッセージを受信するごとに実行される
 @client.event
