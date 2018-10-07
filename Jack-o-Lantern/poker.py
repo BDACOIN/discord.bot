@@ -123,7 +123,7 @@ def card_ranks(hand):
     return [5, 4, 3, 2, 1] if (ranks == [14, 5, 4, 3, 2]) else ranks
 
 def flush(hand):
-    "Return True if all the cards have the same suit."
+    """Return True if all the cards have the same suit."""
     suits = [s for r,s in hand]
     return len(set(suits)) == 1
 

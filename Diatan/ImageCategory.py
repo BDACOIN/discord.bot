@@ -338,31 +338,45 @@ async def replay_image_message(message, word, isStrong = True):
         await JapaneseOmikuji.get_omikuji_from_kaiwa(message, word)
 
         
-        
+# 現在のunixタイムを出す
+pre_datetime_unix_time = 0
+
 def delete_old_image(message):
-    print("files")
 
-    files = os.listdir('DataTempImage')
-    for file in files:
-        print(file)
-        try:
-            m = re.search("^[0-9]+", file)
-            print(str(m))
-            date = m.group(0)
-            print(date)
-            date = int(date)
-            
-            # 現在のunixタイムを出す
-            now = datetime.datetime.now()
-            unix = now.timestamp()
-            unix = int(unix)
+    # 現在のunixタイムを出す
+    now = datetime.datetime.now()
+    unix = now.timestamp()
+    unix = int(unix)
 
-            if unix-date > 60:
-                os.remove('DataTempImage/' + file)
-            print (unix - date)
-            
-        except:
-            print(sys.exc_info())
-            
+    if unix-pre_datetime_unix_time > 600:
 
+        pre_datetime_unix_time = unix
+
+        files = os.listdir('DataTempImage')
+        if len(files) > 1000:
+            print("delete_old_image")
+            for file in files:
+                print(file)
+                try:
+                    m = re.search("^[0-9]+", file)
+                    print(str(m))
+                    date = m.group(0)
+                    print(date)
+                    date = int(date)
+                    
+                    # 現在のunixタイムを出す
+                    now = datetime.datetime.now()
+                    unix = now.timestamp()
+                    unix = int(unix)
+
+                    if unix-date > 600:
+                        os.remove('DataTempImage/' + file)
+                    # print (unix - date)
+                    
+                except:
+                    print(sys.exc_info())
+                
+
+    else:
+        print(unix-pre_datetime_unix_time)
 
