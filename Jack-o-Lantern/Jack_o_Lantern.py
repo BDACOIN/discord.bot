@@ -130,7 +130,7 @@ async def on_ready():
 
                         await asyncio.sleep(5)
 
-                    if random.random() < 0.7:
+                    if random.random() < 0.9:
                         em.set_image(url=get_jack_o_lantern_trick_or_treat(svr))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
@@ -138,13 +138,13 @@ async def on_ready():
                         # 万が一のときんためにtryしておく
                         try:
                             # await client.send_message(target_channel_obj, ":regional_indicator_t: :regional_indicator_r: :regional_indicator_i: :regional_indicator_c: :regional_indicator_k:\n                    :regional_indicator_o: :regional_indicator_r:\n          :regional_indicator_t: :regional_indicator_r: :regional_indicator_e: :regional_indicator_a: :regional_indicator_t:")
-                            await client.send_message(target_channel_obj, ":regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y:")
+                            await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             await asyncio.sleep(20)
-                            await client.send_message(target_channel_obj, ":regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e:")
+                            await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
                             TRICK_OR_TREAT_CHANNEL = None
                         except:
                             TRICK_OR_TREAT_CHANNEL = None
-                            await client.send_message(target_channel_obj, ":regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e:")
+                            await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
                     else:
                         TRICK_OR_TREAT_CHANNEL = None
                         damn_list = ["さいなら... (Bye...)", "やる気なす... (Damn...)", "ハズれか... (Shit...)", "眠い... (Dark...)", "お腹痛い... (Gloomy...)", "へこんだ... (Dim...)", "だめぽ... (Low...)",  "ぬるぽ... (Null...)", "ガスがない... (No Gass...)" ]
@@ -245,8 +245,8 @@ def best_wild_hand_reflect_hands(cards, bests):
 
 def get_all_cards():
     black_joker_cards = [r+s for r in '23456789TJQKA' for s in 'SC']
-    red_joker_cards = [r+s for r in '23456789TJQKA' for s in 'HD']
-    jokers = ['?B', '?R']
+    red_joker_cards =  [r+s for r in '23456789TJQKA' for s in 'HD']
+    jokers = ['?B', '?R' ]
 
     all_cards = []
     all_cards.extend(jokers)
@@ -337,13 +337,10 @@ async def member_hand_percenteges(message):
     
     hand_names = get_hand_names()
 
-    # cards = message.content.split()
     
     all_cards = get_all_cards()
     # 5枚をランダムに
     cards = random.sample(all_cards, 5)
-    
-    cards = ["R?", "?B", "AD", "1D", "3D"]
     
     bests = poker.best_wild_hand(cards)
     rank = poker.hand_rank(bests)
@@ -356,13 +353,14 @@ async def member_hand_percenteges(message):
     print("rank:" + str(rank))
 
     try:
-        get_bda_point = rank_1st + 1
+        get_bda_point = rank_1st
         get_bda_point = get_bda_point * get_bda_point * 100
     
+        get_bda_jack_point = 0
         if "AD" in bests:
-            get_bda_jack_point = 500
-        else:
-            get_bda_jack_point = 0
+            get_bda_jack_point = get_bda_jack_point + 500
+        if (display_cards[0] == "WJB" and display_cards[1] == "WJR") or (display_cards[1] == "WJB" and display_cards[2] == "WJR") or (display_cards[2] == "WJB" and display_cards[3] == "WJR") or (display_cards[3] == "WJB" and display_cards[4] == "WJR"):
+            get_bda_jack_point = get_bda_jack_point + 30000
             
         await update_one_halloween_poker_data(message, rank_1st, bests, get_bda_point+get_bda_jack_point)
     except Exception as e2:
@@ -379,7 +377,6 @@ async def member_hand_percenteges(message):
 
 #    f = discord.File(path, filename=path2)
     cache_channel = get_poker_cache_count_channel(message.author)
-    print("★チャンネル情報" + str(cache_channel))
     content_message = "..."
     send_message_obj = await client.send_file(cache_channel, path, content=content_message, filename=path2)
     
@@ -390,18 +387,21 @@ async def member_hand_percenteges(message):
         avator_url = message.author.avatar_url or message.author.default_avatar_url
         avator_url = avator_url.replace(".webp?", ".png?")
         em.set_thumbnail(url=avator_url)
-        em.add_field(name=hand_names[rank_1st], value=str(get_bda_point) + " BDA を取得!! (You Get!!)", inline=False)
-        if get_bda_jack_point > 0:
-            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA を取得!! (You Get!!)", inline=False)
-        
-        em.add_field(name=hand_names[rank_1st], value=str(get_bda_point) + " BDA を取得!! (You Get!!)", inline=False)
         em.set_image(url=get_url_of_hallowine_cards_base(message))
-        em.set_footer(text=str_tehuda)
             
         ret = await client.send_message(message.channel, embed=em)
         proxy_url = send_message_obj.attachments[0]["proxy_url"]
         await asyncio.sleep(2)
         em.set_image(url=proxy_url)
+        
+        if get_bda_point == 0:
+            em.add_field(name=hand_names[rank_1st], value="-", inline=False)
+        else:
+            em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA を取得!! (You Get!!)", inline=False)
+        if get_bda_jack_point > 0:
+            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA を取得!! (You Get!!)", inline=False)
+        em.set_footer(text=str_tehuda)
+        
         await client.edit_message(ret, embed=em)
         await asyncio.sleep(10)
         await client.delete_message(send_message_obj)
@@ -549,6 +549,25 @@ async def make_one_halloween_poker_data(message):
 # メッセージを受信するごとに実行される
 @client.event
 async def on_message(message):
+
+    # komiyamma
+    if message.author.id == "397238348877529099":
+        # そのチャンネルに存在するメッセージを全て削除する
+        if message.content.startswith('!!!clear'):
+            tmp = await client.send_message(message.channel, 'チャンネルのメッセージを削除しています')
+            try:
+                async for msg in client.logs_from(message.channel):
+                    await client.delete_message(msg)
+            except:
+                print("削除中にエラーが発生しました")
+            return
+        if message.content.startswith('!!!allexit'):
+            for m in list(message.channel.server.members):
+                if len(m.roles) == 1 and m.roles[0].name == "@everyone":
+                    print(m.name + ":" + m.roles[0].name)
+                    await client.kick(m)
+                    time.sleep(1)
+
 
     try:
         print(message.channel.id)
