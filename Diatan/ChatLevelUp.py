@@ -425,28 +425,6 @@ async def make_one_kaiwa_post_data(message):
     return None
 
 
-async def load_one_kaiwa_data(message):
-    try:
-        if not has_post_data(message):
-            await make_one_kaiwa_post_data(message)
-    
-        with open(path, "r") as fr:
-            postinfo = json.load(fr)
-
-        path = get_data_kaiwa_post_path(message)
-        print(path)
-        with open(path, "r") as fr:
-            postinfo = json.load(fr)
-
-
-        return postinfo
-
-    except:
-        await report_error(message, "load_one_kaiwa_data 中にエラー")
-        await report_error(message, sys.exc_info())
-    
-    return None
-
 
 async def push_kaiwa_post(message, text):
 

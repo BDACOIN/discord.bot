@@ -151,3 +151,9 @@ def two_pair(ranks):
         return None
 
 
+
+if __name__ == '__main__':
+    bests = best_wild_hand("3S 3D 3C 2D 2C".split())
+    rank = hand_rank(bests)
+    print(str(rank))
+    print()

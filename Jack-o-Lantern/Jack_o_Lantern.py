@@ -80,7 +80,8 @@ async def on_ready():
     target_server_id = '443637824063930369' # BDA
     
     if "Test" in client.user.name:
-        target_server_id = '411022327380180992' # こみやんま本舗
+        pass
+        # target_server_id = '411022327380180992' # こみやんま本舗
     
     target_server_obj = None
     try:
@@ -112,7 +113,7 @@ async def on_ready():
                     ret_message = await client.send_message(target_channel_obj, embed=em)
 
                     for r in range(0, random.randint(1, 3)):
-                        hmm_list = ["What...!?", "Hmm...!?", "Sweet...!?", "Well...!?", "Um...!?", "Huh...!?", "No way...!?", "Terrible...!?" ]
+                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)" ]
                         hmm = random.choice(hmm_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=hmm)
@@ -121,8 +122,9 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
-                        trc_list = ["T...?", "Tr...?", "Tri...?", "Tric...?" ]
+                        trc_list = ["もれちぁ...? (T...?)", "でちゃ...? (Tr...?)", "うっぷ...? (Tri...?)", "い...いく...? (Tric...?)" ]
                         trc = random.choice(trc_list)
+
                         em.set_footer(text=trc)
                         await client.edit_message(ret_message, embed=em)
 
@@ -145,8 +147,9 @@ async def on_ready():
                             await client.send_message(target_channel_obj, ":regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e:")
                     else:
                         TRICK_OR_TREAT_CHANNEL = None
-                        damn_list = ["Bye...", "Damn...", "Shit...", "Dark...", "Gloomy...", "Dim...", "Low..." ]
+                        damn_list = ["さいなら... (Bye...)", "やる気なす... (Damn...)", "ハズれか... (Shit...)", "眠い... (Dark...)", "お腹痛い... (Gloomy...)", "へこんだ... (Dim...)", "だめぽ... (Low...)",  "ぬるぽ... (Null...)", "ガスがない... (No Gass...)" ]
                         damn = random.choice(damn_list)
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=damn)
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
@@ -205,7 +208,7 @@ def get_hand_names():
     '''
     Sample n random hands and print a table of percentages for each type of hand.
     '''
-    hand_names =('ブタ -High Card-', 'ワンペア -1 Pair-', 'ツーペア -2 Pairs-', 'スリーカード -3 Kind-', 'ストレート -Straight-', 'フラッシュ -Flush-', 'フルハウス -Full House-', 'フォーカード -4 Kind-', 'ストレートフラッシュ -Straight Flush-')
+    hand_names = ('ブタ -High Card-', 'ワンペア -1 Pair-', 'ツーペア -2 Pairs-', 'スリーカード -3 Kind-', 'ストレート -Straight-', 'フラッシュ -Flush-', 'フルハウス -Full House-', 'フォーカード -4 Kind-', 'ストレートフラッシュ -Straight Flush-')
     return hand_names
 
 
@@ -294,6 +297,14 @@ def get_symbol_display_cards(cards):
 
 
 
+
+def get_today_datestring(message):
+    #今日の日付の作成
+    date = message.timestamp.now()
+    strdate = str(date.year) + '{0:02d}'.format(date.month) + '{0:02d}'.format(date.day)
+    return strdate
+
+
 def get_url_of_hallowine_cards_base(message):
     if "BDA" in message.channel.server.name:
         return "https://media.discordapp.net/attachments/498183493361205278/498183608679268359/hallowine_cards_base.png"
@@ -321,6 +332,9 @@ async def member_hand_percenteges(message):
         print(str(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST))
         return False
     
+    if not has_post_data(message):
+        await make_one_halloween_poker_data(message)
+    
     hand_names = get_hand_names()
 
     # cards = message.content.split()
@@ -329,11 +343,34 @@ async def member_hand_percenteges(message):
     # 5枚をランダムに
     cards = random.sample(all_cards, 5)
     
+    cards = ["R?", "?B", "AD", "1D", "3D"]
+    
     bests = poker.best_wild_hand(cards)
+    rank = poker.hand_rank(bests)
+    rank_1st = rank[0]
+    rank_2nd = 0
 
     display_cards = best_wild_hand_reflect_hands(cards, bests)
     path, path2 = make_png_img(message, display_cards)
-    rank = poker.hand_rank(bests)
+
+    print("rank:" + str(rank))
+
+    try:
+        get_bda_point = rank_1st + 1
+        get_bda_point = get_bda_point * get_bda_point * 100
+    
+        if "AD" in bests:
+            get_bda_jack_point = 500
+        else:
+            get_bda_jack_point = 0
+            
+        await update_one_halloween_poker_data(message, rank_1st, bests, get_bda_point+get_bda_jack_point)
+    except Exception as e2:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e2.__traceback__))
+        print("例外:update_one_halloween_poker_data")
+        
 
     modified_display_cards = get_symbol_display_cards(display_cards)
     str_tehuda = "  ,  ".join(modified_display_cards)
@@ -350,12 +387,16 @@ async def member_hand_percenteges(message):
         em = discord.Embed(title="", description="", color=0xDEED33)
         em.add_field(name="ハロウィンポーカー -The Halloween in Poker-", value= "<@" + message.author.id + ">", inline=False)
         str_tehuda = "  ,  ".join(modified_display_cards)
-        em.add_field(name=hand_names[rank[0]], value=str_tehuda, inline=True)
         avator_url = message.author.avatar_url or message.author.default_avatar_url
         avator_url = avator_url.replace(".webp?", ".png?")
         em.set_thumbnail(url=avator_url)
-
+        em.add_field(name=hand_names[rank_1st], value=str(get_bda_point) + " BDA を取得!! (You Get!!)", inline=False)
+        if get_bda_jack_point > 0:
+            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA を取得!! (You Get!!)", inline=False)
+        
+        em.add_field(name=hand_names[rank_1st], value=str(get_bda_point) + " BDA を取得!! (You Get!!)", inline=False)
         em.set_image(url=get_url_of_hallowine_cards_base(message))
+        em.set_footer(text=str_tehuda)
             
         ret = await client.send_message(message.channel, embed=em)
         proxy_url = send_message_obj.attachments[0]["proxy_url"]
@@ -410,7 +451,7 @@ def IsInputHappyHalloWeenWords(text):
     similar5 = get_sequence_matcher_coef(text, "はっぴーハロウィン")
     similar6 = get_sequence_matcher_coef(text, "ﾊｯﾋﾟｰﾊﾛｳｨﾝ")
     similar7 = get_sequence_matcher_coef(text, "Halloween!")
-    similar9 = get_sequence_matcher_coef(text, "ハロウィン")
+    similar8 = get_sequence_matcher_coef(text, "ハロウィン")
     similar9 = get_sequence_matcher_coef(text, "はろうぃん")
     similar10 = get_sequence_matcher_coef(text, "ﾊﾛｳｨﾝ")
     if similar1 > 0.5 or similar2 > 0.5 or similar3 > 0.5 or similar4 > 0.5 or similar5 > 0.5 or similar6 > 0.5 or similar7 > 0.5 or similar8 > 0.5 or similar9 > 0.5 or similar10 > 0.5 :
@@ -420,51 +461,86 @@ def IsInputHappyHalloWeenWords(text):
 
 
 
-# 1人分のメンバーデータの作成
-async def make_one_kaiwa_post_data(message):
+def get_data_halloween_poker_path(message):
+    id = message.author.id
+    return 'DataHalloweenPokerInfo/' + str(id) + ".json"
+
+
+def has_post_data(message):
+    path = get_data_halloween_poker_path(message)
+    if not os.path.exists(path):
+        return False
+    else:
+        return True
+
+async def report_error(message, error_msg):
+    em = discord.Embed(title=" ", description="─────────\n" , color=0xDEED33)
+    em.set_author(name='Dia', icon_url=client.user.default_avatar_url)
+    em.set_author(name='Dia', icon_url='http://bdacoin.org/bot/omikuji/image/face.png')
+    
+    em.add_field(name="返信相手(Reply)", value= "<@" + message.author.id + ">", inline=False)
+    em.add_field(name="エラー(Error)", value=error_msg, inline=False)
     try:
-        postinfo = {
-            "id": message.author.id,
-            "posthistory": [],
-            "exp": 0,
-        }
+        print(error_msg)
+        await client.send_message(message.channel, embed=em)
+    except:
+        print(sys.exc_info())
+
+
+async def update_one_halloween_poker_data(message, rank, cards, get_bda_point):
+    try:
+
+        path = get_data_halloween_poker_path(message)
+        print(path)
+        with open(path, "r") as fr:
+            pokerinfo = json.load(fr)
+
+        pokerinfo["cardhistory"].append([rank, cards])
+        today_string = get_today_datestring(message)
         
-        path = get_data_kaiwa_post_path(message)
-        print("ここきた★" + path)
-        json_data = json.dumps(postinfo, indent=4)
+        # キーがなければ作成
+        if not today_string in pokerinfo["amount"]:
+            pokerinfo["amount"][today_string] = 0
+
+        pokerinfo["amount"][today_string] = pokerinfo["amount"][today_string] + get_bda_point
+
+        path = get_data_halloween_poker_path(message)
+        json_data = json.dumps(pokerinfo, indent=4)
         with open(path, "w") as fw:
             fw.write(json_data)
-        return postinfo
+        return True
+
+    except:
+        await report_error(message, "update_one_halloween_poker_dataデータ作成中にエラー")
+        await report_error(message, sys.exc_info())
+    
+    return False
+
+
+# 1人分のメンバーデータの作成
+async def make_one_halloween_poker_data(message):
+    try:
+        pokerinfo = {
+            "id": message.author.id,
+            "cardhistory": [],
+            "amount": {},
+        }
+        
+        path = get_data_halloween_poker_path(message)
+        print("ここきた★" + path)
+        json_data = json.dumps(pokerinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+        return pokerinfo
     except Exception as e:
         t, v, tb = sys.exc_info()
         print(traceback.format_exception(t,v,tb))
         print(traceback.format_tb(e.__traceback__))
-        await report_error(message, "make_one_kaiwa_post_data 中にエラーが発生しました。")
+        await report_error(message, "make_one_halloween_poker_data 中にエラーが発生しました。")
         await report_error(message, sys.exc_info())
     return None
 
 
-async def load_one_kaiwa_data(message):
-    try:
-        if not has_post_data(message):
-            await make_one_kaiwa_post_data(message)
-    
-        with open(path, "r") as fr:
-            postinfo = json.load(fr)
-
-        path = get_data_kaiwa_post_path(message)
-        print(path)
-        with open(path, "r") as fr:
-            postinfo = json.load(fr)
-
-
-        return postinfo
-
-    except:
-        await report_error(message, "load_one_kaiwa_data 中にエラー")
-        await report_error(message, sys.exc_info())
-    
-    return None
 
 
 
@@ -491,6 +567,7 @@ async def on_message(message):
                 return
     except:
         pass
+
 
     try:
 
