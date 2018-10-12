@@ -33,6 +33,9 @@ def get_poker_cache_count_channel(member):
     return None
 
 
+def get_target_channel_name_list():
+    return ["jack-o-lantern", "trick-or-treat", "candle" ]
+
 
 
 # ２つのテキストの類似度の比較
@@ -98,7 +101,7 @@ async def on_ready():
     if target_server_obj:
         print("サーバー発見")
         while(True):
-            target_channel_name = ["雑談", "jack-o-lantern", "trick-or-treat", "candle" ]
+            target_channel_name = get_target_channel_name_list()
             try:
                 print(target_channel_name)
                 random_channel_name = random.choice(target_channel_name)
@@ -130,24 +133,64 @@ async def on_ready():
 
                         await asyncio.sleep(5)
 
-                    if random.random() < 0.9:
+                    if random.random() < 1.1: # ★ 0.6 などとすると帰ることがある★
                         em.set_image(url=get_jack_o_lantern_trick_or_treat(svr))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
                         TRICK_OR_TREAT_CHANNEL = target_channel_obj
                         # 万が一のときんためにtryしておく
                         try:
-                            # await client.send_message(target_channel_obj, ":regional_indicator_t: :regional_indicator_r: :regional_indicator_i: :regional_indicator_c: :regional_indicator_k:\n                    :regional_indicator_o: :regional_indicator_r:\n          :regional_indicator_t: :regional_indicator_r: :regional_indicator_e: :regional_indicator_a: :regional_indicator_t:")
+                            # HAPPY
                             await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             await asyncio.sleep(20)
+                            # CLOSE
                             await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
                             TRICK_OR_TREAT_CHANNEL = None
-                        except:
+                            
+                            print(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST)
+
+                            if len(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST) > 0:
+
+                                # キーと値のうち、値の方のpointでソート。
+                                sorted_list = sorted(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items(), key=lambda x: x[1]["point"], reverse=True )
+                                print("★"+str(sorted_list))
+
+                                result_str = "─ 今回の結果 ─\n　(Result of this time)\n\n"
+                                index_list_ix = 0
+                                for s in sorted_list:
+                                    index_list_ix = index_list_ix + 1
+                                    if len(sorted_list) >=10:
+                                        number_padding = "{0:02d}".format(index_list_ix)
+                                    else:
+                                        number_padding = str(index_list_ix)
+                                    result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n"
+                                    if index_list_ix >= 30:
+                                        # その他にいたら略する
+                                        if len(sorted_list) > 30:
+                                            result_str = result_str + "...その他(Others) " + (len(sorted_list)-index_list_ix) + " 人\n"
+
+                                        break
+                                        
+                                await client.send_message(target_channel_obj, str(result_str))
+
+                                result_all_message = calc_of_all_poker(target_channel_obj)
+                                if result_all_message != "":
+                                    await client.send_message(target_channel_obj, str(result_all_message))
+                                else:
+                                    await client.send_message(target_channel_obj, "総計が空っぽ")
+                            
+                        except Exception as e4:
                             TRICK_OR_TREAT_CHANNEL = None
+
+                            t, v, tb = sys.exc_info()
+                            print(traceback.format_exception(t,v,tb))
+                            print(traceback.format_tb(e4.__traceback__))
+
+                            # CLOSE
                             await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
                     else:
                         TRICK_OR_TREAT_CHANNEL = None
-                        damn_list = ["さいなら... (Bye...)", "やる気なす... (Damn...)", "ハズれか... (Shit...)", "眠い... (Dark...)", "お腹痛い... (Gloomy...)", "へこんだ... (Dim...)", "だめぽ... (Low...)",  "ぬるぽ... (Null...)", "ガスがない... (No Gass...)" ]
+                        damn_list = ["さようなら... (Bye...)", "ちっきしょう～ (Damn...)", "ウンコいこ～ (Shit...)", "眠いし帰ろ～ (Sleep...)", "お腹が痛い～ (Gloomy...)", "暗いし帰ろ～ (Dim...)", "あぁ絶不調～ (Low...)",  "ガスがないわ～ (No Gass...)" ]
                         damn = random.choice(damn_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=damn)
@@ -155,8 +198,6 @@ async def on_ready():
                         await asyncio.sleep(5)
                         await client.delete_message(ret_message)
                         
-                    
-
                 print("スリープ")
                 await asyncio.sleep(25)
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
@@ -202,6 +243,67 @@ async def send_typing_message(channel, text):
 
 
 client.send_typing_message = send_typing_message
+
+
+def calc_of_all_poker(target_channel_obj):
+    member_of_on_calk = {}
+    for m in list(target_channel_obj.server.members):
+        member_of_on_calk[m.id] = True
+    
+    dirlist = os.listdir("./DataHalloweenPokerInfo")
+    
+    
+    all_result_hash = {}
+    # print(dirlist)
+    for d in dirlist:
+        path = "./DataHalloweenPokerInfo/" + d
+        
+        try:
+            with open(path, "r") as fr:
+                pokerinfo = json.load(fr)
+
+            amount = 0
+            id = pokerinfo["id"]
+            
+            for v in pokerinfo["amount"].values():
+                amount = amount + v
+                
+            all_result_hash[id] = amount
+                
+        except Exception as e2:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e2.__traceback__))
+            print("例外:calc_of_all_poker")
+            
+    sorted_list = sorted(all_result_hash.items(), key=lambda x: x[1], reverse=True )
+
+    modified_sorted_list = []
+    for sl in sorted_list:
+        if sl[0] in member_of_on_calk:
+            modified_sorted_list.append(sl)
+
+    result_str = "─ 総計の結果 ─\n　(Result of total time)\n\n"
+
+    index_list_ix = 0
+    for s in modified_sorted_list:
+        index_list_ix = index_list_ix + 1
+        if len(modified_sorted_list) >=100:
+            number_padding = "{0:03d}".format(index_list_ix)
+        elif len(modified_sorted_list) >=10:
+            number_padding = "{0:02d}".format(index_list_ix)
+        else:
+            number_padding = str(index_list_ix)
+        result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
+        if index_list_ix >= 30:
+            # その他にいたら略する
+            if len(modified_sorted_list) > 30:
+                result_str = result_str + "...その他(Others) " + (len(modified_sorted_list)-index_list_ix) + " 人\n"
+
+            break
+
+    
+    return result_str
 
 
 def get_hand_names():
@@ -354,7 +456,15 @@ async def member_hand_percenteges(message):
 
     try:
         get_bda_point = rank_1st
-        get_bda_point = get_bda_point * get_bda_point * 100
+        
+        # 豚なら
+        if get_bda_point == 0:
+            highcard = sum(rank[1])
+            get_bda_point = get_bda_point + highcard
+        
+        # 豚以外なら
+        else:
+            get_bda_point = get_bda_point * get_bda_point * 100
     
         get_bda_jack_point = 0
         if "AD" in bests:
@@ -362,7 +472,8 @@ async def member_hand_percenteges(message):
         if (display_cards[0] == "WJB" and display_cards[1] == "WJR") or (display_cards[1] == "WJB" and display_cards[2] == "WJR") or (display_cards[2] == "WJB" and display_cards[3] == "WJR") or (display_cards[3] == "WJB" and display_cards[4] == "WJR"):
             get_bda_jack_point = get_bda_jack_point + 30000
             
-        await update_one_halloween_poker_data(message, rank_1st, bests, get_bda_point+get_bda_jack_point)
+        total_point = get_bda_point+get_bda_jack_point
+        await update_one_halloween_poker_data(message, rank_1st, bests, total_point)
     except Exception as e2:
         t, v, tb = sys.exc_info()
         print(traceback.format_exception(t,v,tb))
@@ -373,7 +484,7 @@ async def member_hand_percenteges(message):
     modified_display_cards = get_symbol_display_cards(display_cards)
     str_tehuda = "  ,  ".join(modified_display_cards)
 
-    TRICK_OR_TREAT_TIME_POKER_REGIST_LIST[message.author.id] = bests
+    TRICK_OR_TREAT_TIME_POKER_REGIST_LIST[message.author.id] = {"bests":bests, "point":total_point}
 
 #    f = discord.File(path, filename=path2)
     cache_channel = get_poker_cache_count_channel(message.author)
@@ -391,15 +502,15 @@ async def member_hand_percenteges(message):
             
         ret = await client.send_message(message.channel, embed=em)
         proxy_url = send_message_obj.attachments[0]["proxy_url"]
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
         em.set_image(url=proxy_url)
         
         if get_bda_point == 0:
             em.add_field(name=hand_names[rank_1st], value="-", inline=False)
         else:
-            em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA を取得!! (You Get!!)", inline=False)
+            em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA を取得しました!! (You Get!!)", inline=False)
         if get_bda_jack_point > 0:
-            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA を取得!! (You Get!!)", inline=False)
+            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA !!", inline=False)
         em.set_footer(text=str_tehuda)
         
         await client.edit_message(ret, embed=em)
@@ -553,7 +664,7 @@ async def on_message(message):
     # komiyamma
     if message.author.id == "397238348877529099":
         # そのチャンネルに存在するメッセージを全て削除する
-        if message.content.startswith('!!!clear'):
+        if message.content.startswith('!-!-!clear'):
             tmp = await client.send_message(message.channel, 'チャンネルのメッセージを削除しています')
             try:
                 async for msg in client.logs_from(message.channel):
@@ -561,12 +672,6 @@ async def on_message(message):
             except:
                 print("削除中にエラーが発生しました")
             return
-        if message.content.startswith('!!!allexit'):
-            for m in list(message.channel.server.members):
-                if len(m.roles) == 1 and m.roles[0].name == "@everyone":
-                    print(m.name + ":" + m.roles[0].name)
-                    await client.kick(m)
-                    time.sleep(1)
 
 
     try:
@@ -600,8 +705,8 @@ async def on_message(message):
 
 
     try:
-
-        delete_old_image(message)
+        if message.channel.name in get_target_channel_name_list():
+            delete_old_image(message)
             
     except Exception as e:
         pass

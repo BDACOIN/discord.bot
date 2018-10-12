@@ -176,6 +176,13 @@ async def on_message(message):
         await InviteCounter.invites_show_command(message, message.author)
         return
 
+    if "jack-o-lantern" in message.channel.name:
+        return
+
+    if "ポーカーキャッシュ" in message.channel.name:
+        print("ポーカーキャッシュ")
+        return
+
     try:
         if ChatLevelUp.is_level_command_condition(message.content):
             await ChatLevelUp.command_show_level_infomation(message, message.author)
