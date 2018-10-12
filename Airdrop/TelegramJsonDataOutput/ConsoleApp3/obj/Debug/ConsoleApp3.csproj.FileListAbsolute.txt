@@ -1,0 +1,9 @@
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.csproj.CoreCompileInputs.cache
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\bin\Debug\ConsoleApp3.exe.config
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\bin\Debug\ConsoleApp3.exe
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\bin\Debug\ConsoleApp3.pdb
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\bin\Debug\Newtonsoft.Json.dll
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\bin\Debug\Newtonsoft.Json.xml
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.csproj.CopyComplete
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.exe
+C:\Users\admin\Source\Repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.pdb

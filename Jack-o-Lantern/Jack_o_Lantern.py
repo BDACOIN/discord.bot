@@ -34,7 +34,7 @@ def get_poker_cache_count_channel(member):
 
 
 def get_target_channel_name_list():
-    return ["jack-o-lantern", "trick-or-treat", "candle" ]
+    return ["halloween-poker", "ハロウィン・ポーカー" ]
 
 
 
@@ -68,11 +68,16 @@ TRICK_OR_TREAT_CHANNEL = None
 # 
 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST = {}
 
+GLOBAL_START_MESSAGE = None
+GLOBAL_CLOSE_MESSAGE = None
+
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
 async def on_ready():
 
     global TRICK_OR_TREAT_CHANNEL
+    global GLOBAL_START_MESSAGE
+    global GLOBAL_CLOSE_MESSAGE
 
     # コンソールにBOTとしてログインした名前とUSER-IDを出力
     print('Logged in as')
@@ -112,10 +117,14 @@ async def on_ready():
                         
                 if target_channel_obj:
 
+                    GLOBAL_START_MESSAGE = None
+                    GLOBAL_CLOSE_MESSAGE = None
+
                     em = discord.Embed(title="", description="", color=0x36393f)
                     ret_message = await client.send_message(target_channel_obj, embed=em)
 
-                    for r in range(0, random.randint(1, 3)):
+                    max_length = random.randint(1, 3)
+                    for r in range(0, max_length):
                         hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)" ]
                         hmm = random.choice(hmm_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
@@ -125,7 +134,9 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
-                        trc_list = ["もれちぁ...? (T...?)", "でちゃ...? (Tr...?)", "うっぷ...? (Tri...?)", "い...いく...? (Tric...?)" ]
+                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)" ]
+                        if r == max_length-1:
+                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)" ]
                         trc = random.choice(trc_list)
 
                         em.set_footer(text=trc)
@@ -137,14 +148,31 @@ async def on_ready():
                         em.set_image(url=get_jack_o_lantern_trick_or_treat(svr))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
+
                         TRICK_OR_TREAT_CHANNEL = target_channel_obj
                         # 万が一のときんためにtryしておく
                         try:
                             # HAPPY
-                            await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
-                            await asyncio.sleep(20)
+                            g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
+                            GLOBAL_START_MESSAGE = g_start_message.id
+                            await asyncio.sleep(30)
+                            
+                            """
+                            ghost_message = await client.send_message(target_channel_obj, ":ghost:")
+                            await asyncio.sleep(0.5)
+                            await client.edit_message(ghost_message, "…………:ghost:")
+                            await asyncio.sleep(0.5)
+                            await client.edit_message(ghost_message, "……………………:ghost:")
+                            await asyncio.sleep(0.5)
+                            await client.edit_message(ghost_message, "………………………")
+                            await asyncio.sleep(0.5)
+                            await client.delete_message(ghost_message)
+                            await asyncio.sleep(10)
+                            """
+
                             # CLOSE
-                            await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
+                            g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
+                            GLOBAL_CLOSE_MESSAGE = g_close_message.id
                             TRICK_OR_TREAT_CHANNEL = None
                             
                             print(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST)
@@ -155,7 +183,7 @@ async def on_ready():
                                 sorted_list = sorted(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items(), key=lambda x: x[1]["point"], reverse=True )
                                 print("★"+str(sorted_list))
 
-                                result_str = "─ 今回の結果 ─\n　(Result of this time)\n\n"
+                                result_str = "─ **今回**の結果 ─\n　(The result of **this** time)\n\n"
                                 index_list_ix = 0
                                 for s in sorted_list:
                                     index_list_ix = index_list_ix + 1
@@ -283,7 +311,7 @@ def calc_of_all_poker(target_channel_obj):
         if sl[0] in member_of_on_calk:
             modified_sorted_list.append(sl)
 
-    result_str = "─ 総計の結果 ─\n　(Result of total time)\n\n"
+    result_str = "─ **総計**の結果 ─\n　(The result of **total** time)\n\n"
 
     index_list_ix = 0
     for s in modified_sorted_list:
@@ -416,9 +444,24 @@ def get_url_of_hallowine_cards_base(message):
 async def member_hand_percenteges(message):
     
     global TRICK_OR_TREAT_CHANNEL
+
+    global GLOBAL_START_MESSAGE
+    global GLOBAL_CLOSE_MESSAGE
+
     # 入力タイミングではない
     if not TRICK_OR_TREAT_CHANNEL:
         return False
+
+    # 値が有効で、
+    if GLOBAL_START_MESSAGE and int(message.id) < int(GLOBAL_START_MESSAGE):
+        print("早い投稿")
+        return False
+
+    # 遅い投稿
+    if GLOBAL_CLOSE_MESSAGE and int(GLOBAL_CLOSE_MESSAGE) < int(message.id) :
+        print("遅い投稿")
+        return False
+    
     
     # チャンネルが違う
     if TRICK_OR_TREAT_CHANNEL.id != message.channel.id:
@@ -508,7 +551,7 @@ async def member_hand_percenteges(message):
         if get_bda_point == 0:
             em.add_field(name=hand_names[rank_1st], value="-", inline=False)
         else:
-            em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA を取得しました!! (You Get!!)", inline=False)
+            em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA Get!!", inline=False)
         if get_bda_jack_point > 0:
             em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA !!", inline=False)
         em.set_footer(text=str_tehuda)
