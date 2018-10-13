@@ -52,6 +52,12 @@ def get_sequence_matcher_coef(test_1, text_2):
 
 
 
+def get_ether_regist_channel(target_channel_obj):
+    for ch in target_channel_obj.server.channels:
+        if "イーサアドレス登録" in str(ch) or "eth-address" in str(ch) or "ethアドレス登録" in str(ch):
+            return ch
+            
+    return None
 
 
 # テストサーバー用のトークン
@@ -155,20 +161,21 @@ async def on_ready():
                             # HAPPY
                             g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             GLOBAL_START_MESSAGE = g_start_message.id
-                            await asyncio.sleep(30)
+                            await asyncio.sleep(20)
                             
-                            """
-                            ghost_message = await client.send_message(target_channel_obj, ":ghost:")
+                            ghost_message = await client.send_message(target_channel_obj, "…")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "…………:ghost:")
+                            await client.edit_message(ghost_message, ":ghost:………………………………")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "……………………:ghost:")
+                            await client.edit_message(ghost_message, "…………:ghost:……………………")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "………………………")
+                            await client.edit_message(ghost_message, "……………………:ghost:…………")
                             await asyncio.sleep(0.5)
+                            await client.edit_message(ghost_message, "………………………………:ghost:")
+                            await asyncio.sleep(1)
                             await client.delete_message(ghost_message)
-                            await asyncio.sleep(10)
-                            """
+                            await asyncio.sleep(7)
+
 
                             # CLOSE
                             g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
@@ -278,6 +285,8 @@ def calc_of_all_poker(target_channel_obj):
     for m in list(target_channel_obj.server.members):
         member_of_on_calk[m.id] = True
     
+    # ch = get_ether_regist_channel(target_channel_obj)
+    
     dirlist = os.listdir("./DataHalloweenPokerInfo")
     
     
@@ -322,7 +331,9 @@ def calc_of_all_poker(target_channel_obj):
             number_padding = "{0:02d}".format(index_list_ix)
         else:
             number_padding = str(index_list_ix)
+            
         result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
+
         if index_list_ix >= 30:
             # その他にいたら略する
             if len(modified_sorted_list) > 30:
@@ -452,6 +463,10 @@ async def member_hand_percenteges(message):
     if not TRICK_OR_TREAT_CHANNEL:
         return False
 
+    # チャンネルが違う
+    if TRICK_OR_TREAT_CHANNEL.id != message.channel.id:
+        return False
+
     # 値が有効で、
     if GLOBAL_START_MESSAGE and int(message.id) < int(GLOBAL_START_MESSAGE):
         print("早い投稿")
@@ -462,9 +477,10 @@ async def member_hand_percenteges(message):
         print("遅い投稿")
         return False
     
-    
-    # チャンネルが違う
-    if TRICK_OR_TREAT_CHANNEL.id != message.channel.id:
+    # ETHアドレスに登録がある。
+    if not os.path.exists("../Diatan/DataMemberInfo/" + str(message.author.id) + ".json"):
+        eth_ch = get_ether_regist_channel(message)
+        await report_error(message, "登録情報がないぜぃ？\n" + "<#" + eth_ch.id + ">" + " に\n自分の **MyEtherWallet** など、\nエアドロが受け取れるETHウォレットアドレスを投稿して、\n**コインを受け取れるように**するのがいいぜぃ？")
         return False
         
     # ハッピーハロウィンの言葉的なものを入力してる？
@@ -629,8 +645,7 @@ def has_post_data(message):
 
 async def report_error(message, error_msg):
     em = discord.Embed(title=" ", description="─────────\n" , color=0xDEED33)
-    em.set_author(name='Dia', icon_url=client.user.default_avatar_url)
-    em.set_author(name='Dia', icon_url='http://bdacoin.org/bot/omikuji/image/face.png')
+    em.set_author(name='Jack-o-Lantern', icon_url=client.user.avatar_url)
     
     em.add_field(name="返信相手(Reply)", value= "<@" + message.author.id + ">", inline=False)
     em.add_field(name="エラー(Error)", value=error_msg, inline=False)
