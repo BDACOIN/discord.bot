@@ -77,6 +77,12 @@ TRICK_OR_TREAT_TIME_POKER_REGIST_LIST = {}
 GLOBAL_START_MESSAGE = None
 GLOBAL_CLOSE_MESSAGE = None
 
+GLOBAL_JACK_ACTING = False
+
+
+# 前回実行した時間（時の部分だけ）
+PRE_DATETIME_HOUR = -1
+
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
 async def on_ready():
@@ -84,6 +90,7 @@ async def on_ready():
     global TRICK_OR_TREAT_CHANNEL
     global GLOBAL_START_MESSAGE
     global GLOBAL_CLOSE_MESSAGE
+    global PRE_DATETIME_HOUR
 
     # コンソールにBOTとしてログインした名前とUSER-IDを出力
     print('Logged in as')
@@ -109,11 +116,22 @@ async def on_ready():
         print(traceback.format_tb(e.__traceback__))
         print("例外:poker hand_percenteges error")
 
+    # 起動時の時間をひかえる
+    PRE_DATETIME_HOUR = datetime.datetime.now().hour
     if target_server_obj:
         print("サーバー発見")
         while(True):
             target_channel_name = get_target_channel_name_list()
+            
+            nowdatetime = datetime.datetime.now()
+            
+            # 前回と同じ「時」であれば、次の「時」を待つ
+            if PRE_DATETIME_HOUR == nowdatetime.hour:
+                await asyncio.sleep(1)
+                continue
+
             try:
+                GLOBAL_JACK_ACTING = True
                 print(target_channel_name)
                 random_channel_name = random.choice(target_channel_name)
                 target_channel_obj = None
@@ -151,6 +169,9 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                     if random.random() < 1.1: # ★ 0.6 などとすると帰ることがある★
+                    
+                        PRE_DATETIME_HOUR = nowdatetime.hour
+
                         em.set_image(url=get_jack_o_lantern_trick_or_treat(svr))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
@@ -165,17 +186,18 @@ async def on_ready():
                             
                             ghost_message = await client.send_message(target_channel_obj, "…")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, ":ghost:………………………………")
+                            await client.edit_message(ghost_message, ":ghost:…………………………………………")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "…………:ghost:……………………")
+                            await client.edit_message(ghost_message, "…………:ghost:………………………………")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "……………………:ghost:…………")
+                            await client.edit_message(ghost_message, "……………………:ghost:……………………")
                             await asyncio.sleep(0.5)
-                            await client.edit_message(ghost_message, "………………………………:ghost:")
+                            await client.edit_message(ghost_message, "………………………………:ghost:…………")
+                            await asyncio.sleep(0.5)
+                            await client.edit_message(ghost_message, "…………………………………………:ghost:")
                             await asyncio.sleep(1)
                             await client.delete_message(ghost_message)
-                            await asyncio.sleep(7)
-
+                            await asyncio.sleep(6)
 
                             # CLOSE
                             g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
@@ -208,12 +230,12 @@ async def on_ready():
                                         
                                 await client.send_message(target_channel_obj, str(result_str))
 
-                                result_all_message = calc_of_all_poker(target_channel_obj)
+                                result_all_message = calc_of_all_poker(target_channel_obj, TRICK_OR_TREAT_TIME_POKER_REGIST_LIST)
                                 if result_all_message != "":
                                     await client.send_message(target_channel_obj, str(result_all_message))
                                 else:
                                     await client.send_message(target_channel_obj, "総計が空っぽ")
-                            
+
                         except Exception as e4:
                             TRICK_OR_TREAT_CHANNEL = None
 
@@ -223,7 +245,10 @@ async def on_ready():
 
                             # CLOSE
                             await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
+                            
                     else:
+                        PRE_DATETIME_HOUR = nowdatetime.hour
+
                         TRICK_OR_TREAT_CHANNEL = None
                         damn_list = ["さようなら... (Bye...)", "ちっきしょう～ (Damn...)", "ウンコいこ～ (Shit...)", "眠いし帰ろ～ (Sleep...)", "お腹が痛い～ (Gloomy...)", "暗いし帰ろ～ (Dim...)", "あぁ絶不調～ (Low...)",  "ガスがないわ～ (No Gass...)" ]
                         damn = random.choice(damn_list)
@@ -234,15 +259,17 @@ async def on_ready():
                         await client.delete_message(ret_message)
                         
                 print("スリープ")
-                await asyncio.sleep(25)
+                await asyncio.sleep(30)
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
+                GLOBAL_JACK_ACTING = False
             except Exception as e2:
                 t, v, tb = sys.exc_info()
                 print(traceback.format_exception(t,v,tb))
                 print(traceback.format_tb(e2.__traceback__))
                 print("例外:poker hand_percenteges error")
-                await asyncio.sleep(25)
+                await asyncio.sleep(30)
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
+                GLOBAL_JACK_ACTING = False
 
 
 def get_jack_o_lantern_to_r_direction(server):
@@ -280,10 +307,10 @@ async def send_typing_message(channel, text):
 client.send_typing_message = send_typing_message
 
 
-def calc_of_all_poker(target_channel_obj):
+def calc_of_all_poker(target_channel_obj, this_time_list):
     member_of_on_calk = {}
     for m in list(target_channel_obj.server.members):
-        member_of_on_calk[m.id] = True
+        member_of_on_calk[m.id] = m.display_name
     
     # ch = get_ether_regist_channel(target_channel_obj)
     
@@ -331,8 +358,14 @@ def calc_of_all_poker(target_channel_obj):
             number_padding = "{0:02d}".format(index_list_ix)
         else:
             number_padding = str(index_list_ix)
-            
-        result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
+        
+        # 今参加していたら、メンション
+        if s[0] in this_time_list:
+        
+            result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
+        # 今不参加なら文字列
+        else:
+            result_str = result_str + number_padding + ". @" + member_of_on_calk[s[0]] + "      " + str(s[1]) + " BDA.\n"
 
         if index_list_ix >= 30:
             # その他にいたら略する
@@ -719,6 +752,12 @@ async def make_one_halloween_poker_data(message):
 @client.event
 async def on_message(message):
 
+    global PRE_DATETIME_HOUR
+    global TRICK_OR_TREAT_CHANNEL
+    global GLOBAL_START_MESSAGE
+    global GLOBAL_CLOSE_MESSAGE
+    global GLOBAL_JACK_ACTING
+    
     # komiyamma
     if message.author.id == "397238348877529099":
         # そのチャンネルに存在するメッセージを全て削除する
@@ -750,6 +789,14 @@ async def on_message(message):
     except:
         pass
 
+
+    if message.content == "!halloween poker":
+    
+        if message.author.id in ["397238348877529099", "443634644294959104", "446297147957182464", "444624675251814422", "427792548568760321", "429920700359245824", "295731360776060939" ,"427257154542501927"]:
+            # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
+            # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
+            if not GLOBAL_JACK_ACTING:
+                PRE_DATETIME_HOUR = -1
 
     try:
 
