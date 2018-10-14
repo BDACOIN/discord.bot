@@ -343,6 +343,8 @@ pre_datetime_unix_time = 0
 
 def delete_old_image(message):
 
+    global pre_datetime_unix_time
+
     # 現在のunixタイムを出す
     now = datetime.datetime.now()
     unix = now.timestamp()
