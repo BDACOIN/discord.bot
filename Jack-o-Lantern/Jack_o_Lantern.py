@@ -182,7 +182,7 @@ async def on_ready():
                             # HAPPY
                             g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             GLOBAL_START_MESSAGE = g_start_message.id
-                            await asyncio.sleep(20)
+                            await asyncio.sleep(30)
                             
                             ghost_message = await client.send_message(target_channel_obj, "…")
                             await asyncio.sleep(0.5)
@@ -212,6 +212,9 @@ async def on_ready():
                                 sorted_list = sorted(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items(), key=lambda x: x[1]["point"], reverse=True )
                                 print("★"+str(sorted_list))
 
+                                ranchange_amaount = 1000000000
+                                medal_str_list = ["", ":first_place:",":second_place:",":third_place:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:"]
+
                                 result_str = "─ **今回**の結果 ─\n　(The result of **this** time)\n\n"
                                 index_list_ix = 0
                                 for s in sorted_list:
@@ -220,7 +223,26 @@ async def on_ready():
                                         number_padding = "{0:02d}".format(index_list_ix)
                                     else:
                                         number_padding = str(index_list_ix)
-                                    result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n"
+                                        
+                                    medal = ""
+                                    if s[1]["point"] < 100:
+                                        medal = ":pig:"
+                                        ranchange_amaount = s[1]["point"]
+
+                                    elif s[1]["point"] == 100:
+                                        medal = ":dog:"
+                                        ranchange_amaount = s[1]["point"]
+
+                                    # 報酬が同じなら、同じなら今先頭にあるメダルをそのまま使う
+                                    elif s[1]["point"] == ranchange_amaount:
+                                        medal = medal_str_list[0]
+                                    
+                                    elif s[1]["point"] < ranchange_amaount:
+                                        medal_str_list.pop(0)
+                                        medal = medal_str_list[0]
+                                        ranchange_amaount = s[1]["point"]
+                                        
+                                    result_str = result_str + number_padding + ". " + medal + " <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n"
                                     if index_list_ix >= 30:
                                         # その他にいたら略する
                                         if len(sorted_list) > 30:
@@ -359,13 +381,16 @@ def calc_of_all_poker(target_channel_obj, this_time_list):
         else:
             number_padding = str(index_list_ix)
         
+        # 強制的に消しておく
+        medal = ""
+        
         # 今参加していたら、メンション
         if s[0] in this_time_list:
         
-            result_str = result_str + number_padding + ". <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
+            result_str = result_str + number_padding + ". " + medal + " <@" + str(s[0]) + ">" + "      " + str(s[1]) + " BDA.\n"
         # 今不参加なら文字列
         else:
-            result_str = result_str + number_padding + ". @" + member_of_on_calk[s[0]] + "      " + str(s[1]) + " BDA.\n"
+            result_str = result_str + number_padding + ". " + medal + "  @" + member_of_on_calk[s[0]] + "      " + str(s[1]) + " BDA.\n"
 
         if index_list_ix >= 30:
             # その他にいたら略する
@@ -602,7 +627,7 @@ async def member_hand_percenteges(message):
         else:
             em.add_field(name=hand_names[rank_1st], value=str(get_bda_point)  + " BDA Get!!", inline=False)
         if get_bda_jack_point > 0:
-            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA !!", inline=False)
+            em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA Get!!", inline=False)
         em.set_footer(text=str_tehuda)
         
         await client.edit_message(ret, embed=em)
@@ -793,10 +818,13 @@ async def on_message(message):
     if message.content == "!halloween poker":
     
         if message.author.id in ["397238348877529099", "443634644294959104", "446297147957182464", "444624675251814422", "427792548568760321", "429920700359245824", "295731360776060939" ,"427257154542501927"]:
+            print("強制発動")
             # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
             # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
             if not GLOBAL_JACK_ACTING:
                 PRE_DATETIME_HOUR = -1
+            else:
+                print("アクション中")
 
     try:
 
