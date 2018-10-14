@@ -149,7 +149,7 @@ async def on_ready():
 
                     max_length = random.randint(1, 3)
                     for r in range(0, max_length):
-                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)" ]
+                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがない...!? (No Gass...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
                         hmm = random.choice(hmm_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=hmm)
@@ -158,9 +158,9 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
-                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)" ]
+                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが...!? (Tr.ck .. Tr.at!?)" ]
                         if r == max_length-1:
-                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)" ]
+                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)", "ガ、ガスがーーー!! (Gaaass---!!)", ]
                         trc = random.choice(trc_list)
 
                         em.set_footer(text=trc)
@@ -224,7 +224,7 @@ async def on_ready():
                                     if index_list_ix >= 30:
                                         # その他にいたら略する
                                         if len(sorted_list) > 30:
-                                            result_str = result_str + "...その他(Others) " + (len(sorted_list)-index_list_ix) + " 人\n"
+                                            result_str = result_str + "...その他(Others) " + str(len(sorted_list)-index_list_ix) + " 人\n"
 
                                         break
                                         
@@ -370,7 +370,7 @@ def calc_of_all_poker(target_channel_obj, this_time_list):
         if index_list_ix >= 30:
             # その他にいたら略する
             if len(modified_sorted_list) > 30:
-                result_str = result_str + "...その他(Others) " + (len(modified_sorted_list)-index_list_ix) + " 人\n"
+                result_str = result_str + "...その他(Others) " + str(len(modified_sorted_list)-index_list_ix) + " 人\n"
 
             break
 
