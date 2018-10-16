@@ -287,7 +287,7 @@ async def on_ready():
                                     await client.send_message(target_channel_obj, "総計が空っぽ")
                                     
                                 if em_poop:
-                                    await asyncio.sleep(15)
+                                    await asyncio.sleep(10)
                                     await client.send_message(target_channel_obj, embed=em_poop)
 
                         except Exception as e4:
