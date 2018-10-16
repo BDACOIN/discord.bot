@@ -79,6 +79,8 @@ GLOBAL_CLOSE_MESSAGE = None
 
 GLOBAL_JACK_ACTING = False
 
+GLOBAL_UNKO_JACK_MODE = {}
+GLOBAL_UNKO_JACK_MODE["JACK"] = False
 
 # 前回実行した時間（時の部分だけ）
 PRE_DATETIME_HOUR = -1
@@ -91,6 +93,7 @@ async def on_ready():
     global GLOBAL_START_MESSAGE
     global GLOBAL_CLOSE_MESSAGE
     global PRE_DATETIME_HOUR
+    global GLOBAL_JACK_ACTING
 
     # コンソールにBOTとしてログインした名前とUSER-IDを出力
     print('Logged in as')
@@ -143,13 +146,21 @@ async def on_ready():
 
                     GLOBAL_START_MESSAGE = None
                     GLOBAL_CLOSE_MESSAGE = None
-
                     em = discord.Embed(title="", description="", color=0x36393f)
                     ret_message = await client.send_message(target_channel_obj, embed=em)
 
                     max_length = random.randint(1, 3)
+                    if GLOBAL_UNKO_JACK_MODE["JACK"]:
+                        max_length = 3
                     for r in range(0, max_length):
                         hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
+                        
+                        if GLOBAL_UNKO_JACK_MODE["JACK"]:
+                            if r == 0:
+                                hmm_list = [ "え、呼んだ...!?(Called...!?)" ] 
+                            if r >= 2:
+                                hmm_list = [ "ガス不足...!? (gas shortage!?)" ]
+                        
                         hmm = random.choice(hmm_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=hmm)
@@ -161,6 +172,14 @@ async def on_ready():
                         trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが出る...!? (Tr.ck .. Tr.at!?)" ]
                         if r == max_length-1:
                             trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い・いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
+                        if GLOBAL_UNKO_JACK_MODE["JACK"]:
+                            if r == 1:
+                                trc_list = ["メタンガス持ち...?? (I've methane gas...??)" ]
+                            else:
+                                trc_list = ["頭のうえ...?? (Head on top...!?)" ]
+                            if r == max_length-1:
+                                trc_list = ["ガスがあふれるーー!! (Gas overflows---!!)" ]
+
                         trc = random.choice(trc_list)
 
                         em.set_footer(text=trc)
@@ -217,6 +236,9 @@ async def on_ready():
 
                                 result_str = "─ **今回**の結果 ─\n　(The result of **this** time)\n\n"
                                 index_list_ix = 0
+                                
+                                poop = 0
+                                
                                 for s in sorted_list:
                                     index_list_ix = index_list_ix + 1
                                     if len(sorted_list) >=10:
@@ -229,8 +251,10 @@ async def on_ready():
                                         medal = ":pig:"
                                         # 最後の要素でかつ、
                                         if s is sorted_list[-1] and s[1]["point"] < ranchange_amaount:
-                                            medal = ":poop:" 
-                                        
+                                            medal = ":poop:"
+                                            # パンプキンが入っている
+                                            if "9D" in TRICK_OR_TREAT_TIME_POKER_REGIST_LIST[ s[0] ]["bests"]:
+                                                poop = s[0]
                                         ranchange_amaount = s[1]["point"]
 
                                     elif s[1]["point"] == 100:
@@ -256,11 +280,15 @@ async def on_ready():
                                         
                                 await client.send_message(target_channel_obj, str(result_str))
 
-                                result_all_message = calc_of_all_poker(target_channel_obj, TRICK_OR_TREAT_TIME_POKER_REGIST_LIST)
+                                result_all_message, em_poop = await calc_of_all_poker(target_channel_obj, TRICK_OR_TREAT_TIME_POKER_REGIST_LIST, poop)
                                 if result_all_message != "":
                                     await client.send_message(target_channel_obj, str(result_all_message))
                                 else:
                                     await client.send_message(target_channel_obj, "総計が空っぽ")
+                                    
+                                if em_poop:
+                                    await asyncio.sleep(15)
+                                    await client.send_message(target_channel_obj, embed=em_poop)
 
                         except Exception as e4:
                             TRICK_OR_TREAT_CHANNEL = None
@@ -287,6 +315,8 @@ async def on_ready():
                 print("スリープ")
                 await asyncio.sleep(30)
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
+                print("GLOBAL_UNKO_JACK_MODE Falseに代入")
+                GLOBAL_UNKO_JACK_MODE["JACK"] = False
                 GLOBAL_JACK_ACTING = False
             except Exception as e2:
                 t, v, tb = sys.exc_info()
@@ -295,26 +325,52 @@ async def on_ready():
                 print("例外:poker hand_percenteges error")
                 await asyncio.sleep(30)
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
+                print("GLOBAL_UNKO_JACK_MODE Falseに代入")
+                GLOBAL_UNKO_JACK_MODE["JACK"] = False
                 GLOBAL_JACK_ACTING = False
 
 
 def get_jack_o_lantern_to_r_direction(server):
-    if '443637824063930369' in server.id:
-        return "https://media.discordapp.net/attachments/498183493361205278/498330369213333504/jack-o-lantern-to-r-direction.png"
+    if GLOBAL_UNKO_JACK_MODE["JACK"]:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/501761156000514048/jack-o-lantern-to-r-direction-unko.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/501758880225689601/jack-o-lantern-to-r-direction-unko.png"
     else:
-        return "https://media.discordapp.net/attachments/498162384716955655/498333423195389965/jack-o-lantern-to-r-direction.png"
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/498330369213333504/jack-o-lantern-to-r-direction.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/498333423195389965/jack-o-lantern-to-r-direction.png"
 
 def get_jack_o_lantern_to_l_direction(server):
-    if '443637824063930369' in server.id:
-        return "https://media.discordapp.net/attachments/498183493361205278/498330385764319272/jack-o-lantern-to-l-direction.png"
+    if GLOBAL_UNKO_JACK_MODE["JACK"]:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/501808829101768735/jack-o-lantern-to-l-direction-unko.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/501808394114695171/jack-o-lantern-to-l-direction-unko.png"
     else:
-        return "https://media.discordapp.net/attachments/498162384716955655/498333594075267083/jack-o-lantern-to-l-direction.png"
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/498330385764319272/jack-o-lantern-to-l-direction.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/498333594075267083/jack-o-lantern-to-l-direction.png"
 
 def get_jack_o_lantern_trick_or_treat(server):
-    if '443637824063930369' in server.id:
-        return "https://media.discordapp.net/attachments/498183493361205278/498330403447504897/trick_or_treat.png"
+    if GLOBAL_UNKO_JACK_MODE["JACK"]:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/501761194755883028/trick_or_treat-unko.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/501759024870588416/trick_or_treat-unko.png"
     else:
-        return "https://media.discordapp.net/attachments/498162384716955655/498334187565350934/trick_or_treat.png"
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/498330403447504897/trick_or_treat.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/498334187565350934/trick_or_treat.png"
+
+def get_pumpkin_unko_picture(server):
+    if '443637824063930369' in server.id: # BDA鯖
+        return "https://media.discordapp.net/attachments/498183493361205278/501761136262250496/pumpkin-unko.png"
+    else:
+        return "https://media.discordapp.net/attachments/498162384716955655/501758815235080202/pumpkin-unko.png"
 
 
 async def send_typing_message(channel, text):
@@ -333,9 +389,13 @@ async def send_typing_message(channel, text):
 client.send_typing_message = send_typing_message
 
 
-def calc_of_all_poker(target_channel_obj, this_time_list):
+async def calc_of_all_poker(target_channel_obj, this_time_list, poop):
     member_of_on_calk = {}
+    poop_member = None
     for m in list(target_channel_obj.server.members):
+        if poop == m.id:
+            poop_member = m
+            
         member_of_on_calk[m.id] = m.display_name
     
     # ch = get_ether_regist_channel(target_channel_obj)
@@ -403,8 +463,19 @@ def calc_of_all_poker(target_channel_obj, this_time_list):
 
             break
 
-    
-    return result_str
+    if poop_member:
+        try:
+            em = update_one_halloween_poker_jack_unko(target_channel_obj, poop_member)
+
+            return result_str, em
+        except Exception as e2:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e2.__traceback__))
+            print("例外:update_one_halloween_poker_jack_unko")
+            return result_str, None
+    else:
+        return result_str, None
 
 
 def get_hand_names():
@@ -715,13 +786,13 @@ def delete_old_image(message):
 
 # ハッピーハロウィンの文言を入力したのか？
 def IsInputHappyHalloWeenWords(text):
-    similar1 = get_sequence_matcher_coef(text, "Happy Halloween!")
+    similar1 = get_sequence_matcher_coef(text.upper(), "Happy Halloween!".upper())
     similar2 = get_sequence_matcher_coef(text, "ハッピーハロウィン")
     similar3 = get_sequence_matcher_coef(text, "はっぴーはろうぃん")
     similar4 = get_sequence_matcher_coef(text, "ハッピーはろうぃん")
     similar5 = get_sequence_matcher_coef(text, "はっぴーハロウィン")
     similar6 = get_sequence_matcher_coef(text, "ﾊｯﾋﾟｰﾊﾛｳｨﾝ")
-    similar7 = get_sequence_matcher_coef(text, "Halloween!")
+    similar7 = get_sequence_matcher_coef(text.upper(), "Halloween!".upper())
     similar8 = get_sequence_matcher_coef(text, "ハロウィン")
     similar9 = get_sequence_matcher_coef(text, "はろうぃん")
     similar10 = get_sequence_matcher_coef(text, "ﾊﾛｳｨﾝ")
@@ -785,6 +856,102 @@ async def update_one_halloween_poker_data(message, rank, cards, get_bda_point):
         await report_error(message, sys.exc_info())
     
     return False
+
+
+def update_one_halloween_poker_jack_unko(target_channel_obj, member):
+    try:
+
+        path = 'DataHalloweenPokerInfo/' + member.id + ".json"
+        print(path)
+        with open(path, "r") as fr:
+            pokerinfo = json.load(fr)
+
+        # キーがなければ作成
+        if not "poop" in pokerinfo:
+            pokerinfo["poop"] = []
+
+        now = datetime.datetime.now()
+        unix = now.timestamp()
+        unix = int(unix)
+
+        pokerinfo["poop"].append( {str(unix):True} )
+
+        path = 'DataHalloweenPokerInfo/' + member.id + ".json"
+        json_data = json.dumps(pokerinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+
+        em = discord.Embed(title="", description="", color=0x36393f)
+        em.set_image(url=get_pumpkin_unko_picture(target_channel_obj.server))
+        em.add_field(name="返信相手 (reply)", value= "<@" + member.id + ">\n何かを得たようだ... (You got something..)", inline=False)
+        em.set_footer(text="「!JACK」とはなんだろう...? (What is ❝!JACK❞?)")
+        
+        return em
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+    
+    return False
+
+
+
+async def load_one_halloween_poker_jack_unko(message):
+    try:
+
+        path = get_data_halloween_poker_path(message)
+        with open(path, "r") as fr:
+            pokerinfo = json.load(fr)
+            
+        count = 0
+        if "poop" in pokerinfo:
+            for ele in pokerinfo["poop"]:
+                for e in ele:
+                    if ele[e] == True:
+                        count = count + 1
+
+        return count
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+    
+    return 0
+
+
+async def decrement_one_halloween_poker_jack_unko(message):
+    try:
+
+        path = get_data_halloween_poker_path(message)
+        with open(path, "r") as fr:
+            pokerinfo = json.load(fr)
+            
+        count = 0
+        if "poop" in pokerinfo:
+            is_falsed = False
+            for ele in pokerinfo["poop"]:
+                for e in ele:
+                    if ele[e] == True:
+                        if not is_falsed:
+                            ele[e] = False
+                            is_falsed = True
+                        count = count + 1
+
+        path = get_data_halloween_poker_path(message)
+        json_data = json.dumps(pokerinfo, indent=4)
+        with open(path, "w") as fw:
+            fw.write(json_data)
+            
+        return count
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+    
+    return 0
 
 
 # 1人分のメンバーデータの作成
@@ -868,6 +1035,32 @@ async def on_message(message):
                 PRE_DATETIME_HOUR = -1
             else:
                 print("アクション中")
+
+    if message.content.upper() == "!JACK":
+    
+        print("ジャックモードチェック")
+        # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
+        # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
+        # 安全のため、55分～5分の間はやらない。
+        nowdatetime = datetime.datetime.now()
+
+        has_unko_card_count = await load_one_halloween_poker_jack_unko(message)
+        if has_unko_card_count:
+            if not GLOBAL_JACK_ACTING and 6 <= nowdatetime.minute and nowdatetime.minute <= 54:
+                PRE_DATETIME_HOUR = -1
+                print("GLOBAL_UNKO_JACK_MODE Trueに代入")
+                GLOBAL_UNKO_JACK_MODE["JACK"] = True
+                remain_count = await decrement_one_halloween_poker_jack_unko(message)
+                 
+            else:
+                em = discord.Embed(title="", description="", color=0x36393f)
+                em.set_image(url=get_pumpkin_unko_picture(message.channel.server))
+                em.add_field(name="返信相手 (reply)", value= "<@" + message.author.id + ">", inline=False)
+                em.add_field(name="あなたの「!JACK」(Your's ❝!JACK❞) ", value="残り" + str(has_unko_card_count) + " つ" + " (remaining)", inline=False)
+                em.set_footer(text="今はその時ではないようだ...(It is not the time now...)")
+                
+                await client.send_message(message.channel, embed=em)
+
 
     try:
 
