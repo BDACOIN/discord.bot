@@ -149,7 +149,7 @@ async def on_ready():
 
                     max_length = random.randint(1, 3)
                     for r in range(0, max_length):
-                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがない...!? (No Gass...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
+                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
                         hmm = random.choice(hmm_list)
                         em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
                         em.set_footer(text=hmm)
@@ -158,9 +158,9 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
-                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが...!? (Tr.ck .. Tr.at!?)" ]
+                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが出る...!? (Tr.ck .. Tr.at!?)" ]
                         if r == max_length-1:
-                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)", "ガ、ガスがーーー!! (Gaaass---!!)", ]
+                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い・いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
                         trc = random.choice(trc_list)
 
                         em.set_footer(text=trc)
@@ -227,6 +227,10 @@ async def on_ready():
                                     medal = ""
                                     if s[1]["point"] < 100:
                                         medal = ":pig:"
+                                        # 最後の要素でかつ、
+                                        if s is sorted_list[-1] and s[1]["point"] < ranchange_amaount:
+                                            medal = ":poop:" 
+                                        
                                         ranchange_amaount = s[1]["point"]
 
                                     elif s[1]["point"] == 100:
@@ -617,7 +621,26 @@ async def member_hand_percenteges(message):
         em.set_thumbnail(url=avator_url)
         em.set_image(url=get_url_of_hallowine_cards_base(message))
             
-        ret = await client.send_message(message.channel, embed=em)
+        ret = None
+        try:
+            ret = await client.send_message(message.channel, embed=em)
+        except:
+            ret = None
+        
+        if ret == None:
+            try:
+                await asyncio.sleep(1)
+                ret = await client.send_message(message.channel, embed=em)
+            except:
+                ret = None
+
+        if ret == None:
+            try:
+                await asyncio.sleep(1)
+                ret = await client.send_message(message.channel, embed=em)
+            except:
+                ret = None
+            
         proxy_url = send_message_obj.attachments[0]["proxy_url"]
         await asyncio.sleep(3)
         em.set_image(url=proxy_url)
@@ -630,7 +653,27 @@ async def member_hand_percenteges(message):
             em.add_field(name="Jack-o-Lantern Bonus!!", value=str(get_bda_jack_point) + " BDA Get!!", inline=False)
         em.set_footer(text=str_tehuda)
         
-        await client.edit_message(ret, embed=em)
+        ret_edit = None
+        
+        try:
+            ret_edit = await client.edit_message(ret, embed=em)
+        except:
+            ret_edit = None
+            
+        if ret_edit == None:
+            try:
+                await asyncio.sleep(1)
+                ret_edit = await client.edit_message(ret, embed=em)
+            except:
+                ret_edit = None
+
+        if ret_edit == None:
+            try:
+                await asyncio.sleep(1)
+                ret_edit = await client.edit_message(ret, embed=em)
+            except:
+                ret_edit = None
+            
         await asyncio.sleep(10)
         await client.delete_message(send_message_obj)
         
