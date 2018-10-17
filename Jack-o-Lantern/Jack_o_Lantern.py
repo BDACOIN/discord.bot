@@ -105,7 +105,7 @@ async def on_ready():
     
     if "Test" in client.user.name:
         pass
-        # target_server_id = '411022327380180992' # こみやんま本舗
+        # target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
     
     target_server_obj = None
     try:
@@ -171,7 +171,7 @@ async def on_ready():
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
                         trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが出る...!? (Tr.ck .. Tr.at!?)" ]
                         if r == max_length-1:
-                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い・いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
+                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
                         if GLOBAL_UNKO_JACK_MODE["JACK"]:
                             if r == 1:
                                 trc_list = ["メタンガス持ち...?? (I've methane gas...??)" ]
@@ -229,7 +229,7 @@ async def on_ready():
 
                                 # キーと値のうち、値の方のpointでソート。
                                 sorted_list = sorted(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items(), key=lambda x: x[1]["point"], reverse=True )
-                                print("★"+str(sorted_list))
+                                # print("★"+str(sorted_list))
 
                                 ranchange_amaount = 1000000000
                                 medal_str_list = ["", ":first_place:",":second_place:",":third_place:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:"]
@@ -271,9 +271,9 @@ async def on_ready():
                                         ranchange_amaount = s[1]["point"]
                                         
                                     result_str = result_str + number_padding + ". " + medal + " <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n"
-                                    if index_list_ix >= 30:
+                                    if index_list_ix >= 40:
                                         # その他にいたら略する
-                                        if len(sorted_list) > 30:
+                                        if len(sorted_list) > 40:
                                             result_str = result_str + "...その他(Others) " + str(len(sorted_list)-index_list_ix) + " 人\n"
 
                                         break
@@ -636,8 +636,19 @@ async def member_hand_percenteges(message):
     # 5枚をランダムに
     cards = random.sample(all_cards, 5)
     
+    # cards = "9D 3D 2C AC 5C".split(" ")
+    
     bests = poker.best_wild_hand(cards)
     rank = poker.hand_rank(bests)
+    
+    if rank[0] == 0 and sum(rank[1]) < 36:
+        print("35以下")
+        if not "9D" in bests and random.randint(1, 7) == 2:
+            cards = ["9D", bests[1], bests[2], bests[3], bests[4]]
+            random.shuffle(cards)
+            bests = poker.best_wild_hand(cards)
+            rank = poker.hand_rank(bests)
+    
     rank_1st = rank[0]
     rank_2nd = 0
 
@@ -874,7 +885,7 @@ def update_one_halloween_poker_jack_unko(target_channel_obj, member):
         unix = now.timestamp()
         unix = int(unix)
 
-        pokerinfo["poop"].append( {str(unix):True} )
+        pokerinfo["poop"].append( {str(unix):2} )
 
         path = 'DataHalloweenPokerInfo/' + member.id + ".json"
         json_data = json.dumps(pokerinfo, indent=4)
@@ -908,8 +919,8 @@ async def load_one_halloween_poker_jack_unko(message):
         if "poop" in pokerinfo:
             for ele in pokerinfo["poop"]:
                 for e in ele:
-                    if ele[e] == True:
-                        count = count + 1
+                    if ele[e] > 0:
+                        count = count + ele[e]
 
         return count
 
@@ -933,11 +944,11 @@ async def decrement_one_halloween_poker_jack_unko(message):
             is_falsed = False
             for ele in pokerinfo["poop"]:
                 for e in ele:
-                    if ele[e] == True:
+                    if ele[e] > 0:
                         if not is_falsed:
-                            ele[e] = False
+                            ele[e] = ele[e] - 1
                             is_falsed = True
-                        count = count + 1
+                        count = count + ele[e]
 
         path = get_data_halloween_poker_path(message)
         json_data = json.dumps(pokerinfo, indent=4)
@@ -1036,30 +1047,37 @@ async def on_message(message):
             else:
                 print("アクション中")
 
-    if message.content.upper() == "!JACK":
-    
-        print("ジャックモードチェック")
-        # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
-        # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
-        # 安全のため、55分～5分の間はやらない。
-        nowdatetime = datetime.datetime.now()
+    try:
+        if message.content.upper() == "!JACK":
+            print("ジャックモードチェック")
+            # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
+            # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
+            # 安全のため、55分～5分の間はやらない。
+            nowdatetime = datetime.datetime.now()
 
-        has_unko_card_count = await load_one_halloween_poker_jack_unko(message)
-        if has_unko_card_count:
-            if not GLOBAL_JACK_ACTING and 6 <= nowdatetime.minute and nowdatetime.minute <= 54:
-                PRE_DATETIME_HOUR = -1
-                print("GLOBAL_UNKO_JACK_MODE Trueに代入")
-                GLOBAL_UNKO_JACK_MODE["JACK"] = True
-                remain_count = await decrement_one_halloween_poker_jack_unko(message)
-                 
-            else:
-                em = discord.Embed(title="", description="", color=0x36393f)
-                em.set_image(url=get_pumpkin_unko_picture(message.channel.server))
-                em.add_field(name="返信相手 (reply)", value= "<@" + message.author.id + ">", inline=False)
-                em.add_field(name="あなたの「!JACK」(Your's ❝!JACK❞) ", value="残り" + str(has_unko_card_count) + " つ" + " (remaining)", inline=False)
-                em.set_footer(text="今はその時ではないようだ...(It is not the time now...)")
-                
-                await client.send_message(message.channel, embed=em)
+            has_unko_card_count = await load_one_halloween_poker_jack_unko(message)
+            if has_unko_card_count > 0:
+
+                target_channel_name = get_target_channel_name_list()
+                if not GLOBAL_JACK_ACTING and 6 <= nowdatetime.minute and nowdatetime.minute <= 54 and target_channel_name and (message.channel.name in target_channel_name):
+                    PRE_DATETIME_HOUR = -1
+                    print("GLOBAL_UNKO_JACK_MODE Trueに代入")
+                    GLOBAL_UNKO_JACK_MODE["JACK"] = True
+                    remain_count = await decrement_one_halloween_poker_jack_unko(message)
+                     
+                else:
+                    em = discord.Embed(title="", description="", color=0x36393f)
+                    em.set_image(url=get_pumpkin_unko_picture(message.channel.server))
+                    em.add_field(name="返信相手 (reply)", value= "<@" + message.author.id + ">", inline=False)
+                    em.add_field(name="あなたの「!JACK」(Your's ❝!JACK❞) ", value="残り" + str(has_unko_card_count) + " 回" + " (remaining)", inline=False)
+                    em.set_footer(text="今はその時ではないようだ...(It is not the time now...)")
+                    
+                    await client.send_message(message.channel, embed=em)
+    except Exception as e5:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e5.__traceback__))
+        print("例外:!JACK error")
 
 
     try:
@@ -1082,3 +1100,4 @@ async def on_message(message):
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
+#
