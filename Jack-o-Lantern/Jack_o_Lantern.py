@@ -234,10 +234,12 @@ async def on_ready():
                                 ranchange_amaount = 1000000000
                                 medal_str_list = ["", ":first_place:",":second_place:",":third_place:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:",":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:", ":medal:"]
 
-                                result_str = "─ **今回**の結果 ─\n　(The result of **this** time)\n\n"
                                 index_list_ix = 0
                                 
                                 poop = 0
+                                
+                                result_str_list = []
+                                result_str_list.append("─ **今回**の結果 ─\n　(The result of **this** time)\n\n")
                                 
                                 for s in sorted_list:
                                     index_list_ix = index_list_ix + 1
@@ -270,15 +272,54 @@ async def on_ready():
                                         medal = medal_str_list[0]
                                         ranchange_amaount = s[1]["point"]
                                         
-                                    result_str = result_str + number_padding + ". " + medal + " <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n"
-                                    if index_list_ix >= 40:
+                                    result_str_list.append(number_padding + ". " + medal + " <@" + str(s[0]) + ">" + "      " + str(s[1]["point"]) + " BDA Get!!\n")
+                                    if index_list_ix >= 65:
                                         # その他にいたら略する
-                                        if len(sorted_list) > 40:
-                                            result_str = result_str + "...その他(Others) " + str(len(sorted_list)-index_list_ix) + " 人\n"
+                                        if len(sorted_list) > 65:
+                                            result_str_list.append("...その他(Others) " + str(len(sorted_list)-index_list_ix) + " 人\n")
 
                                         break
+
+                                try:
+                                    await client.send_message(target_channel_obj, ".\n")
+                                    await asyncio.sleep(0.2)
+                                except:
+                                    pass
+
+                                result_string = ""
+                                for line_ix in range(0, len(result_str_list)):
+                                    line_str = result_str_list[line_ix]
+                                    result_string = result_string + line_str
+                                    
+                                    # ％で割った最後の値か、もしくは配列の長さの最後の値
+                                    if line_ix % 30 == 29 or line_ix == len(result_str_list)-1:
+                                        try:
+                                            result_aaa = await client.send_message(target_channel_obj, result_string)
+                                            await asyncio.sleep(0.5)
+                                        except:
+                                            result_aaa = None
                                         
-                                await client.send_message(target_channel_obj, str(result_str))
+                                        if result_aaa == None:
+                                            await asyncio.sleep(0.5)
+                                            try:
+                                                result_aaa = await client.send_message(target_channel_obj, result_string)
+                                            except:
+                                                result_aaa = None
+
+                                        if result_aaa == None:
+                                            await asyncio.sleep(0.5)
+                                            try:
+                                                result_aaa = await client.send_message(target_channel_obj, result_string)
+                                            except:
+                                                result_aaa = None
+                                                
+                                        result_string = ""
+
+                                try:
+                                    await client.send_message(target_channel_obj, ".\n")
+                                    await asyncio.sleep(0.2)
+                                except:
+                                    pass
 
                                 result_all_message, em_poop = await calc_of_all_poker(target_channel_obj, TRICK_OR_TREAT_TIME_POKER_REGIST_LIST, poop)
                                 if result_all_message != "":
@@ -641,10 +682,11 @@ async def member_hand_percenteges(message):
     bests = poker.best_wild_hand(cards)
     rank = poker.hand_rank(bests)
     
-    if rank[0] == 0 and sum(rank[1]) < 36:
-        print("35以下")
+    if rank[0] == 0 and sum(rank[1]) <= 34:
+        print("34以下")
         if not "9D" in bests and random.randint(1, 7) == 2:
-            cards = ["9D", bests[1], bests[2], bests[3], bests[4]]
+            sorted_cards = sorted(bests)
+            cards = [sorted_cards[0], sorted_cards[1], sorted_cards[2], sorted_cards[3], "9D"]
             random.shuffle(cards)
             bests = poker.best_wild_hand(cards)
             rank = poker.hand_rank(bests)
@@ -885,7 +927,8 @@ def update_one_halloween_poker_jack_unko(target_channel_obj, member):
         unix = now.timestamp()
         unix = int(unix)
 
-        pokerinfo["poop"].append( {str(unix):2} )
+        rand_cnt = random.randint(2, 3)
+        pokerinfo["poop"].append( {str(unix):rand_cnt} )
 
         path = 'DataHalloweenPokerInfo/' + member.id + ".json"
         json_data = json.dumps(pokerinfo, indent=4)
