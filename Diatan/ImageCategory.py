@@ -234,7 +234,7 @@ async def analyze_image(message, url):
             
         # 投稿が多いので間引く
         if "見ちゃイヤ" in message.channel.name:
-            if random.randint(1,5) <= 4:
+            if random.randint(1,15) <= 14:
                 return
             
         delete_old_image(message)
