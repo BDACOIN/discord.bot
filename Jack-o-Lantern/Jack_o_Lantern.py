@@ -682,9 +682,9 @@ async def member_hand_percenteges(message):
     bests = poker.best_wild_hand(cards)
     rank = poker.hand_rank(bests)
     
-    if rank[0] == 0 and sum(rank[1]) <= 34:
-        print("34以下")
-        if not "9D" in bests and random.randint(1, 7) == 2:
+    if rank[0] == 0 and sum(rank[1]) <= 30:
+        print("30以下")
+        if (not "9D" in bests) and (random.randint(1, 16) == 2):
             sorted_cards = sorted(bests)
             cards = [sorted_cards[0], sorted_cards[1], sorted_cards[2], sorted_cards[3], "9D"]
             random.shuffle(cards)
@@ -927,7 +927,7 @@ def update_one_halloween_poker_jack_unko(target_channel_obj, member):
         unix = now.timestamp()
         unix = int(unix)
 
-        rand_cnt = random.randint(2, 3)
+        rand_cnt = random.randint(1, 3)
         pokerinfo["poop"].append( {str(unix):rand_cnt} )
 
         path = 'DataHalloweenPokerInfo/' + member.id + ".json"
