@@ -132,6 +132,26 @@ async def show_level_infomation(message, exp, default="会話レベル情報"):
         avator_url = message.author.avatar_url or message.author.default_avatar_url
         print(avator_url)
         avator_url = avator_url.replace(".webp?", ".png?")
+
+        try:
+            if message.content == "!rankinfo":
+                if paidinfo != None and "kaiwa_paid_lv" in paidinfo and "kaiwa_paid_amount" in paidinfo:
+                    if sum(paidinfo["kaiwa_paid_amount"].values()) > 0:
+                        max_level_YM = max(paidinfo["kaiwa_paid_lv"].keys())
+                        print(max_level_YM)
+                        em.add_field(name="報酬を支払済みの Lv", value=str((paidinfo["kaiwa_paid_lv"][max_level_YM] // 5) * 5), inline=False)
+                        em.add_field(name="報酬を支払済みの BDA枚数", value=str(sum(paidinfo["kaiwa_paid_amount"].values())) + " 枚", inline=False)
+                    else:
+                        em.add_field(name="報酬を支払済みの BDA枚数", value="0 枚", inline=False)
+                else:
+                    em.add_field(name="報酬を支払済みの BDA枚数", value="0 枚", inline=False)
+                
+        except Exception as e3:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e3.__traceback__))
+            print("報酬を支払済み 中エラー")
+
         # em.set_author(name=" ", icon_url=avator_url)
         em.add_field(name="Lv", value=str(lv), inline=True)
         amari = exp-LV_TO_EXP_LIST[lv][1]
@@ -145,19 +165,6 @@ async def show_level_infomation(message, exp, default="会話レベル情報"):
         print("★" + str(int_cur_per_nex))
         em.add_field(name="経験値", value=str_cur_per_nex, inline=False)
         em.set_thumbnail(url=avator_url)
-
-        try:
-            if message.content == "!rankinfo" and paidinfo != None and "kaiwa_paid_lv" in paidinfo and "kaiwa_paid_amount" in paidinfo:
-                if sum(paidinfo["kaiwa_paid_amount"].values()) > 0:
-                    max_level_YM = max(paidinfo["kaiwa_paid_lv"].keys())
-                    print(max_level_YM)
-                    em.add_field(name="(報酬を支払済みの Lv)", value=str((paidinfo["kaiwa_paid_lv"][max_level_YM] // 5) * 5), inline=True)
-                    em.add_field(name="(報酬を支払済みの BDA枚数)", value=str(sum(paidinfo["kaiwa_paid_amount"].values())), inline=False)
-        except Exception as e3:
-            t, v, tb = sys.exc_info()
-            print(traceback.format_exception(t,v,tb))
-            print(traceback.format_tb(e3.__traceback__))
-            print("報酬を支払済み 中エラー")
         
         em.set_image(url="http://bdacoin.org/bot/levelup/image/level_up_image_{0:03d}.png".format(int_cur_per_nex))
     #        em.add_field(name="テスト", value=avator_url, inline=True)
@@ -332,8 +339,8 @@ async def update_one_kaiwa_post_data(message):
             total_seconds = tdelta.total_seconds()
             print("差分:" + str(total_seconds))
             if "見ちゃイヤ" in message.channel.name:
-                if add_experience > total_seconds/8:
-                    print("差分タイム/8へと抑え込み:" + str(total_seconds/8)) 
+                if add_experience > total_seconds/15:
+                    print("差分タイム/15へと抑え込み:" + str(total_seconds/15)) 
                     add_experience = int(total_seconds/8)
             # 普通のチャンネル
             else:
