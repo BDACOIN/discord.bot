@@ -30,6 +30,7 @@ import asyncio
 import ChatLevelUp
 import InviteCounter
 
+
 # 上記で取得したアプリのトークンを入力
 
 
@@ -119,6 +120,7 @@ async def on_message(message):
                 return
     except:
         pass
+
 
     # 許可されないWalletアドレスのメッセージ
     is_delete = await WalletAddressDeleter.violation_wallet_address_message(message)

@@ -17,6 +17,75 @@ import RegistEtherMemberInfo
 import EastAsianWidthCounter
 
 
+#coding: utf-8
+# ver 2.1
+
+import builtins
+
+import re
+import random
+import requests
+import json
+import types
+import base64
+import os
+import sys, datetime, time
+import discord
+import traceback
+import copy
+
+
+def get_data_inviteinfo_path():
+    return "DataInviteInfo/InviteInfo.json"
+
+def get_member_id_list(member):
+    # メンバーIDのリスト一覧
+    member_id_list = []
+    for mem in list(member.server.members):
+        member_id_list.append(mem.id)
+
+    return member_id_list
+
+def is_this_member_issue_member(member):
+    print("who_invite_this_member")
+
+    try:
+        for mr in member.roles:
+            if mr.name == "issue_inviter":
+                return True
+
+        member_id_list = {}
+        for mem in list(member.server.members):
+            member_id_list[mem.id] = mem
+
+        path = get_data_inviteinfo_path()
+        with open(path, "r") as fr:
+            inviteinfo = json.load(fr)
+
+        id = member.id
+        for oneobj in inviteinfo.values():
+            # childrenがあり
+            if "children" in oneobj:
+                # 今投稿したメンバーはそのchildrenにあるなら
+                if id in oneobj["children"]:
+                    # ownerがあるなら
+                    if "owner" in oneobj:
+                        if oneobj["owner"] in member_id_list:
+                            owner_obj = member_id_list[ oneobj["owner"] ]
+                            for r in owner_obj.roles:
+                                if r.name == "issue_inviter":
+                                    return True
+
+        return False
+
+    except Exception as e:
+        t, v, tb = sys.exc_info()
+        print(traceback.format_exception(t,v,tb))
+        print(traceback.format_tb(e.__traceback__))
+
+        return False
+
+
 def is_permission_omikuji_condition(message):
     ch = str(message.channel)
     if ch in ["★おみくじコーナー★"]:
@@ -188,6 +257,12 @@ async def get_embedded_omikuji_object(message):
     
     # ハッシュからランダムで１つ選ぶ
     rndstr = random.choice(["吉", "吉", "吉", "吉", "吉", "中吉", "中吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "末吉", "末吉", "大吉", "ぴょん吉", "凶"])
+    
+    # 問題があるメンバーであれば大吉は渡さない
+    is_issue_member = is_this_member_issue_member(message.author)
+    if is_issue_member:
+        print("★問題のあるメンバー")
+        random.choice(["吉", "吉", "吉", "吉", "吉", "中吉", "中吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "末吉", "末吉", "凶", "凶", "凶"])
     omikuji_key = rndstr
     omikuji_lv = un_list[rndstr]
     print("キ★" + omikuji_key)
@@ -224,6 +299,9 @@ async def get_embedded_omikuji_object(message):
                 # 再度振りなおし
 
                 rndstr2 = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "大吉", "ぴょん吉", "凶"])
+                # 問題があるメンバーは大吉にならない
+                if is_issue_member:
+                    rndstr2 = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "凶", "凶"])
                 omikuji_key2 = rndstr2
                 omikuji_lv2 = un_list[rndstr2]
 
@@ -319,32 +397,45 @@ def is_report_command_condition(command):
         return True
 
 
-def report_command_one_key_name(json_data, key):
+def report_command_one_key_name(json_data, key, message):
+
+    member_id_list = []
+    for mem in list(message.channel.server.members):
+        member_id_list.append(mem.id)
+
     msg = []
     try:
         for id in json_data[key]:
-            msg.append( "<@" + str(id) + ">" )
+            if id in member_id_list:
+                msg.append( "<@" + str(id) + ">" )
     except:
         pass
 
     return " , ".join(msg)
 
-def report_command_one_key_eth(json_data, key):
+def report_command_one_key_eth(json_data, key, message):
+
+    member_id_list = []
+    for mem in list(message.channel.server.members):
+        member_id_list.append(mem.id)
+
     msg = []
+    
     try:
         for id in json_data[key]:
-            fullpath = "DataMemberInfo/" + str(id) + ".json"
-            if os.path.exists(fullpath):
-                try:
-                    with open(fullpath,'r') as fr:
-                        json_data = json.load(fr)
-                    msg.append(json_data["eth_address"])
-                    
-                except:
-                    pass
-                    
-            else:
-                msg.append( "<@" + str(id) + ">" )
+            if id in member_id_list:
+                fullpath = "DataMemberInfo/" + str(id) + ".json"
+                if os.path.exists(fullpath):
+                    try:
+                        with open(fullpath,'r') as fr:
+                            json_data = json.load(fr)
+                        msg.append(json_data["eth_address"])
+                        
+                    except:
+                        pass
+                        
+                else:
+                    msg.append( "<@" + str(id) + ">" )
     except:
         pass
 
@@ -357,9 +448,9 @@ async def report_command(message):
         fullpath = get_date_omikuji_file(date)
         if os.path.exists(fullpath):
             json_data = get_today_omikuji_data(date)
-            ret = report_command_one_key_name(json_data, "大吉")
+            ret = report_command_one_key_name(json_data, "大吉", message)
             await client.send_message(message.channel, ret)
-            ret = report_command_one_key_eth(json_data, "大吉")
+            ret = report_command_one_key_eth(json_data, "大吉", message)
             await client.send_message(message.channel, ret)
         else:
             await client.send_message(message.channel, "指定の年月日のおみくじ情報はありません。")

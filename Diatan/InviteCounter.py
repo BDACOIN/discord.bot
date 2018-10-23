@@ -259,6 +259,12 @@ async def another_invites_show_command(message):
 async def invites_show_command(message, target_author):
     print("invites_show_command")
     owner_id = target_author.id
+    
+    is_issue_inviter = False
+    for r in target_author.roles:
+        if r.name == "issue_inviter":
+            is_issue_inviter = True
+    
     try:
         invite_point = 0
         invite_num   = 0
@@ -307,6 +313,8 @@ async def invites_show_command(message, target_author):
 
                             invite_num = invite_num + 1
                             add_point = 1
+                            
+                            
                             # 20日以上経過していること
                             if tdelta and tdelta.days >= 20:
                                 
@@ -326,6 +334,9 @@ async def invites_show_command(message, target_author):
                             else:
                                 add_point = add_point * 0.5
                                 # print("メンバー登録情報なし")
+
+                            if is_issue_inviter:
+                                add_point = add_point * 0.1
 
                             invite_point = invite_point + add_point
 
