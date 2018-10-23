@@ -85,6 +85,8 @@ GLOBAL_UNKO_JACK_MODE["JACK"] = False
 # 前回実行した時間（時の部分だけ）
 PRE_DATETIME_HOUR = -1
 
+GLOBAL_REACTION_ICON = 0
+
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
 async def on_ready():
@@ -94,6 +96,7 @@ async def on_ready():
     global GLOBAL_CLOSE_MESSAGE
     global PRE_DATETIME_HOUR
     global GLOBAL_JACK_ACTING
+    global GLOBAL_REACTION_ICON
 
     # コンソールにBOTとしてログインした名前とUSER-IDを出力
     print('Logged in as')
@@ -134,6 +137,7 @@ async def on_ready():
                 continue
 
             try:
+                GLOBAL_REACTION_ICON = 0
                 GLOBAL_JACK_ACTING = True
                 print(target_channel_name)
                 random_channel_name = random.choice(target_channel_name)
@@ -142,8 +146,9 @@ async def on_ready():
                     if c.name in target_channel_name:
                         target_channel_obj = c
                         
+                
                 if target_channel_obj:
-
+                    
                     GLOBAL_START_MESSAGE = None
                     GLOBAL_CLOSE_MESSAGE = None
                     em = discord.Embed(title="", description="", color=0x36393f)
@@ -152,54 +157,199 @@ async def on_ready():
                     max_length = random.randint(1, 3)
                     if GLOBAL_UNKO_JACK_MODE["JACK"]:
                         max_length = 3
-                    for r in range(0, max_length):
-                        hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
                         
-                        if GLOBAL_UNKO_JACK_MODE["JACK"]:
-                            if r == 0:
-                                hmm_list = [ "え、呼んだ...!?(Called...!?)" ] 
-                            if r >= 2:
-                                hmm_list = [ "ガス不足...!? (gas shortage!?)" ]
-                        
-                        hmm = random.choice(hmm_list)
-                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
-                        em.set_footer(text=hmm)
-                        await client.edit_message(ret_message, embed=em)
+                    jack_inner_mode = 0 # normal
 
-                        await asyncio.sleep(5)
+                    if not GLOBAL_UNKO_JACK_MODE["JACK"]:
+                        rand_jack = random.randint(1,6)
+                        if rand_jack == 1:
+                            jack_inner_mode = 1 #king mode
+                        if rand_jack == 2:
+                            jack_inner_mode = 2 #danbol mode
+                    
+                    
+                    if jack_inner_mode == 0:
+                        for r in range(0, max_length):
+                            hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
+                            
+                            if GLOBAL_UNKO_JACK_MODE["JACK"]:
+                                if r == 0:
+                                    hmm_list = [ "え、呼んだ...!?(Called...!?)" ] 
+                                if r >= 2:
+                                    hmm_list = [ "ガス不足...!? (gas shortage!?)" ]
+                            
+                            hmm = random.choice(hmm_list)
+                            em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
+                            em.set_footer(text=hmm)
+                            await client.edit_message(ret_message, embed=em)
 
-                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
-                        trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが出る...!? (Tr.ck .. Tr.at!?)" ]
-                        if r == max_length-1:
-                            trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
-                        if GLOBAL_UNKO_JACK_MODE["JACK"]:
-                            if r == 1:
-                                trc_list = ["メタンガス持ち...?? (I've methane gas...??)" ]
-                            else:
-                                trc_list = ["頭のうえ...?? (Head on top...!?)" ]
+                            await asyncio.sleep(5)
+
+                            em.set_image(url=get_jack_o_lantern_to_l_direction(svr))
+                            trc_list = ["何かもれちぁう...!? (Tr.c. o. .re.t!?)", "あ、でちゃう...? (Tr..k .r Tr.a.!?)", "うぇっぷ...!? (.ric. or ..eat!?)", "い...いく...!? (Tr.ck .. Tr.at!?)", "ガ...ガスが出る...!? (Tr.ck .. Tr.at!?)" ]
                             if r == max_length-1:
-                                trc_list = ["ガスがあふれるーー!! (Gas overflows---!!)" ]
+                                trc_list = ["も! もれちゃうーー!! (Daammnn---!!)", "あー! でちゃうー!! (Aiieee---!!)", "うっぷーー あ!! (Yiiipee---!!)", "い、いくーーー!! (Eeeekk---!!)", "あたま屁ガスーー!! (Faaarrt---!!)", ]
+                            if GLOBAL_UNKO_JACK_MODE["JACK"]:
+                                if r == 1:
+                                    trc_list = ["メタンガス持ち...?? (I've methane gas...??)" ]
+                                else:
+                                    trc_list = ["頭のうえ...?? (Head on top...!?)" ]
+                                if r == max_length-1:
+                                    trc_list = ["ガスがあふれるーー!! (Gas overflows---!!)" ]
 
-                        trc = random.choice(trc_list)
+                            trc = random.choice(trc_list)
 
-                        em.set_footer(text=trc)
+                            em.set_footer(text=trc)
+                            await client.edit_message(ret_message, embed=em)
+
+                            await asyncio.sleep(5)
+
+                            # 念のため消しておく
+                            GLOBAL_REACTION_ICON = 0
+                            
+                        # 念のため消しておく
+                        GLOBAL_REACTION_ICON = 0
+                            
+                    # 王冠モード
+                    elif jack_inner_mode == 1:
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
+                        em.set_footer(text="いいもんめっけたw (I found something good!, lol.)")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                        em.set_footer(text="じゃじゃーん!! 王冠!! (Well Shazam!! Crown!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr, jack_inner_mode))
+                        em.set_footer(text="キングww (I'm a King, lol)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...ふぁ!? (...What!?)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...外れない!? (...Not come off!?)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...誰か👑引っ張って!! (...Pulling 👑!!)")
+                        await client.edit_message(ret_message, embed=em)
+                        #await client.add_reaction(ret_message, ":point_right::skin-tone-2:")
+                        #emjs = client.get_all_emojis()
+                        #print(emjs)
+                        await client.add_reaction(ret_message, "👉")
+                        await client.add_reaction(ret_message, "👑")
+                        await client.add_reaction(ret_message, "👈")
+                        
+                        for k in range(0, 5):
+                            if GLOBAL_REACTION_ICON > 40:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                                em.set_footer(text="...そんなに引っ張っちゃ らめー!! (...Do not pull me so much!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif k==4:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                                em.set_footer(text="...んにに!! とれるーー!! (...Mnn!! Come off!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif GLOBAL_REACTION_ICON >= 25:
+                                em.set_image(url=get_jack_o_lantern_to_r_direction(svr, jack_inner_mode))
+                                em.set_footer(text="...その調子ーー!! (...you're doing great!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                await asyncio.sleep(5)
+                            else:
+                                await asyncio.sleep(5)
+
+                        await asyncio.sleep(5)
+
+                    # 段ボールモード
+                    elif jack_inner_mode == 2:
+                        em.set_image(url=get_jack_o_lantern_to_close(svr, jack_inner_mode))
+                        em.set_footer(text="...💤")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...ん? (Hmm?)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...時間!?... (...It's time!?)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...ここワシんち (...This is my house)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                        em.set_footer(text="...産地直送!? (...Farm-fresh!?)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_close(svr, jack_inner_mode))
+                        em.set_footer(text="...じゃ、また... (See u later...)")
+                        await client.edit_message(ret_message, embed=em)
+                        
+                        await client.add_reaction(ret_message, "👉")
+                        await client.add_reaction(ret_message, "📦")
+                        await client.add_reaction(ret_message, "👈")
+
+                        for k in range(0, 5):
+                            if GLOBAL_REACTION_ICON > 40:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                                em.set_footer(text="...えーい!! 眠れんわーい!! (...Eh! clamorous!! I can't sleep!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif k==4:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
+                                em.set_footer(text="...はよ起こさんかーい!! (...Wake me up!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif GLOBAL_REACTION_ICON >= 25:
+                                em.set_image(url=get_jack_o_lantern_to_close(svr, jack_inner_mode))
+                                em.set_footer(text="...う、うーん💢 (...Um..Ummm 💢)")
+                                await client.edit_message(ret_message, embed=em)
+                                await asyncio.sleep(5)
+                            else:
+                                await asyncio.sleep(5)
+
+                        await asyncio.sleep(5)
+
 
                     if random.random() < 1.1: # ★ 0.6 などとすると帰ることがある★
                     
                         PRE_DATETIME_HOUR = nowdatetime.hour
 
-                        em.set_image(url=get_jack_o_lantern_trick_or_treat(svr))
+                        em.set_image(url=get_jack_o_lantern_trick_or_treat(svr, jack_inner_mode))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
 
                         TRICK_OR_TREAT_CHANNEL = target_channel_obj
                         # 万が一のときんためにtryしておく
                         try:
+
                             # HAPPY
                             g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
+                            
                             GLOBAL_START_MESSAGE = g_start_message.id
                             await asyncio.sleep(30)
                             
@@ -355,6 +505,7 @@ async def on_ready():
                         
                 print("スリープ")
                 await asyncio.sleep(30)
+                GLOBAL_REACTION_ICON = 0
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
                 print("GLOBAL_UNKO_JACK_MODE Falseに代入")
                 GLOBAL_UNKO_JACK_MODE["JACK"] = False
@@ -365,13 +516,38 @@ async def on_ready():
                 print(traceback.format_tb(e2.__traceback__))
                 print("例外:poker hand_percenteges error")
                 await asyncio.sleep(30)
+                GLOBAL_REACTION_ICON = 0
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
                 print("GLOBAL_UNKO_JACK_MODE Falseに代入")
                 GLOBAL_UNKO_JACK_MODE["JACK"] = False
                 GLOBAL_JACK_ACTING = False
 
 
-def get_jack_o_lantern_to_r_direction(server):
+
+def get_jack_o_lantern_to_close(server, mode=0):
+    if mode==2:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504350081969946636/jack-o-lantern-to-close-danbo.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504350376221212672/jack-o-lantern-to-close-danbo.png"
+
+
+
+def get_jack_o_lantern_to_r_direction(server, mode=0):
+
+    # king
+    if mode==1:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504304286566580239/jack-o-lantern-to-r-direction-king.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504304528334520320/jack-o-lantern-to-r-direction-king.png"
+    elif mode==2:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504350105714032641/jack-o-lantern-to-r-direction-danbo.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504350399608913948/jack-o-lantern-to-r-direction-danbo.png"
+    
+
     if GLOBAL_UNKO_JACK_MODE["JACK"]:
         if '443637824063930369' in server.id: # BDA鯖
             return "https://media.discordapp.net/attachments/498183493361205278/501761156000514048/jack-o-lantern-to-r-direction-unko.png"
@@ -383,7 +559,21 @@ def get_jack_o_lantern_to_r_direction(server):
         else:
             return "https://media.discordapp.net/attachments/498162384716955655/498333423195389965/jack-o-lantern-to-r-direction.png"
 
-def get_jack_o_lantern_to_l_direction(server):
+def get_jack_o_lantern_to_l_direction(server, mode=0):
+
+    # king
+    if mode==1:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504304318422319134/jack-o-lantern-to-l-direction-king.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504304547703947275/jack-o-lantern-to-l-direction-king.png"
+    elif mode==2:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504350128404955136/jack-o-lantern-to-l-direction-danbo.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504350419544178689/jack-o-lantern-to-l-direction-danbo.png"
+
+
     if GLOBAL_UNKO_JACK_MODE["JACK"]:
         if '443637824063930369' in server.id: # BDA鯖
             return "https://media.discordapp.net/attachments/498183493361205278/501808829101768735/jack-o-lantern-to-l-direction-unko.png"
@@ -395,7 +585,21 @@ def get_jack_o_lantern_to_l_direction(server):
         else:
             return "https://media.discordapp.net/attachments/498162384716955655/498333594075267083/jack-o-lantern-to-l-direction.png"
 
-def get_jack_o_lantern_trick_or_treat(server):
+def get_jack_o_lantern_trick_or_treat(server, mode=0):
+
+    # king
+    if mode==1:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504304347891367948/trick_or_treat-king.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504304565059977232/trick_or_treat-king.png"
+    elif mode==2:
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504350169786220565/trick_or_treat-danbo.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504350442936074240/trick_or_treat-danbo.png"
+
+
     if GLOBAL_UNKO_JACK_MODE["JACK"]:
         if '443637824063930369' in server.id: # BDA鯖
             return "https://media.discordapp.net/attachments/498183493361205278/501761194755883028/trick_or_treat-unko.png"
@@ -633,6 +837,8 @@ async def member_hand_percenteges(message):
     global GLOBAL_START_MESSAGE
     global GLOBAL_CLOSE_MESSAGE
 
+    global GLOBAL_REACTION_ICON
+
     # 入力タイミングではない
     if not TRICK_OR_TREAT_CHANNEL:
         return False
@@ -681,6 +887,23 @@ async def member_hand_percenteges(message):
     
     bests = poker.best_wild_hand(cards)
     rank = poker.hand_rank(bests)
+    
+    try:
+        # 60以上のリアクション評価値
+        if GLOBAL_REACTION_ICON > 60:
+            # 多ければ多いほど、なんども手札を引いて一番いいものが採用される
+            kurikaeshi_count = GLOBAL_REACTION_ICON // 30
+            for kuri in range(0, kurikaeshi_count):
+                # 5枚をランダムに
+                cards2 = random.sample(all_cards, 5)
+                bests2 = poker.best_wild_hand(cards2)
+                rank2 = poker.hand_rank(bests2)
+                if rank2 > rank:
+                    cards = cards2
+                    bests = bests2
+                    rank = rank2
+    except:
+        print("カード繰り返しエラー")
     
     if rank[0] == 0 and sum(rank[1]) <= 30:
         print("30以下")
@@ -850,6 +1073,14 @@ def IsInputHappyHalloWeenWords(text):
     similar9 = get_sequence_matcher_coef(text, "はろうぃん")
     similar10 = get_sequence_matcher_coef(text, "ﾊﾛｳｨﾝ")
     if similar1 > 0.5 or similar2 > 0.5 or similar3 > 0.5 or similar4 > 0.5 or similar5 > 0.5 or similar6 > 0.5 or similar7 > 0.5 or similar8 > 0.5 or similar9 > 0.5 or similar10 > 0.5 :
+        return True
+    elif "ハロウィン" in text:
+        return True
+    elif "はろうぃん" in text:
+        return True
+    elif "Halloween" in text:
+        return True
+    elif ":jack_o_lantern:" in text:
         return True
     else:
         return False
@@ -1035,7 +1266,16 @@ async def make_one_halloween_poker_data(message):
 
 
 
-
+@client.event
+async def on_reaction_add(reaction, user):
+    global GLOBAL_REACTION_ICON
+    if reaction.emoji == '👉':
+        GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 2
+    if reaction.emoji == '👈':
+        GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 2
+    if reaction.emoji == '👑':
+        GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
+    
 
 # メッセージを受信するごとに実行される
 @client.event
