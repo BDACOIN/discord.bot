@@ -165,14 +165,16 @@ async def on_ready():
                     jack_inner_mode = 0 # normal
 
                     if not GLOBAL_UNKO_JACK_MODE["JACK"]:
-                        rand_jack = random.randint(1,8)
+                        rand_jack = random.randint(1,16)
                         if rand_jack == 1:
                             jack_inner_mode = 1 #king mode
                         if rand_jack == 2:
                             jack_inner_mode = 2 #danbol mode
                         if rand_jack == 3:
                             jack_inner_mode = 3 #shampoo mode
-                    
+                        if rand_jack == 4:
+                            jack_inner_mode = 4 #kasa mode
+
                     
                     if jack_inner_mode == 0:
                         for r in range(0, max_length):
@@ -436,6 +438,119 @@ async def on_ready():
                         await asyncio.sleep(5)
 
 
+                    # 傘
+                    elif jack_inner_mode == 4:
+                        """
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "blue"))
+                        em.set_footer(text="青がいいかな～ ♤")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "red"))
+                        em.set_footer(text="赤がいいかな～ ♡")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "green"))
+                        em.set_footer(text="緑がいいかな～ ♧")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+                        """
+                        em.set_image(url=get_jack_o_lantern_to_r_direction(svr))
+                        em.set_footer(text="いいもんめっけたw (I found something good!, lol.)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="じゃじゃーん!! かさ!! (Well Shazam!! Umbrella!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="カボチャ付きww (The Pumpkin is on this, lol)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="せーの!! (Ready!!) ")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_up"))
+                        em.set_footer(text="よっしょい～!! (Go!!) ")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="ほいっと～!! (Catch!!) ")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="お･め･で･と･う･ご･ざ･い･ま･すー!! (O･me･de･to!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "orange"))
+                        em.set_footer(text="お･め･で･と･う･ご･ざ･い･ま･すー!! (O･me･de･to!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                        em.set_footer(text="ふあ!? 風が!! (...What!? Wind!!?)")
+                        await client.edit_message(ret_message, embed=em)
+                        
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                        em.set_footer(text="浮いちゃう!! 誰か助けて!! (I'm floating!! Help me!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+                        
+                        GLOBAL_REACTION_ICON = 0
+                        await client.add_reaction(ret_message, "👉")
+                        await client.add_reaction(ret_message, "🎃")
+                        await client.add_reaction(ret_message, "👈")
+
+                        for k in range(0, 5):
+                            if GLOBAL_REACTION_ICON > 60:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                em.set_footer(text="...そんなに引っ張っちゃ らめー!! (...Do not pull me so much!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif k==4:
+                                em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                em.set_footer(text="...ああー 体がもっていかれるー!! (...Oh!! My body floats in the air!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif GLOBAL_REACTION_ICON >= 35:
+                                if k==4 % 2 == 0:
+                                    em.set_image(url=get_jack_o_lantern_to_r_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                else:
+                                    em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                em.set_footer(text="...その調子ーー!! (...you're doing great!!)")
+                                await client.edit_message(ret_message, embed=em)
+                                await asyncio.sleep(5)
+                            else:
+                                if k==4 % 2 == 0:
+                                    em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                else:
+                                    em.set_image(url=get_jack_o_lantern_to_l_direction_kasa(svr, jack_inner_mode, "orange_kaze"))
+                                em.set_footer(text="浮いちゃう!! 誰か助けて!! (I'm floating!! Help me!!)")
+                                await asyncio.sleep(5)
+
+                        await asyncio.sleep(5)
 
 
                     if random.random() < 1.1: # ★ 0.6 などとすると帰ることがある★
@@ -637,6 +752,83 @@ def get_jack_o_lantern_to_close(server, mode=0):
             return "https://media.discordapp.net/attachments/498162384716955655/504350376221212672/jack-o-lantern-to-close-danbo.png"
 
 
+def get_jack_o_lantern_to_r_direction_kasa(server, mode=0, custom=""):
+
+    # 傘
+    if mode==4:
+        if custom == "blue":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998041007161356/jack-o-lantern-to-r-direction-kasa-blue.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998833789337630/jack-o-lantern-to-r-direction-kasa-blue.png"
+        
+        elif custom == "green":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998070052847627/jack-o-lantern-to-r-direction-kasa-green.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998851732701191/jack-o-lantern-to-r-direction-kasa-green.png"
+
+        elif custom == "red":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998100927250433/jack-o-lantern-to-r-direction-kasa-red.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998870388965387/jack-o-lantern-to-r-direction-kasa-red.png"
+
+        elif custom == "orange":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998127988768788/jack-o-lantern-to-r-direction-kasa-orange.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998891905744897/jack-o-lantern-to-r-direction-kasa-orange.png"
+
+        elif custom == "orange_kaze":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998545779064832/jack-o-lantern-to-r-direction-kasa-orange-kaze.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504999003352727553/jack-o-lantern-to-r-direction-kasa-orange-kaze.png"
+
+
+def get_jack_o_lantern_to_l_direction_kasa(server, mode=0, custom=""):
+
+    # 傘
+    if mode==4:
+        if custom == "blue":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998153863561226/jack-o-lantern-to-l-direction-kasa-blue.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998909353918475/jack-o-lantern-to-l-direction-kasa-blue.png"
+        
+        elif custom == "green":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998174767710229/jack-o-lantern-to-l-direction-kasa-green.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998926374666261/jack-o-lantern-to-l-direction-kasa-green.png"
+
+        elif custom == "red":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998197995896833/jack-o-lantern-to-l-direction-kasa-red.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998940576448522/jack-o-lantern-to-l-direction-kasa-red.png"
+
+        elif custom == "orange":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998241742356480/jack-o-lantern-to-l-direction-kasa-orange.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998961275469831/jack-o-lantern-to-l-direction-kasa-orange.png"
+
+        elif custom == "orange_up":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998429705895936/jack-o-lantern-to-l-direction-kasa-orange_up.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504998977801027595/jack-o-lantern-to-l-direction-kasa-orange_up.png"
+
+        elif custom == "orange_kaze":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/504998567732183040/jack-o-lantern-to-l-direction-kasa-orange-kaze.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/504999020184207360/jack-o-lantern-to-l-direction-kasa-orange-kaze.png"
+
+
+
 def get_jack_o_lantern_to_r_direction_shower(server, mode=0):
 
     # シャワー
@@ -738,6 +930,11 @@ def get_jack_o_lantern_trick_or_treat(server, mode=0):
             return "https://media.discordapp.net/attachments/498183493361205278/504637851447590922/trick_or_treat-shampoo-no-shower.png"
         else:
             return "https://media.discordapp.net/attachments/498162384716955655/504638750601642025/trick_or_treat-shampoo-no-shower.png"
+    elif mode==4: # 傘
+        if '443637824063930369' in server.id: # BDA鯖
+            return "https://media.discordapp.net/attachments/498183493361205278/504998621557817344/trick_or_treat-kasa.png"
+        else:
+            return "https://media.discordapp.net/attachments/498162384716955655/504999056477650944/trick_or_treat-kasa.png"
 
 
     if GLOBAL_UNKO_JACK_MODE["JACK"]:
@@ -1424,6 +1621,10 @@ async def on_reaction_add(reaction, user):
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
         elif reaction.emoji == '🚿':
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
+        elif reaction.emoji == '🎃':
+            GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
+        elif reaction.emoji == '☂':
+            GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 3
         elif GLOBAL_REACTION_ICON > 0:
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 1
 
