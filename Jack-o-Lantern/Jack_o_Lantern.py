@@ -400,7 +400,7 @@ async def on_ready():
                         await asyncio.sleep(4)
 
                         em.set_image(url=get_jack_o_lantern_to_l_direction(svr, jack_inner_mode))
-                        em.set_footer(text="...ちょ!! だれかシャワーよろ!! (Hey! please bring a Shower!!)")
+                        em.set_footer(text="...ちょ!! だれかシャワーよろ! (Hey! Please bring a Shower!)")
                         await client.edit_message(ret_message, embed=em)
                         
                         GLOBAL_REACTION_ICON = 0
@@ -1045,8 +1045,8 @@ async def member_hand_percenteges(message):
     except:
         print("カード繰り返しエラー")
     
-    if rank[0] == 0 and sum(rank[1]) <= 32:
-        print("32以下")
+    if rank[0] == 0 and sum(rank[1]) <= 31:
+        print("31以下")
         if (not "9D" in bests) and (random.randint(1, 16) == 2):
             sorted_cards = sorted(bests)
             cards = [sorted_cards[0], sorted_cards[1], sorted_cards[2], sorted_cards[3], "9D"]
