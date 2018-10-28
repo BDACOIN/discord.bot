@@ -18,6 +18,7 @@ import difflib
 import copy
 import asyncio
 
+
 from PIL import Image
 from PIL import ImageDraw
 
@@ -25,9 +26,21 @@ import EnvironmentVariable
 import poker
 
 
+
+
+
+
+
 def get_poker_cache_count_channel(member):
     for ch in member.server.channels:
         if "ポーカー" in str(ch) and "キャッシュ" in str(ch):
+            return ch
+            
+    return None
+
+def get_bgm_cache_channel(server):
+    for ch in server.channels:
+        if str(ch) == "halloween-bgm-cache":
             return ch
             
     return None
@@ -89,6 +102,9 @@ PRE_DATETIME_HOUR = -1
 
 GLOBAL_REACTION_ICON = 0
 
+
+GLOBAL_PLAYER = {}
+
 # ログイン&準備が完了したら一度だけ実行される
 @client.event
 async def on_ready():
@@ -125,9 +141,12 @@ async def on_ready():
         print(traceback.format_tb(e.__traceback__))
         print("例外:poker hand_percenteges error")
 
+    cannel_bgm_cache = get_bgm_cache_channel(target_server_obj)
+
     # 起動時の時間をひかえる
     PRE_DATETIME_HOUR = datetime.datetime.now().hour
     if target_server_obj:
+
         print("サーバー発見")
         while(True):
             target_channel_name = get_target_channel_name_list()
@@ -181,7 +200,11 @@ async def on_ready():
                         if rand_jack == 7:
                             jack_inner_mode = 7 #toilet mode
 
-                    
+                    try:
+                        await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_play gag_64k.mp3")
+                    except:
+                        pass
+                        
                     if jack_inner_mode == 0:
                         for r in range(0, max_length):
                             hmm_list = ["何だ...!? (What...!?)", "ふ～む...!? (Hmm...!?)", "どこだ...!? (Where...!?)", "甘い香り...!? (Sweet...!?)", "え～と...!? (Well...!?)", "う～む...!? (Um...!?)", "はは～ん...!? (Huh...!?)", "ふぁ...!? (No way...!?)", "なにごと...!? (Terrible...!?)", "ガスがあるのはココ...!? (Where Gass...!?)" ]
@@ -765,6 +788,11 @@ async def on_ready():
 
                             await asyncio.sleep(3)
 
+                    # BGMの停止
+                    try:
+                        await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_fadeout")
+                    except:
+                        pass
 
                     if random.random() < 1.1: # ★ 0.6 などとすると帰ることがある★
                     
@@ -798,6 +826,7 @@ async def on_ready():
                             await asyncio.sleep(1)
                             await client.delete_message(ghost_message)
                             await asyncio.sleep(6)
+
 
                             # CLOSE
                             g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
@@ -907,7 +936,7 @@ async def on_ready():
                                     await client.send_message(target_channel_obj, str(result_all_message))
                                 else:
                                     await client.send_message(target_channel_obj, "総計が空っぽ")
-                                    
+
                                 if em_poop:
                                     await asyncio.sleep(10)
                                     await client.send_message(target_channel_obj, embed=em_poop)
@@ -936,7 +965,9 @@ async def on_ready():
                         await client.delete_message(ret_message)
                         
                 print("スリープ")
-                await asyncio.sleep(30)
+                await asyncio.sleep(3)
+                await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_stop")
+                await asyncio.sleep(27)
                 GLOBAL_REACTION_ICON = 0
                 GLOBAL_REACTION_ICON_ROCK = False
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
@@ -948,7 +979,9 @@ async def on_ready():
                 print(traceback.format_exception(t,v,tb))
                 print(traceback.format_tb(e2.__traceback__))
                 print("例外:poker hand_percenteges error")
-                await asyncio.sleep(30)
+                await asyncio.sleep(3)
+                await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_stop")
+                await asyncio.sleep(27)
                 GLOBAL_REACTION_ICON = 0
                 TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.clear()
                 print("GLOBAL_UNKO_JACK_MODE Falseに代入")
@@ -2039,6 +2072,12 @@ async def on_message(message):
             
     except Exception as e:
         pass
+
+
+
+
+
+
 
 # APP(BOT)を実行
 client.run(BOT_TOKEN)

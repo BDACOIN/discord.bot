@@ -215,6 +215,17 @@ async def get_embedded_omikuji_object(message):
     print("メンバー情報がある？" + str(has))
     if not has:
         return
+        
+    member_exp = 0
+    try:
+        post_path = 'DataMemberPostInfo/' + str(message.author.id) + ".json"
+        with open(post_path, "r") as fr:
+            postinfo = json.load(fr)
+            member_exp = postinfo["exp"]
+    except:
+        pass
+    
+    print("経験値" + str(member_exp))
 
     #今日の日付の作成
     date = message.timestamp.now()
@@ -260,7 +271,7 @@ async def get_embedded_omikuji_object(message):
     
     # 問題があるメンバーであれば大吉は渡さない
     is_issue_member = is_this_member_issue_member(message.author)
-    if is_issue_member:
+    if is_issue_member or member_exp < 200:
         print("★問題のあるメンバー")
         random.choice(["吉", "吉", "吉", "吉", "吉", "中吉", "中吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "末吉", "末吉", "凶", "凶", "凶"])
     omikuji_key = rndstr
@@ -300,7 +311,7 @@ async def get_embedded_omikuji_object(message):
 
                 rndstr2 = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "大吉", "ぴょん吉", "凶"])
                 # 問題があるメンバーは大吉にならない
-                if is_issue_member:
+                if is_issue_member or member_exp < 200:
                     rndstr2 = random.choice(["吉", "吉", "吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "凶", "凶"])
                 omikuji_key2 = rndstr2
                 omikuji_lv2 = un_list[rndstr2]
