@@ -292,18 +292,19 @@ TARGET_MEMBER_MESSAGE = {}
 async def on_reaction_add(reaction, user):
 
     try:
-        if reaction.emoji == '💩':
-            if user.id in TARGET_MEMBER_MESSAGE:
-                message = TARGET_MEMBER_MESSAGE[user.id]
-                
-                has_ticket_count = await get_count_one_member_omikuji_data(message, message.author.id)
-                if has_ticket_count < 3:
-                    await client.send_message(message.channel, "おみくじ券が足りないですぜー\n")
-                else:
-                    await client.send_message(message.channel, "<@" + message.author.id + "> 、まいどあり！")
-                    await decrement_one_member_omikuji_data(message, message.author.id)
-                    em = update_one_halloween_poker_jack_unko(message, message.author)
-                    ret_message = await client.send_message(message.channel, embed=em)
+        if reaction.message.channel.name == "カボチャの館":
+            if reaction.emoji == '💩':
+                if user.id in TARGET_MEMBER_MESSAGE:
+                    message = TARGET_MEMBER_MESSAGE[user.id]
+                    
+                    has_ticket_count = await get_count_one_member_omikuji_data(message, message.author.id)
+                    if has_ticket_count < 3:
+                        await client.send_message(message.channel, "おみくじ券が足りないですぜー\n")
+                    else:
+                        await client.send_message(message.channel, "<@" + message.author.id + "> 、まいどあり！")
+                        await decrement_one_member_omikuji_data(message, message.author.id)
+                        em = update_one_halloween_poker_jack_unko(message, message.author)
+                        ret_message = await client.send_message(message.channel, embed=em)
     except Exception as e:
         t, v, tb = sys.exc_info()
         print(traceback.format_exception(t,v,tb))

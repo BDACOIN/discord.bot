@@ -273,7 +273,7 @@ async def get_embedded_omikuji_object(message):
     is_issue_member = is_this_member_issue_member(message.author)
     if is_issue_member or member_exp < 200:
         print("★問題のあるメンバー")
-        random.choice(["吉", "吉", "吉", "吉", "吉", "中吉", "中吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "末吉", "末吉", "凶", "凶", "凶"])
+        rndstr = random.choice(["吉", "吉", "吉", "吉", "吉", "中吉", "中吉", "中吉", "中吉", "中吉", "末吉", "末吉", "末吉", "末吉", "末吉", "凶", "凶", "凶"])
     omikuji_key = rndstr
     omikuji_lv = un_list[rndstr]
     print("キ★" + omikuji_key)

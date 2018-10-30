@@ -145,6 +145,9 @@ async def on_ready():
 
     # 起動時の時間をひかえる
     PRE_DATETIME_HOUR = datetime.datetime.now().hour
+    print("時間" + str(PRE_DATETIME_HOUR))
+    DATETIME_DAY = datetime.datetime.now().day
+    print("日にち" + str(DATETIME_DAY))
     if target_server_obj:
 
         print("サーバー発見")
@@ -200,8 +203,13 @@ async def on_ready():
                         if rand_jack == 7:
                             jack_inner_mode = 7 #toilet mode
 
+                        if datetime.datetime.now().day == 30 and datetime.datetime.now().hour == 21:
+                            jack_inner_mode = 98
+
                     try:
-                        await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_play gag_64k.mp3")
+                        if jack_inner_mode < 50:
+                            await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_play gag_64k.mp3")
+                        
                     except:
                         pass
                         
@@ -788,6 +796,214 @@ async def on_ready():
 
                             await asyncio.sleep(3)
 
+                    # 闇の登場
+                    elif jack_inner_mode == 98:
+                        em.set_footer(text="この劇はかなり長くなっています。メニューの「ハロウィン・ＢＧＭ」への接続がお勧めです。")
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(8)
+
+                        em1 = discord.Embed(title="", description="", color=0x36393f)
+                        em1.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "1st"))
+                        em1.set_footer(text="ブラックだわ！")
+                        ecmsg1 = await client.send_message(target_channel_obj, embed=em1)
+                        await asyncio.sleep(2)
+
+                        em2 = discord.Embed(title="", description="", color=0x36393f)
+                        em2.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "2nd"))
+                        em2.set_footer(text="逃げろ！")
+                        ecmsg2 = await client.send_message(target_channel_obj, embed=em2)
+                        await asyncio.sleep(2)
+
+                        em3 = discord.Embed(title="", description="", color=0x36393f)
+                        em3.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "3rd"))
+                        em3.set_footer(text="スイーツないかしら💛")
+                        ecmsg3 = await client.send_message(target_channel_obj, embed=em3)
+                        await asyncio.sleep(1)
+                        await client.delete_message(ecmsg1)
+                        await asyncio.sleep(1)
+
+                        em4 = discord.Embed(title="", description="", color=0x36393f)
+                        em4.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "4th"))
+                        em4.set_footer(text="やつが来た！")
+                        ecmsg4 = await client.send_message(target_channel_obj, embed=em4)
+                        await asyncio.sleep(1)
+                        await client.delete_message(ecmsg2)
+                        await asyncio.sleep(1)
+
+                        em5 = discord.Embed(title="", description="", color=0x36393f)
+                        em5.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "5th"))
+                        em5.set_footer(text="隠れろ！")
+                        ecmsg5 = await client.send_message(target_channel_obj, embed=em5)
+                        await asyncio.sleep(1)
+                        await client.delete_message(ecmsg3)
+
+                        await asyncio.sleep(1)
+
+                        em6 = discord.Embed(title="", description="", color=0x36393f)
+                        em6.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "6th"))
+                        em6.set_footer(text="ヤミじゃ! 早く逃げるんじゃ！\n")
+                        ecmsg6 = await client.send_message(target_channel_obj, embed=em6)
+
+                        await asyncio.sleep(1)
+                        await client.delete_message(ecmsg4)
+                        await asyncio.sleep(1)
+                        await client.delete_message(ecmsg5)
+                        await asyncio.sleep(1)
+
+                        await client.delete_message(ecmsg6)
+
+                        await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_play devil_battle_64k.mp3")
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "7th"))
+                        em.set_footer(text="(パタパタパタ…)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(16)
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "8th"))
+                        em.set_footer(text="(ぶっほっほっほ)", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(8)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "9th"))
+                        em.set_footer(text="(ここか、次なるエサ場は… ぐっふっふ)", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "10th"))
+                        em.set_footer(text="...？", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(3)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "11th"))
+                        em.set_footer(text="ねぇ、あんたボス...？", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "11th"))
+                        em.set_footer(text="え？ あ、はい。ブラックボスです...", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "12th"))
+                        em.set_footer(text="あっそ。ちょっとそこで待っといて～", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "25th"))
+                        em.set_footer(text="あっ...", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "9th"))
+                        em.set_footer(text="はい...", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "9th"))
+                        em.set_footer(text="一体何者...？", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "13th"))
+                        em.set_footer(text="メンドクサイのぅ～", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "14th"))
+                        em.set_footer(text="あれやるかのぅ～", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
+                        em.set_footer(text="このダンボールは「契約の箱」。", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_footer(text="すごい箱。", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "16th"))
+                        em.set_footer(text="このおでんの棒を", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
+                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "17th"))
+                        em.set_footer(text="おでんの棒 ⇒ オーディンの槍に！", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "18th"))
+                        em.set_footer(text="顔がついた傘を", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
+                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "19th"))
+                        em.set_footer(text="イージスの盾に！", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "20th"))
+                        em.set_footer(text="王冠とシャンプーハットを", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
+                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "21th"))
+                        em.set_footer(text="大天使のカブトに！", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "14th"))
+                        em.set_footer(text="時間ないので 巻きで！", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "23th"))
+                        em.set_footer(text="じゃじゃーん！ 真の姿！", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "26th"))
+                        em.set_footer(text="我こそ、勇者･ダイヤモンド･エース!!(I'm Brave Diamond Ace!!)", icon_url=client.user.avatar_url )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "27th"))
+                        em.set_footer(text="やはり 天の使いであったかーー!", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "8th"))
+                        em.set_footer(text="バカナーー!!!! ギャァァぁーーーー!!!!", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+
+                        GLOBAL_REACTION_ICON = 300
+                        await client.add_reaction(ret_message, "👉")
+                        await client.add_reaction(ret_message, "🦇")
+                        await client.add_reaction(ret_message, "👈")
+
+                        await asyncio.sleep(4)
+
+                        em1.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "7st"))
+                        em.set_footer(text="(パタパタパタ…)", icon_url=get_boss_icon(svr) )
+                        await client.edit_message(ret_message, embed=em)
+                        await asyncio.sleep(4)
+                        
+
                     # BGMの停止
                     try:
                         await client.send_message(cannel_bgm_cache, "!halloween_poker_bgm_fadeout")
@@ -798,7 +1014,10 @@ async def on_ready():
                     
                         PRE_DATETIME_HOUR = nowdatetime.hour
 
-                        em.set_image(url=get_jack_o_lantern_trick_or_treat(svr, jack_inner_mode))
+                        if jack_inner_mode == 98:
+                            em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "7th"))
+                        else:
+                            em.set_image(url=get_jack_o_lantern_trick_or_treat(svr, jack_inner_mode))
                         em.set_footer(text=" ")
                         await client.edit_message(ret_message, embed=em)
 
@@ -806,8 +1025,14 @@ async def on_ready():
                         # 万が一のときんためにtryしておく
                         try:
                             GLOBAL_REACTION_ICON_ROCK = True
-                            # HAPPY
-                            g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
+                            
+                            g_start_message = None
+                            
+                            if jack_inner_mode == 98:
+                                g_start_message = await client.send_message(target_channel_obj, " :bat: :regional_indicator_b: :regional_indicator_l: :regional_indicator_a: :regional_indicator_c: :regional_indicator_k: :bat:")
+                            else:
+                                # HAPPY
+                                g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             
                             GLOBAL_START_MESSAGE = g_start_message.id
                             await asyncio.sleep(30)
@@ -827,9 +1052,14 @@ async def on_ready():
                             await client.delete_message(ghost_message)
                             await asyncio.sleep(6)
 
-
-                            # CLOSE
-                            g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
+                            g_close_message = None
+                            if jack_inner_mode == 98:
+                                # CLOSE
+                                g_close_message = await client.send_message(target_channel_obj, ":bat: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :bat:")
+                            
+                            else:
+                                # CLOSE
+                                g_close_message = await client.send_message(target_channel_obj, ":jack_o_lantern: :regional_indicator_c: :regional_indicator_l: :regional_indicator_o: :regional_indicator_s: :regional_indicator_e: :jack_o_lantern:")
                             GLOBAL_CLOSE_MESSAGE = g_close_message.id
                             TRICK_OR_TREAT_CHANNEL = None
                             
@@ -989,6 +1219,12 @@ async def on_ready():
                 GLOBAL_JACK_ACTING = False
 
 
+def get_boss_icon(server):
+    if '443637824063930369' in server.id: # BDA鯖
+        return "https://media.discordapp.net/attachments/498183493361205278/506563026166480896/boss_disappear_icon.png"
+    else:
+        return "https://media.discordapp.net/attachments/498162384716955655/506562937985433610/boss_disappear_icon.png"
+
 
 def get_jack_o_lantern_to_close(server, mode=0):
     if mode==2:
@@ -1001,6 +1237,142 @@ def get_jack_o_lantern_to_close(server, mode=0):
             return "https://media.discordapp.net/attachments/498183493361205278/505322103797710849/chracter_toilet_close.png"
         else:
             return "https://media.discordapp.net/attachments/498162384716955655/505323740532572161/chracter_toilet_close.png"
+
+
+def get_jack_o_lantern_to_yamitojo(server, mode=0, custom=""):
+    # チャート
+    if mode==98:
+        if custom == "1st":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528274499764226/escape_yellow_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526515320848388/escape_yellow_mini.png"
+        elif custom == "2nd":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528300697649152/escape_sky_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526552910200854/escape_sky_mini.png"
+        elif custom == "3rd":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528321153007617/escape_pink_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526726810238976/escape_pink_mini.png"
+        elif custom == "4th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528344066621440/escape_purple_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526752143704064/escape_purple_mini.png"
+        elif custom == "5th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528363301830657/escape_orange_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526773144715278/escape_orange_mini.png"
+        elif custom == "6th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506528379860680714/escape_green_mini.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506526836038172688/escape_green_mini.png"
+        elif custom == "7th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506558431360974851/boss_disappear_01.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506556582335873047/boss_disappear_01.png"
+        elif custom == "8th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506558456157831184/boss_disappear_02.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506556611167256578/boss_disappear_02.png"
+        elif custom == "9th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506558483911409709/boss_disappear_03.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506556645011095552/boss_disappear_03.png"
+        elif custom == "10th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506563844911530015/boss_disappear_04.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506563736534908930/boss_disappear_04.png"
+        elif custom == "11th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506563868789833768/boss_disappear_05.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506563768617140235/boss_disappear_05.png"
+        elif custom == "12th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506566664620343314/boss_disappear_06.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506566597658411028/boss_disappear_06.png"
+        elif custom == "25th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506582528841482266/boss_disappear_22.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506582692238983178/boss_disappear_22.png"
+                
+        elif custom == "13th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/498330369213333504/jack-o-lantern-to-r-direction.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/498333423195389965/jack-o-lantern-to-r-direction.png"
+        elif custom == "14th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/498330385764319272/jack-o-lantern-to-l-direction.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/498333594075267083/jack-o-lantern-to-l-direction.png"
+        elif custom == "15th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511557425889280/weapon_close_box.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515359382241280/weapon_close_box.png"
+        elif custom == "16th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511484222701578/weapon_prev_oden.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515333310447618/weapon_prev_oden.png"
+        elif custom == "17th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511584625950722/weapon_post_odin.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515381217656841/weapon_post_odin.png"
+        elif custom == "18th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511686291816463/weapon_prev_kasa.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515431620739088/weapon_prev_kasa.png"
+        elif custom == "19th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511728956276737/weapon_post_shield.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515531504025620/weapon_post_shield.png"
+        elif custom == "20th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506511812859265044/weapon_prev_okan.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515639150706698/weapon_prev_okan.png"
+        elif custom == "21th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506513424495149056/weapon_post_angel.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515705399869441/weapon_post_angel.png"
+        elif custom == "23th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506514584413274112/omega-jack-o-lantern.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506515748810915870/omega-jack-o-lantern.png"
+        elif custom == "26th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506588798847811591/boss_disappear_26.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506589127181991946/boss_disappear_26.png"
+        elif custom == "27th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/506588826622492672/boss_disappear_27.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/506589147419639819/boss_disappear_27.png"
+
+
+
+
+
 
 
 def get_jack_o_lantern_to_toilet(server, mode=0, custom=""):
@@ -1965,6 +2337,8 @@ async def on_reaction_add(reaction, user):
         elif reaction.emoji == '🚽':
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
         elif reaction.emoji == '🚾':
+            GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
+        elif reaction.emoji == '🦇':
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 5
         elif GLOBAL_REACTION_ICON > 0:
             GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 1
