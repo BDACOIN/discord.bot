@@ -38,6 +38,15 @@ def get_poker_cache_count_channel(member):
             
     return None
 
+def get_poker_result_channel(server):
+    for ch in server.channels:
+        if "ハロウィン・結果発表" in str(ch):
+            return ch
+            
+    return None
+
+
+
 def get_bgm_cache_channel(server):
     for ch in server.channels:
         if str(ch) == "halloween-bgm-cache":
@@ -127,7 +136,7 @@ async def on_ready():
     
     if "Test" in client.user.name:
         pass
-        target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
+        # target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
     
     target_server_obj = None
     try:
@@ -187,7 +196,7 @@ async def on_ready():
                     jack_inner_mode = 0 # normal
 
                     if not GLOBAL_UNKO_JACK_MODE["JACK"]:
-                        rand_jack = random.randint(1,32)
+                        rand_jack = random.randint(1,7)
                         if rand_jack == 1:
                             jack_inner_mode = 1 #king mode
                         if rand_jack == 2:
@@ -203,10 +212,11 @@ async def on_ready():
                         if rand_jack == 7:
                             jack_inner_mode = 7 #toilet mode
 
-                        if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 30 and datetime.datetime.now().hour == 21:
+                        if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
                             jack_inner_mode = 98
 
-                    jack_inner_mode = 99
+                        if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
+                            jack_inner_mode = 99
 
                     try:
                         if jack_inner_mode < 50:
@@ -875,8 +885,10 @@ async def on_ready():
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(3)
 
+                        jack_avator_url = client.user.avatar_url.replace(".webp?", ".png?")
+
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "11th"))
-                        em.set_footer(text="ねぇ、あんたボス...？", icon_url=client.user.avatar_url )
+                        em.set_footer(text="ねぇ、あんたボス...？", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
@@ -886,7 +898,7 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "12th"))
-                        em.set_footer(text="あっそ。ちょっとそこで待っといて～", icon_url=client.user.avatar_url )
+                        em.set_footer(text="あっそ。ちょっとそこで待っといて～", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(4)
 
@@ -906,81 +918,81 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "13th"))
-                        em.set_footer(text="メンドクサイのぅ～", icon_url=client.user.avatar_url )
+                        em.set_footer(text="メンドクサイのぅ～", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "14th"))
-                        em.set_footer(text="あれやるかのぅ～", icon_url=client.user.avatar_url )
+                        em.set_footer(text="あれやるかのぅ～", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
-                        em.set_footer(text="このダンボールは「契約の箱」。", icon_url=client.user.avatar_url )
+                        em.set_footer(text="このダンボールは「契約の箱」。", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
-                        em.set_footer(text="すごい箱。", icon_url=client.user.avatar_url )
+                        em.set_footer(text="すごい箱。", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "16th"))
-                        em.set_footer(text="このおでんの棒を", icon_url=client.user.avatar_url )
+                        em.set_footer(text="このおでんの棒を", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
-                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        em.set_footer(text="入れると...", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "17th"))
-                        em.set_footer(text="おでんの棒 ⇒ オーディンの槍に！", icon_url=client.user.avatar_url )
+                        em.set_footer(text="おでんの棒 ⇒ オーディンの槍に！", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "18th"))
-                        em.set_footer(text="顔がついた傘を", icon_url=client.user.avatar_url )
+                        em.set_footer(text="顔がついた傘を", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
-                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        em.set_footer(text="入れると...", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "19th"))
-                        em.set_footer(text="イージスの盾に！", icon_url=client.user.avatar_url )
+                        em.set_footer(text="イージスの盾に！", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "20th"))
-                        em.set_footer(text="王冠とシャンプーハットを", icon_url=client.user.avatar_url )
+                        em.set_footer(text="王冠とシャンプーハットを", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "15th"))
-                        em.set_footer(text="入れると...", icon_url=client.user.avatar_url )
+                        em.set_footer(text="入れると...", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "21th"))
-                        em.set_footer(text="大天使のカブトに！", icon_url=client.user.avatar_url )
+                        em.set_footer(text="大天使のカブトに！", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "14th"))
-                        em.set_footer(text="時間ないので 巻きで！", icon_url=client.user.avatar_url )
+                        em.set_footer(text="時間ないので 巻きで！", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "23th"))
-                        em.set_footer(text="じゃじゃーん！ 真の姿！", icon_url=client.user.avatar_url )
+                        em.set_footer(text="じゃじゃーん！ 真の姿！", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "26th"))
-                        em.set_footer(text="我こそ、勇者･ダイヤモンド･エース!!(I'm Brave Diamond Ace!!)", icon_url=client.user.avatar_url )
+                        em.set_footer(text="我こそ、勇者･ダイヤモンド･エース!!(I'm Brave Diamond Ace!!)", icon_url=jack_avator_url )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
@@ -1010,7 +1022,7 @@ async def on_ready():
                     elif jack_inner_mode == 99:
                         em.set_footer(text="エンディングとなります。メニューの「ハロウィン・ＢＧＭ」への接続がお勧めです。")
                         await client.edit_message(ret_message, embed=em)
-                        await asyncio.sleep(7)
+                        await asyncio.sleep(20)
 
                         jack_avator_url = client.user.avatar_url.replace(".webp?", ".png?")
 
@@ -1028,7 +1040,7 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "2nd"))
-                        em.set_footer(text="〔謎の声：...あーあー テストテスト...  エース、聞こえる？〕")
+                        em.set_footer(text="〔❔ 謎の声：...あーあー テストテスト...  エース、聞こえる？〕")
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
@@ -1038,7 +1050,7 @@ async def on_ready():
                         await asyncio.sleep(4)
 
                         em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "2nd"))
-                        em.set_footer(text="〔謎の声：...ゲートが直ったから帰っておいでー〕")
+                        em.set_footer(text="〔❔ 謎の声：...ゲートが直ったから帰っておいでー〕")
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
@@ -1095,6 +1107,10 @@ async def on_ready():
                         # em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "toumei"))
                         em.set_image(url="")
                         await client.edit_message(ret_message, embed=em)
+                        
+                        result_channel = get_poker_result_channel(svr)
+                        await client.send_message(result_channel, embed=em)
+                        
                         await asyncio.sleep(7)
                         
                         await ending_scroll_sanka(svr, ret_message, em, target_channel_obj)
@@ -1108,13 +1124,13 @@ async def on_ready():
                         await asyncio.sleep(3)
 
                         em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "toumei"))
-                        em.set_footer(text="─ その後、Jack-o' Lantern ...")
+                        em.set_footer(text="─ その後、ジャック･オー･ランターン ...")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(4)
 
                         em.clear_fields()
-                        em.set_footer(text="いや、Brave･Diamond･Ace の姿を見たものは、いない。")
+                        em.set_footer(text="Brave･Diamond･Ace の姿を見たものは、いない。")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(5)
@@ -1152,13 +1168,14 @@ async def on_ready():
                         em.set_footer(text="")
                         await client.edit_message(ret_message, embed=em)
 
-                        await asyncio.sleep(7)
+                        await asyncio.sleep(20)
 
                         em3 = discord.Embed(title="", description="", color=0x36393f)
                         em3.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "coin"))
-                        em3.add_field(name="お守り (Brave Diamond Ace Coin)", value= "** **", inline=False)
-                        em3.set_footer(text="ただ ひっそりとたたずんでいる...")
+                        em3.add_field(name="Brave Diamond Ace のコイン", value= "JACKがお守りとして残したコイン", inline=False)
+                        em3.set_footer(text="JACKの名前と姿が彫られている...")
                         await client.send_message(target_channel_obj, embed=em3)
+                        await client.send_message(result_channel, embed=em3)
                         
 
 
@@ -1409,15 +1426,17 @@ async def ending_scroll_sanka(svr, ret_message, em, channel):
 
     modified_sorted_list = []
     for sl in sorted_list:
-        if True:
-        # ★★★ if sl[0] in member_of_on_calk:
+        if sl[0] in member_of_on_calk:
             modified_sorted_list.append(sl)
 
     result_str = ""
 
     index_list_ix = 1
     
-    span_time = 132 / (len(modified_sorted_list)/5)
+    result_channel = get_poker_result_channel(svr)
+    await client.send_message(result_channel, "**参加メンバー**")
+    
+    span_time = 130 / (len(modified_sorted_list)/5)
     print("スパンタイム" + str(span_time))
     for s in modified_sorted_list:
         try:
@@ -1428,6 +1447,7 @@ async def ending_scroll_sanka(svr, ret_message, em, channel):
                 em.add_field(name="参加メンバー", value=result_str, inline=False)
                 # em.set_image(url=get_jack_o_lantern_to_ending(svr, 99, "11th"))
                 await client.edit_message(ret_message, embed=em)
+                await client.send_message(result_channel, result_str)
                 # await client.send_message(channel, result_str)
                 await asyncio.sleep(span_time)
                 result_str = ""
