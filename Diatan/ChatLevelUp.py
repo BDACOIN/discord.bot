@@ -140,7 +140,7 @@ async def show_level_infomation(message, exp, default="会話レベル情報"):
                         max_level_YM = max(paidinfo["kaiwa_paid_lv"].keys())
                         print(max_level_YM)
                         em.add_field(name="報酬を支払済みの Lv", value=str((paidinfo["kaiwa_paid_lv"][max_level_YM] // 5) * 5), inline=False)
-                        em.add_field(name="報酬を支払済みの BDA枚数", value=str(sum(paidinfo["kaiwa_paid_amount"].values())) + " 枚", inline=False)
+                        em.add_field(name="報酬を支払済みの BDA枚数", value=str(max(paidinfo["kaiwa_paid_amount"].values())) + " 枚", inline=False)
                     else:
                         em.add_field(name="報酬を支払済みの BDA枚数", value="0 枚", inline=False)
                 else:
