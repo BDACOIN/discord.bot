@@ -26,6 +26,8 @@ def CalclateERCPaid(YEAR_MONTH):
                     paidinfo = json.load(fr2)
                     if paidinfo["kaiwa_paid_amount"] != 0:
                         amount = paidinfo["kaiwa_paid_amount"][YEAR_MONTH]
+                        if "201809" in paidinfo["kaiwa_paid_amount"]:
+                            amount = amount - paidinfo["kaiwa_paid_amount"]["201809"]
 
                         if amount > 0:
                             print_ethadd.append(eth)
@@ -61,4 +63,4 @@ def CalclateERCPaid(YEAR_MONTH):
     f.close()
 
 
-CalclateERCPaid("201809")
+CalclateERCPaid("201810")

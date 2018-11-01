@@ -102,16 +102,20 @@ def CalclatePaid(YEAR_MONTH):
                     if paidinfo["kaiwa_paid_lv"] == 0:
                         paidinfo["kaiwa_paid_lv"] = {}
                         paidinfo["kaiwa_paid_lv"][YEAR_MONTH] = lv
+                    else:
+                        paidinfo["kaiwa_paid_lv"][YEAR_MONTH] = lv
 
                     if not "kaiwa_paid_exp" in paidinfo:
                         paidinfo["kaiwa_paid_exp"] = {}
+                        paidinfo["kaiwa_paid_exp"][YEAR_MONTH] = exp
+                    else:
                         paidinfo["kaiwa_paid_exp"][YEAR_MONTH] = exp
 
                     if paidinfo["kaiwa_paid_amount"] == 0:
                         paidinfo["kaiwa_paid_amount"] = {}
                         paidinfo["kaiwa_paid_amount"][YEAR_MONTH] = amount
-
-    
+                    else:
+                        paidinfo["kaiwa_paid_amount"][YEAR_MONTH] = amount
 
                 if paidinfo:
                     with open("DataMemberPaid/" + str(id) + ".json", "w") as fw:
@@ -129,4 +133,4 @@ def CalclatePaid(YEAR_MONTH):
 
 
 createChatLevelUpTable()
-CalclatePaid("201809")
+CalclatePaid("201810")
