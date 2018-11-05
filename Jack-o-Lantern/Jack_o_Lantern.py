@@ -56,7 +56,7 @@ def get_bgm_cache_channel(server):
 
 
 def get_target_channel_name_list():
-    return ["halloween-poker", "ハロウィン・ポーカー" ]
+    return ["雑談２" ]
 
 
 
@@ -136,7 +136,7 @@ async def on_ready():
     
     if "Test" in client.user.name:
         pass
-        # target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
+        target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
     
     target_server_obj = None
     try:
@@ -196,7 +196,7 @@ async def on_ready():
                     jack_inner_mode = 0 # normal
 
                     if not GLOBAL_UNKO_JACK_MODE["JACK"]:
-                        rand_jack = random.randint(1,7)
+                        rand_jack = random.randint(1,28)
                         if rand_jack == 1:
                             jack_inner_mode = 1 #king mode
                         if rand_jack == 2:
@@ -212,11 +212,15 @@ async def on_ready():
                         if rand_jack == 7:
                             jack_inner_mode = 7 #toilet mode
 
-                        if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
-                            jack_inner_mode = 98
+                        #if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
+                        #    jack_inner_mode = 98
 
-                        if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
-                            jack_inner_mode = 99
+                        #if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
+                        #    jack_inner_mode = 99
+                        
+                        datedatetime_now = datetime.datetime.now()
+                        if datedatetime_now.month == 11 and datedatetime_now.day == 6 and datedatetime_now.hour == 12 and datedatetime_now.min == 0:
+                            jack_inner_mode = 51
 
                     try:
                         if jack_inner_mode < 50:
@@ -224,6 +228,7 @@ async def on_ready():
                         
                     except:
                         pass
+                        
                         
                     if jack_inner_mode == 0:
                         for r in range(0, max_length):
@@ -1178,6 +1183,184 @@ async def on_ready():
                         await client.send_message(result_channel, embed=em3)
                         
 
+                    # 2ndシーズン開始
+                    elif jack_inner_mode == 51:
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "toumei"))
+                        em.set_footer(text="...")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "toumei"))
+                        em.set_footer(text="《 ジャックが去ってより30年... 》")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(6)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "toumei"))
+                        em.set_footer(text="《 彼は現れなかった... 》")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(6)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "toumei"))
+                        em.set_footer(text="《 そう… 》")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(3)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "1st"))
+                        em.set_footer(text="《 あの時までは…!! 》")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(6)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "2nd"))
+                        em.set_footer(text="あ!!")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(4)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "3rd"))
+                        em.set_footer(text="(ぽちゃん...)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "6th"))
+                        em.set_footer(text="(ウゴゴゴゴ!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "toumei"))
+                        em.set_footer(text="─ その頃...")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "5th"))
+                        em.set_footer(text="あたま ごしごしー♪")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "4th"))
+                        em.set_footer(text="かぼちゃ ごしごしー♪")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "9th"))
+                        em.set_footer(text="ふぁーーーーー!!")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "7th"))
+                        em.set_footer(text="なんじゃなんじゃーーー!?")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "8th"))
+                        em.set_footer(text="(ゲート：異常発生!! 異常発生!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(6)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "12th"))
+                        em.set_footer(text="またかーい!😱")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "10th"))
+                        em.set_footer(text="《 またかーい!😱 》")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "6th"))
+                        em.set_footer(text="...")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(3)
+
+                        em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "11th"))
+                        em.set_footer(text="(パコッ!!)")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(3)
+
+                        em.set_footer(text="...")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(3)
+
+                        em.set_footer(text="おひさ❤")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+
+                        em.set_footer(text="...")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(3)
+
+                        em.set_footer(text="ぬいて❤")
+                        await client.edit_message(ret_message, embed=em)
+
+                        await asyncio.sleep(5)
+                        
+                        GLOBAL_REACTION_ICON = 0
+                        await client.add_reaction(ret_message, "👉")
+                        await client.add_reaction(ret_message, "🚽")
+                        await client.add_reaction(ret_message, "🎃")
+                        await client.add_reaction(ret_message, "👈")
+
+                        for k in range(0, 5):
+                            if GLOBAL_REACTION_ICON > 60:
+                                em.set_footer(text="やっと抜けたー!!")
+                                em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "14th"))
+                                await client.edit_message(ret_message, embed=em)
+
+                                await asyncio.sleep(4)
+
+                                em.set_footer(text="ックショ!!!")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif k==4:
+                                em.set_footer(text="あ、抜けた!")
+                                em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "14th"))
+                                await client.edit_message(ret_message, embed=em)
+
+                                await asyncio.sleep(4)
+
+                                em.set_footer(text="ックショ!!!")
+                                await client.edit_message(ret_message, embed=em)
+                                break
+                            elif GLOBAL_REACTION_ICON >= 35:
+                                if k % 2 == 0:
+                                    em.set_footer(text="...その調子ーー!!")
+                                else:
+                                    em.set_footer(text="...いいよいいよーー!!")
+                                em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "13th"))
+                                await client.edit_message(ret_message, embed=em)
+                                await asyncio.sleep(5)
+                            else:
+                                if k % 2 == 0:
+                                    em.set_footer(text="...あ、水が入ってきた🚽")
+                                else:
+                                    em.set_footer(text="ちょこっとぬいて❤")
+                                await client.edit_message(ret_message, embed=em)
+                                await asyncio.sleep(5)
+
+                            await asyncio.sleep(3)
+
+                        await asyncio.sleep(2)
+
 
                     # BGMの停止
                     try:
@@ -1191,7 +1374,9 @@ async def on_ready():
                     
                         PRE_DATETIME_HOUR = nowdatetime.hour
 
-                        if jack_inner_mode == 98:
+                        if jack_inner_mode == 51:
+                            em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "15th"))
+                        elif jack_inner_mode == 98:
                             em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "7th"))
                         else:
                             em.set_image(url=get_jack_o_lantern_trick_or_treat(svr, jack_inner_mode))
@@ -1212,7 +1397,38 @@ async def on_ready():
                                 g_start_message = await client.send_message(target_channel_obj, " :tada: :regional_indicator_h: :regional_indicator_a: :regional_indicator_p: :regional_indicator_p: :regional_indicator_y: :tada:")
                             
                             GLOBAL_START_MESSAGE = g_start_message.id
-                            await asyncio.sleep(30)
+                            await asyncio.sleep(7)
+                            
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 5:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 10:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 20:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 30:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 40:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
+                            try:
+                                if TRICK_OR_TREAT_TIME_POKER_REGIST_LIST.items() > 50:
+                                    await asyncio.sleep(7)
+                            except:
+                                pass
                             
                             ghost_message = await client.send_message(target_channel_obj, "…")
                             await asyncio.sleep(0.5)
@@ -1360,7 +1576,7 @@ async def on_ready():
                             
                     else:
                         PRE_DATETIME_HOUR = nowdatetime.hour
-                        await asyncio.sleep(5000)
+                        await asyncio.sleep(30)
                         GLOBAL_REACTION_ICON_ROCK = False
 
                         TRICK_OR_TREAT_CHANNEL = None
@@ -1462,6 +1678,115 @@ async def ending_scroll_sanka(svr, ret_message, em, channel):
                 
         index_list_ix = index_list_ix + 1
 
+
+
+def get_2nd_season_start(server, mode=0, custom=""):
+    # セカンドシーズン
+    if mode==51:
+
+        if custom == "toumei":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508330668615270403/toumei_large.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/508321812426260501/toumei_large.png"
+
+        if custom == "0st":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508537054427348992/season_2_start_00.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508537054427348992/season_2_start_00.png"
+
+        if custom == "1st":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508537104825843712/season_2_start_01.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508537104825843712/season_2_start_01.png"
+                
+        if custom == "2nd":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508537160387919902/season_2_start_02.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508537160387919902/season_2_start_02.png"
+                
+        if custom == "3rd":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508537237630091266/season_2_start_03.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508537237630091266/season_2_start_03.png"
+
+        if custom == "4th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498162384716955655/508546122369859587/season_2_start_04.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/508546122369859587/season_2_start_04.png"
+
+        if custom == "5th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498162384716955655/508546099821412362/season_2_start_05.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/508546099821412362/season_2_start_05.png"
+
+        if custom == "6th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498162384716955655/508544229648105473/season_2_start_06.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/508544229648105473/season_2_start_06.png"
+
+
+
+        if custom == "9th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498162384716955655/508546145342062592/season_2_start_09.png"
+            else:
+                return "https://media.discordapp.net/attachments/498162384716955655/508546145342062592/season_2_start_09.png"
+
+        if custom == "7th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508538071327965195/season_2_start_07.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508538071327965195/season_2_start_07.png"
+
+        if custom == "8th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508538164978122762/season_2_start_08.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508538164978122762/season_2_start_08.png"
+
+        if custom == "10th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508555800151719936/season_2_start_10.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508555800151719936/season_2_start_10.png"
+
+        if custom == "11th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508684771098886183/season_2_start_11.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508684771098886183/season_2_start_11.png"
+
+        if custom == "12th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508538243747282944/season_2_start_12.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508538243747282944/season_2_start_12.png"
+
+        if custom == "13th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508684804347396096/season_2_start_13.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508684804347396096/season_2_start_13.png"
+
+        if custom == "14th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508684825419317259/season_2_start_14.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508684825419317259/season_2_start_14.png"
+
+        if custom == "15th":
+            if '443637824063930369' in server.id: # BDA鯖
+                return "https://media.discordapp.net/attachments/498183493361205278/508684852833550336/season_2_start_15.png"
+            else:
+                return "https://media.discordapp.net/attachments/498183493361205278/508684852833550336/season_2_start_15.png"
 
 
 
@@ -2160,6 +2485,29 @@ def get_all_cards():
     all_cards.extend(black_joker_cards)
     all_cards.extend(red_joker_cards)
     return all_cards
+
+def get_all_cards_wo_rj():
+    black_joker_cards = [r+s for r in '23456789TJQKA' for s in 'SC']
+    red_joker_cards =  [r+s for r in '23456789TJQKA' for s in 'HD']
+    jokers = ['?B' ]
+
+    all_cards = []
+    all_cards.extend(jokers)
+    all_cards.extend(black_joker_cards)
+    all_cards.extend(red_joker_cards)
+    return all_cards
+
+def get_all_cards_wo_bj():
+    black_joker_cards = [r+s for r in '23456789TJQKA' for s in 'SC']
+    red_joker_cards =  [r+s for r in '23456789TJQKA' for s in 'HD']
+    jokers = ['?R' ]
+
+    all_cards = []
+    all_cards.extend(jokers)
+    all_cards.extend(black_joker_cards)
+    all_cards.extend(red_joker_cards)
+    return all_cards
+
     
 
 def make_png_img(message, displays_cards):
@@ -2258,7 +2606,7 @@ async def member_hand_percenteges(message):
     # もう入力済み
     if message.author.id in TRICK_OR_TREAT_TIME_POKER_REGIST_LIST:
         print("入力済み")
-        print(str(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST))
+        # print(str(TRICK_OR_TREAT_TIME_POKER_REGIST_LIST))
         return False
     
     if not has_post_data(message):
@@ -2268,6 +2616,12 @@ async def member_hand_percenteges(message):
 
     
     all_cards = get_all_cards()
+    all_card_rnd = random.randint(1,3)
+    if all_card_rnd == 1:
+        all_cards = get_all_cards_wo_rj()
+    elif all_card_rnd == 2:
+        all_cards = get_all_cards_wo_bj()
+    
     # 5枚をランダムに
     cards = random.sample(all_cards, 5)
     
@@ -2280,7 +2634,7 @@ async def member_hand_percenteges(message):
         # 60以上のリアクション評価値
         if GLOBAL_REACTION_ICON > 60:
             # 多ければ多いほど、なんども手札を引いて一番いいものが採用される
-            kurikaeshi_count = GLOBAL_REACTION_ICON // 30
+            kurikaeshi_count = GLOBAL_REACTION_ICON // 60
             for kuri in range(0, kurikaeshi_count):
                 # 5枚をランダムに
                 cards2 = random.sample(all_cards, 5)
@@ -2735,7 +3089,7 @@ async def on_message(message):
 
     if message.content == "!halloween poker":
     
-        if message.author.id in ["397238348877529099", "443634644294959104", "446297147957182464", "444624675251814422", "427792548568760321", "429920700359245824", "295731360776060939" ,"427257154542501927"]:
+        if message.author.id in ["480051714116943892", "397238348877529099", "443634644294959104", "446297147957182464", "444624675251814422", "427792548568760321", "429920700359245824", "295731360776060939" ,"427257154542501927"]:
             print("強制発動")
             # ジャックー・オー・ランタンが演技や統計まで一連の何かをしている
             # 間であれば、やらないが、それ以外なら、ハロウィンポーカーを再度
