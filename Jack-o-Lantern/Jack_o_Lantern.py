@@ -223,7 +223,7 @@ async def on_ready():
                             jack_inner_mode = 7 #toilet mode
                         if rand_jack == 8:
                             jack_inner_mode = 8 #pipopipo mode
-                        if rand_jack == 9:
+                        if rand_jack <= 12:
                             jack_inner_mode = 9 #metal mode
 
                         #if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
@@ -285,18 +285,19 @@ async def on_ready():
                                 em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "toumei"))
                                 em.set_footer(text="《メタジャックは逃げ去った... (Metajack escaped...)》")
                                 await client.edit_message(ret_message, embed=em)
-                                jack_inner_mode = 0
+                                jack_inner_mode = random.randint(1, 8)
                                 await asyncio.sleep(3)
                                 em.set_footer(text="《何か来たようだ... (It seems that someone come...)》")
                                 await client.edit_message(ret_message, embed=em)
                                 break
 
                             if "💘" in GLOBAL_REACTION_ICON_LIST:
+                                heart_count = GLOBAL_REACTION_ICON_LIST.count("💘")
                                 try:
                                     GLOBAL_REACTION_ICON_LIST.remove("💘")
                                 except:
                                     pass
-                                GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + 20
+                                GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + (20*heart_count)
                                 random_1damage = random.choice(["r-1-A", "r-1-B", "r-1-C", "r-1-D", "r-1-E", "l-1-A", "l-1-B", "l-1-C", "l-1-D", "l-1-E"])
                                 em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, random_1damage))
                             else:
@@ -325,15 +326,21 @@ async def on_ready():
                                 else:
                                     em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "1st"))
 
-                                the_local_metal_rnd = random.randint(0,3)
+                                the_local_metal_rnd = random.randint(0,6)
                                 if the_local_metal_rnd == 0:
                                     em.set_footer(text="...メタル? (...Metal?)")
                                 elif the_local_metal_rnd == 1:
                                     em.set_footer(text="...メタン? (...Methane?)")
                                 elif the_local_metal_rnd == 2:
-                                    em.set_footer(text="...メンタル? (...Mental?)")
+                                    em.set_footer(text="...スタン? (...Stan?)")
                                 elif the_local_metal_rnd == 3:
+                                    em.set_footer(text="...メガホ? (...Megapo?)")
+                                elif the_local_metal_rnd == 4:
+                                    em.set_footer(text="...メンタル? (...Mental?)")
+                                elif the_local_metal_rnd == 5:
                                     em.set_footer(text="...アロー? (...Arrow?)")
+                                elif the_local_metal_rnd == 6:
+                                    em.set_footer(text="...ハート? (...Heart?)")
                                 await client.edit_message(ret_message, embed=em)
                                 await asyncio.sleep(2.5)
 
