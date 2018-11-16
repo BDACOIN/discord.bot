@@ -223,9 +223,8 @@ async def on_ready():
                             jack_inner_mode = 7 #toilet mode
                         if rand_jack == 8:
                             jack_inner_mode = 8 #pipopipo mode
-                        if rand_jack <= 12:
-                            jack_inner_mode = 9 #metal mode
-                        jack_inner_mode = 9
+                        if rand_jack == 49 and random.randint(0,1)==0:
+                            jack_inner_mode = 49 #metal mode
 
                         #if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
                         #    jack_inner_mode = 98
@@ -243,7 +242,7 @@ async def on_ready():
 
 
                     # メタルモード
-                    if jack_inner_mode == 9:
+                    if jack_inner_mode == 49:
                         em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "1st"))
                         em.set_footer(text="《メタジャックが現れた!! (MetaJack appeared!)》")
                         await client.edit_message(ret_message, embed=em)
@@ -1588,7 +1587,7 @@ async def on_ready():
                             em.set_image(url=get_2nd_season_start(svr, jack_inner_mode, "15th"))
                         elif jack_inner_mode == 98:
                             em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "7th"))
-                        elif jack_inner_mode == 9:
+                        elif jack_inner_mode == 49:
                             pass
                         else:
                             em.set_image(url=get_jack_o_lantern_trick_or_treat(svr, jack_inner_mode))
@@ -1603,7 +1602,7 @@ async def on_ready():
                             g_start_message = None
                             
                             
-                            if jack_inner_mode == 9:
+                            if jack_inner_mode == 49:
                                 g_start_message = await client.send_message(target_channel_obj, " :cupid: :regional_indicator_m: :regional_indicator_e: :regional_indicator_t: :regional_indicator_a: :regional_indicator_l: :cupid:")
 
                             elif jack_inner_mode == 98:
@@ -2007,7 +2006,7 @@ def get_jack_o_lantern_to_ending(server, mode=0, custom=""):
 
 def get_2nd_season_metal(server, mode=0, custom=""):
     # セカンドシーズンのメタル
-    if mode==9:
+    if mode==49:
         if custom == "toumei":
             if '443637824063930369' in server.id: # BDA鯖
                 return "https://media.discordapp.net/attachments/498183493361205278/506859050353295370/toumei_large.png"
@@ -2846,25 +2845,41 @@ def get_hand_names():
     return hand_names
 
 
+def match_original_card(card_copy, best_copy):
+    for x in range(0, len(card_copy)):
+        for y in range(0, len(best_copy)):
+            if card_copy[x] == best_copy[y]:
+                element = card_copy[x]
+                card_copy.pop(x)
+                best_copy.pop(y)
+                return True, card_copy, best_copy, element
+                
+
+    return False, None, None, None
+    
 # ベストの役が計算された並びをもとに、元のオリジナルのジョーカーなどがある
 # (かもしれない)カード名へと戻す
 def best_wild_hand_reflect_hands(cards, bests):
 
-    rests = cards[:]
+    card_copy = list(cards[:])
+    best_copy = list(bests[:])
 
     displays_cards = []
     
+    while(True):
+        has_same, c, b, e = match_original_card(card_copy, best_copy)
+        if not has_same:
+            break
+            
+        displays_cards.append(e)
+    
     # 最終的な手札の並びに基づいて…
-    for b in bests:
-        # それが元のカードにあれば
-        if b in rests:
-            # その最終的な手札のならびに従ってリストに加える
-            displays_cards.append(b)
+    for b in best_copy:
             
         # 元のカードにないということはジョーカー
         # 最終的なジャッジが黒系カード(スペードかクラブ)なら
         # 黒のジョーカーが代用となった
-        elif "S" in b or "C" in b:
+        if "S" in b or "C" in b:
             displays_cards.append("WJB")
 
         # 元のカードにないということはジョーカー
@@ -2873,8 +2888,6 @@ def best_wild_hand_reflect_hands(cards, bests):
         elif "H" in b or "D" in b:
             displays_cards.append("WJR")
             
-        rests.pop(0)
-
     return displays_cards
 
 def get_all_cards():
@@ -3658,3 +3671,5 @@ async def on_message(message):
 # APP(BOT)を実行
 client.run(BOT_TOKEN)
 #
+
+
