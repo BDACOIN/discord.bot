@@ -225,12 +225,14 @@ async def on_ready():
                             jack_inner_mode = 8 #pipopipo mode
                         if rand_jack <= 12:
                             jack_inner_mode = 9 #metal mode
+                        jack_inner_mode = 9
 
                         #if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
                         #    jack_inner_mode = 98
 
                         #if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
                         #    jack_inner_mode = 99
+
 
                     try:
                         if jack_inner_mode < 50:
@@ -285,27 +287,34 @@ async def on_ready():
                                 em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "toumei"))
                                 em.set_footer(text="《メタジャックは逃げ去った... (Metajack escaped...)》")
                                 await client.edit_message(ret_message, embed=em)
+                                await client.clear_reactions(ret_message)
                                 jack_inner_mode = random.randint(1, 8)
                                 await asyncio.sleep(3)
                                 em.set_footer(text="《何か来たようだ... (It seems that someone come...)》")
                                 await client.edit_message(ret_message, embed=em)
                                 break
 
-                            if "💘" in GLOBAL_REACTION_ICON_LIST:
+                            metal_damaged = False
+                            if "💘" in GLOBAL_REACTION_ICON_LIST or "💩" in GLOBAL_REACTION_ICON_LIST:
+                                metal_damaged = True
                                 heart_count = GLOBAL_REACTION_ICON_LIST.count("💘")
+                                heart_count2 = GLOBAL_REACTION_ICON_LIST.count("💩")
                                 try:
                                     GLOBAL_REACTION_ICON_LIST.remove("💘")
                                 except:
                                     pass
+                                try:
+                                    GLOBAL_REACTION_ICON_LIST.remove("💩")
+                                except:
+                                    pass
                                 GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + (20*heart_count)
+                                GLOBAL_REACTION_ICON = GLOBAL_REACTION_ICON + (6*heart_count2)
                                 random_1damage = random.choice(["r-1-A", "r-1-B", "r-1-C", "r-1-D", "r-1-E", "l-1-A", "l-1-B", "l-1-C", "l-1-D", "l-1-E"])
                                 em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, random_1damage))
-                            else:
-                                random_0damage = random.choice(["r-0-A", "r-0-B", "r-0-C", "r-0-D", "r-0-E", "r-0-A", "r-0-B", "r-0-C", "r-0-D", "r-0-E"])
-                                em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, random_0damage))
 
                             print(GLOBAL_REACTION_ICON_LIST)
                             if "📢" in GLOBAL_REACTION_ICON_LIST or "📣" in GLOBAL_REACTION_ICON_LIST:
+                                print("リストに入ってる")
                                 try:
                                     GLOBAL_REACTION_ICON_LIST.remove("📣")
                                 except:
@@ -316,15 +325,21 @@ async def on_ready():
                                     pass
                                 em.set_footer(text="《メタジャックは驚いた!!(Metajack was shocked!!)》")
                                 
-                                if k_ix > 0 and random.randint(0, 2) < 2:
+                                if k_ix > 0 and random.randint(0, 3) < 3:
                                     k_ix = k_ix - 1
+                                if not metal_damaged:
+                                    random_0damage = random.choice(["r-0-A", "r-0-B", "r-0-C", "r-0-D", "r-0-E", "l-0-A", "l-0-B", "l-0-C", "l-0-D", "l-0-E"])
+                                    em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, random_0damage))
+
                                 await client.edit_message(ret_message, embed=em)
                                 await asyncio.sleep(2.5)
                             else:
-                                if k % 2 == 0:
-                                    em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "2nd"))
-                                else:
-                                    em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "1st"))
+                                print("リストに入ってない")
+                                if not metal_damaged:
+                                    if k % 2 == 0:
+                                        em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "2nd"))
+                                    else:
+                                        em.set_image(url=get_2nd_season_metal(svr, jack_inner_mode, "1st"))
 
                                 the_local_metal_rnd = random.randint(0,6)
                                 if the_local_metal_rnd == 0:
