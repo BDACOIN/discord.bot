@@ -223,11 +223,11 @@ async def on_ready():
                             jack_inner_mode = 7 #toilet mode
                         if rand_jack == 8:
                             jack_inner_mode = 8 #pipopipo mode
-                        if rand_jack == 49 and random.randint(0,1)==0:
+                        if rand_jack == 39 and random.randint(0,1)==0:
                             jack_inner_mode = 49 #metal mode
 
-                        #if datetime.datetime.now().month == 10 and datetime.datetime.now().day == 31 and datetime.datetime.now().hour == 23:
-                        #    jack_inner_mode = 98
+                        if rand_jack == 38 and 19 <= datetime.datetime.now().hour and datetime.datetime.now().hour <= 24:
+                            jack_inner_mode = 98
 
                         #if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
                         #    jack_inner_mode = 99
@@ -1024,9 +1024,9 @@ async def on_ready():
 
                     # 闇の登場
                     elif jack_inner_mode == 98:
-                        em.set_footer(text="この劇はかなり長くなっています。メニューの「ハロウィン・ＢＧＭ」への接続がお勧めです。")
-                        await client.edit_message(ret_message, embed=em)
-                        await asyncio.sleep(8)
+                        # em.set_footer(text="この劇はかなり長くなっています。メニューの「ハロウィン・ＢＧＭ」への接続がお勧めです。")
+                        # await client.edit_message(ret_message, embed=em)
+                        # await asyncio.sleep(8)
 
                         em1 = discord.Embed(title="", description="", color=0x36393f)
                         em1.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "1st"))
@@ -1219,7 +1219,7 @@ async def on_ready():
                         em.set_footer(text="バカナーー!!!! ギャァァぁーーーー!!!!", icon_url=get_boss_icon(svr) )
                         await client.edit_message(ret_message, embed=em)
 
-                        GLOBAL_REACTION_ICON = 300
+                        GLOBAL_REACTION_ICON = 600
                         await client.add_reaction(ret_message, "👉")
                         await client.add_reaction(ret_message, "🦇")
                         await client.add_reaction(ret_message, "👈")
