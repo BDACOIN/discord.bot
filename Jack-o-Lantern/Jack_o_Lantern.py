@@ -137,7 +137,7 @@ async def on_ready():
     
     if "Test" in client.user.name:
         pass
-        # target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
+        target_server_id = '411022327380180992' # ★★★★★ こみやんま本舗でデバッグする時は、ここのコメントアウトをはずす
     
     target_server_obj = None
     try:
@@ -3533,12 +3533,130 @@ async def show_jack_info(message):
                 em.add_field(name="参加回数順位", value= str(sanka_order) + " 位", inline=True)
                 break
             sanka_order = sanka_order + 1
+
+        cardhistorylist = pokerinfo["cardhistory"]
+        pigcount = 0
+        dogcount = 0
+        medalcount = 0
+        for h in cardhistorylist:
+            if h[0]==0:
+                pigcount = pigcount + 1
+            elif h[0]==1:
+                dogcount = dogcount + 1
+            else:
+                medalcount = medalcount + 1
+
+        em.add_field(name="🎖 回数", value= str(medalcount) + " 回", inline=True)
+        em.add_field(name="🐶 回数", value= str(pigcount) + " 回", inline=True)
+        em.add_field(name="🐷💩 回数", value= str(dogcount) + " 回", inline=True)
         
-        avator_url = message.author.avatar_url or message.author.default_avatar_url
-        avator_url = avator_url.replace(".webp?", ".png?")
-        em.set_thumbnail(url=avator_url)
-        em.set_image(url=get_url_of_hallowine_cards_base(message))
-        await client.send_message(message.channel, embed=em)
+        rnd = random.randint(0, len(cardhistorylist))
+        bests = cardhistorylist[rnd][1]
+        display_cards = best_wild_hand_reflect_hands(bests, bests)
+        modified_display_cards = get_symbol_display_cards(display_cards)
+        str_tehuda = "  ,  ".join(modified_display_cards)
+        
+        rank = poker.hand_rank(bests)
+        rank_1st = rank[0]
+        rank_2nd = 0
+        get_bda_point = rank_1st
+        get_bda_jack_point = 0
+        try:
+            
+            # 豚なら
+            if get_bda_point == 0:
+                highcard = sum(rank[1])
+                get_bda_point = get_bda_point + highcard
+            
+            # 豚以外なら
+            else:
+                get_bda_point = get_bda_point * get_bda_point * 100
+        
+            get_bda_jack_point = 0
+            if "AD" in bests:
+                get_bda_jack_point = get_bda_jack_point + 500
+            if (display_cards[0] == "WJB" and display_cards[1] == "WJR") or (display_cards[1] == "WJB" and display_cards[2] == "WJR") or (display_cards[2] == "WJB" and display_cards[3] == "WJR") or (display_cards[3] == "WJB" and display_cards[4] == "WJR"):
+                get_bda_jack_point = get_bda_jack_point + 30000
+        except:
+            pass
+        
+        em.add_field(name="第 " + str(rnd+1)+" 回目の役", value= str(get_bda_point) + " BDA", inline=True)
+        em.set_footer(text=" ")
+
+        path, path2 = make_png_img(message, display_cards)
+
+        # print("rank:" + str(rank))
+
+        try:
+
+            modified_display_cards = get_symbol_display_cards(display_cards)
+            cache_channel = get_poker_cache_count_channel(message.author)
+            content_message = "..."
+            send_message_obj = await client.send_file(cache_channel, path, content=content_message, filename=path2)
+            print("1")
+            avator_url = message.author.avatar_url or message.author.default_avatar_url
+            avator_url = avator_url.replace(".webp?", ".png?")
+            em.set_thumbnail(url=avator_url)
+            em.set_image(url=get_url_of_hallowine_cards_base(message))
+            print("2")
+            # await client.send_message(message.channel, embed=em)
+            
+            ret = None
+            try:
+                ret = await client.send_message(message.channel, embed=em)
+            except:
+                ret = None
+            
+            if ret == None:
+                try:
+                    await asyncio.sleep(1)
+                    ret = await client.send_message(message.channel, embed=em)
+                except:
+                    ret = None
+
+            if ret == None:
+                try:
+                    await asyncio.sleep(1)
+                    ret = await client.send_message(message.channel, embed=em)
+                except:
+                    ret = None
+                
+            proxy_url = send_message_obj.attachments[0]["proxy_url"]
+            await asyncio.sleep(3)
+            em.set_image(url=proxy_url)
+            em.set_footer(text=str_tehuda)
+
+            ret_edit = None
+            
+            try:
+                ret_edit = await client.edit_message(ret, embed=em)
+            except:
+                ret_edit = None
+                
+            if ret_edit == None:
+                try:
+                    await asyncio.sleep(1)
+                    ret_edit = await client.edit_message(ret, embed=em)
+                except:
+                    ret_edit = None
+
+            if ret_edit == None:
+                try:
+                    await asyncio.sleep(1)
+                    ret_edit = await client.edit_message(ret, embed=em)
+                except:
+                    ret_edit = None
+                
+            await asyncio.sleep(10)
+            await client.delete_message(send_message_obj)
+
+            
+        except Exception as e3:
+            t, v, tb = sys.exc_info()
+            print(traceback.format_exception(t,v,tb))
+            print(traceback.format_tb(e3.__traceback__))
+            print("例外:calc_of_all_poker")
+
             
     except Exception as e2:
         t, v, tb = sys.exc_info()
