@@ -206,7 +206,7 @@ async def on_ready():
                     jack_inner_mode = 0 # normal
 
                     if not GLOBAL_UNKO_JACK_MODE["JACK"]:
-                        rand_jack = random.randint(1,40)
+                        rand_jack = random.randint(1,45)
                         if rand_jack == 1:
                             jack_inner_mode = 1 #king mode
                         if rand_jack == 2:
@@ -223,15 +223,17 @@ async def on_ready():
                             jack_inner_mode = 7 #toilet mode
                         if rand_jack == 8:
                             jack_inner_mode = 8 #pipopipo mode
-                        if rand_jack == 39 and random.randint(0,1)==0:
+                        if rand_jack == 39:
                             jack_inner_mode = 49 #metal mode
 
-                        if rand_jack == 38 and 19 <= datetime.datetime.now().hour and datetime.datetime.now().hour <= 24:
+                        if (rand_jack == 37 or rand_jack == 38) and (18 <= datetime.datetime.now().hour and datetime.datetime.now().hour <= 24):
                             jack_inner_mode = 98
 
-                        #if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
-                        #    jack_inner_mode = 99
+                        if datetime.datetime.now().hour == 0 or datetime.datetime.now().hour == 24:
+                            jack_inner_mode = 99
 
+                    elif random.randint(0, 2) == 0:
+                        jack_inner_mode = random.randint(1, 8)
 
                     try:
                         if jack_inner_mode < 50:
@@ -1083,7 +1085,7 @@ async def on_ready():
                         em.set_footer(text="(パタパタパタ…)")
                         await client.edit_message(ret_message, embed=em)
 
-                        await asyncio.sleep(16)
+                        await asyncio.sleep(16-8)
                         em.set_image(url=get_jack_o_lantern_to_yamitojo(svr, jack_inner_mode, "8th"))
                         em.set_footer(text="(ぶっほっほっほ)", icon_url=get_boss_icon(svr) )
                         await client.edit_message(ret_message, embed=em)
@@ -1299,7 +1301,7 @@ async def on_ready():
                         await asyncio.sleep(5)
 
                         em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "8th"))
-                        em.set_footer(text="あ、それお守りな!" )
+                        em.set_footer(text="いつでもコインで呼べよな!" )
                         await client.edit_message(ret_message, embed=em)
                         await asyncio.sleep(5)
 
@@ -1317,6 +1319,7 @@ async def on_ready():
                         em.set_footer(text=" " )
                         em.add_field(name="🎃 提供 🎃", value="BLACKDIA LLC\n**　**\n", inline=False)
                         em.add_field(name="🎃 制作 🎃", value="こみやんま\n**　**\n", inline=False)
+                        em.add_field(name="🎃 第２期イベント絵 🎃", value="かんぱらつりぃ\n**　**\n", inline=False)
                         em.add_field(name="🎃 ＢＧＭ 🎃", value="ユーフルカ　Golmont\n**　**\n", inline=False)
                         # em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "toumei"))
                         em.set_image(url="")
@@ -1344,7 +1347,7 @@ async def on_ready():
                         await asyncio.sleep(4)
 
                         em.clear_fields()
-                        em.set_footer(text="Brave･Diamond･Ace の姿を見たものは、いない。")
+                        em.set_footer(text="Brave･Diamond･Ace は、いくつもの偉業を残すこととなる。")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(5)
@@ -1352,13 +1355,13 @@ async def on_ready():
 
                         em.clear_fields()
                         em.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "12th"))
-                        em.set_footer(text="だが、彼が居たことを後の世に伝えるため")
+                        em.set_footer(text="その物語をかたるのは、")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(5)
 
                         em.clear_fields()
-                        em.set_footer(text="私はここにこの物語を残そう・・・")
+                        em.set_footer(text="また、別の機会にするとしよう ...")
                         await client.edit_message(ret_message, embed=em)
 
                         await asyncio.sleep(5)
@@ -1386,7 +1389,7 @@ async def on_ready():
 
                         em3 = discord.Embed(title="", description="", color=0x36393f)
                         em3.set_image(url=get_jack_o_lantern_to_ending(svr, jack_inner_mode, "coin"))
-                        em3.add_field(name="Brave Diamond Ace のコイン", value= "JACKがお守りとして残したコイン", inline=False)
+                        em3.add_field(name="Brave Diamond Ace のコイン", value= "BDA-JACKがお守りとして残したコイン。\nトイレに投げ込むとジャックが現れた。", inline=False)
                         em3.set_footer(text="JACKの名前と姿が彫られている...")
                         await client.send_message(target_channel_obj, embed=em3)
                         await client.send_message(result_channel, embed=em3)
@@ -1847,8 +1850,9 @@ async def ending_scroll_sanka(svr, ret_message, em, channel):
             
             for v in pokerinfo["amount"].values():
                 amount = amount + v
-                
-            all_result_hash[id] = {"amount":amount, "count":len(pokerinfo["cardhistory"]) }
+            
+            if amount > 0:
+                all_result_hash[id] = {"amount":amount, "count":len(pokerinfo["cardhistory"]) }
                 
         except Exception as e2:
             t, v, tb = sys.exc_info()
@@ -1860,7 +1864,7 @@ async def ending_scroll_sanka(svr, ret_message, em, channel):
 
     modified_sorted_list = []
     for sl in sorted_list:
-        if sl[0] in member_of_on_calk:
+        if sl[0] in member_of_on_calk or True: # ★★★★★
             modified_sorted_list.append(sl)
 
     result_str = ""
@@ -3472,8 +3476,6 @@ async def on_reaction_add(reaction, user):
 
 
 
-
-
 async def show_jack_info(message):
 
     try:
@@ -3580,7 +3582,7 @@ async def show_jack_info(message):
         except:
             pass
         
-        em.add_field(name="第 " + str(rnd+1)+" 回目の役", value= str(get_bda_point) + " BDA", inline=True)
+        em.add_field(name="第 " + str(rnd+1)+" 回目の役", value= str(get_bda_point+get_bda_jack_point) + " BDA", inline=True)
         em.set_footer(text=" ")
 
         path, path2 = make_png_img(message, display_cards)
@@ -3663,7 +3665,8 @@ async def show_jack_info(message):
         print(traceback.format_exception(t,v,tb))
         print(traceback.format_tb(e2.__traceback__))
         print("例外:calc_of_all_poker")
-            
+
+
 
 
 
@@ -3704,6 +3707,8 @@ async def on_message(message):
         roles = message.author.roles;
         for r in roles:
             if r.name == "BOT":
+                return
+            if r.name == "うずら":
                 return
     except:
         pass

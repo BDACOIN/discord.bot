@@ -49,6 +49,53 @@ async def on_ready():
     print('------')
 
 
+def make_rain_img(coinname, tip):
+    base = Image.open("card/ZBASE.png")
+
+    x = 0
+    for c in displays_cards:
+        card_img = Image.open("base/momiji" + c + ".png")
+        base.paste(card_img, (x,0))
+        x = x + card_img.width
+
+    # base.save("aaa.png")
+
+    # 現在のunixタイムを出す
+    now = datetime.datetime.now()
+    unix = now.timestamp()
+    unix = int(unix)
+    
+    path2 = str(unix) + "_" + str(message.id) + "_poker" + ".png"
+    path = "DataTempImage/" + path2
+    base.save(path)
+    ### aaa = Image.alpha_composite(black, green)
+    # layers = Image.alpha_composite(black, frame)
+    # layers.save("level_up_image_{0:03d}".format(i)+ ".png")
+    return path, path2
+
+def make_tip_img(coinname, tip):
+    base = Image.open("card/ZBASE.png")
+
+    x = 0
+    for c in displays_cards:
+        card_img = Image.open("card/" + c + ".png")
+        base.paste(card_img, (x,0))
+        x = x + card_img.width
+
+    # base.save("aaa.png")
+
+    # 現在のunixタイムを出す
+    now = datetime.datetime.now()
+    unix = now.timestamp()
+    unix = int(unix)
+    
+    path2 = str(unix) + "_" + str(message.id) + "_poker" + ".png"
+    path = "DataTempImage/" + path2
+    base.save(path)
+    ### aaa = Image.alpha_composite(black, green)
+    # layers = Image.alpha_composite(black, frame)
+    # layers.save("level_up_image_{0:03d}".format(i)+ ".png")
+    return path, path2
 
 
 # メッセージを受信するごとに実行される
@@ -69,20 +116,30 @@ async def on_message(message):
         roles = message.author.roles;
         is_uzura = False
         for r in roles:
-            if r.name == "BOT":
-                return
             if r.name == "うずら":
                 is_uzura = True
                 
-        if not is_uzura:
-            return
+        #if not is_uzura:
+        #    return
+
+        mrain = re.search("\@(.+?) \-\-\- ([0-9\.]+)(.+?)\(Proportional to speech amount\) \-\-\-\>", message.content, re.IGNORECASE)
+        mtip = re.search("\@(.+?) \-\- ([0-9\.]+)(.+?) \-\-\> ", message.content, re.IGNORECASE)
+        print(mtip)
+        if mrain:
+            print(mrain.groups(1))
+            print(mrain.groups(2))
+            print(mrain.groups(3))
+
+        elif mtip:
+            print(mtip.groups(1))
+            print(mtip.groups(2))
+            print(mtip.groups(2))
+
+
     except:
         pass
 
 
-    mrain = re.search("\-\-\- ([0-9\.]+)(.+?)\(Proportional to speech amount\) \-\-\-\>")
-    if mrain:
-        print(mrain)
 
 
 

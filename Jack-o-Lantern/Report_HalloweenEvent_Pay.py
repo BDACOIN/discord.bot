@@ -42,8 +42,9 @@ def ending_scroll_sanka():
             
             for v in pokerinfo["amount"].values():
                 amount = amount + v
-                
-            all_result_hash[id] = amount
+
+            if amount > 0:    
+                all_result_hash[id] = amount
                 
         except Exception as e2:
             t, v, tb = sys.exc_info()
@@ -75,7 +76,7 @@ def ending_scroll_sanka():
             result_add.append(str(s[1]))
 
         try:
-            if index_list_ix >= 15 or s is modified_sorted_list[-1]:
+            if index_list_ix >= 17 or s is modified_sorted_list[-1]:
 
                 print("[ \"" + "\",\"".join(result_list) + "\" ]")
                 print("[" + ",".join(result_add) + "]")

@@ -59,6 +59,7 @@ async def start_bgm(message, bgm_path):
         print(traceback.format_tb(e3.__traceback__))
         print("例外:poker hand_percenteges error")
 
+    # bgm_path = r"D:\bdaproject\discord.bot\Jack-o-BGM\bgm\ending_64k.mp3"
     player = voice.create_ffmpeg_player(bgm_path)
     GLOBAL_PLAYER[message.author.id] = player
     player.start()
