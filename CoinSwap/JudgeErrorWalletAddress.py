@@ -1,6 +1,11 @@
 #coding: utf-8
 # ver 2.1
 
+#
+# Copyright (C) 2018 Akitsugu Komiyama
+# under the GPL v3 License.
+# 
+
 # 正規表現
 import re
 import asyncio

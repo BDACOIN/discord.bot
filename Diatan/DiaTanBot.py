@@ -1,6 +1,9 @@
 ﻿#coding: utf-8
 # ver 2.1
-
+#
+# Copyright (C) 2018 Akitsugu Komiyama
+# under the GPL v3 License.
+# 
 import builtins
 
 import re

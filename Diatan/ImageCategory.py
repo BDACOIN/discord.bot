@@ -1,7 +1,10 @@
 #coding: utf-8
 # ver 2.3
 
-
+#
+# Copyright (C) 2018 Akitsugu Komiyama
+# under the GPL v3 License.
+# 
 import builtins
 import asyncio
 
